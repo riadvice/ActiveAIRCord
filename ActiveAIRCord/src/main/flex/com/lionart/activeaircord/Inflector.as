@@ -282,6 +282,12 @@ package com.lionart.activeaircord
             return StringUtils.replace(' ', '_', StringUtils.replace('-', '_', StringUtils.trim(string.toLowerCase())));
         }
 
+        public static function keyify( string : String ) : String
+        {
+            return underscorify(string).toLowerCase() + "_id";
+
+        }
+
 
     }
 }

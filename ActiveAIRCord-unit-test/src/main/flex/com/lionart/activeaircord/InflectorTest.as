@@ -24,8 +24,8 @@ package com.lionart.activeaircord
 
         private static var singularToPlural : Array;
         private static var toUnderscore : Array;
-
-        private static var toUnderscore : Array;
+        private static var toTabelize : Array;
+        private static var toKeyify : Array;
 
         [Before]
         public function setUp() : void
@@ -160,6 +160,15 @@ package com.lionart.activeaircord
                 ["OneTwoThree", "One_Two_Three"],
                 ["banana", "banana"]
                 ];
+
+            toTabelize = [
+                ["AngryPerson", "angry_people"],
+                ["MySQL", "my_sqls"]
+                ];
+            
+            toKeyify = [
+                ["BuildingType","building_type_id"]
+            ];
         }
 
         [AfterClass]
@@ -203,7 +212,19 @@ package com.lionart.activeaircord
         [Test]
         public function testTabelize() : void
         {
-
+            for each (var couple : Array in toTabelize)
+            {
+                Assert.assertEquals(Inflector.tableize(couple[0]), couple[1]);
+            }
+        }
+        
+        [Test]
+        public function testKeyify() : void
+        {
+            for each (var couple : Array in toKeyify)
+            {
+                Assert.assertEquals(Inflector.keyify(couple[0]), couple[1]);
+            }
         }
     }
 }
