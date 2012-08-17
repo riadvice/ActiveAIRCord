@@ -275,9 +275,27 @@ package com.lionart.activeaircord
             }
         }
 
-        private function buildDestroy() : void
+        private function buildDestroy() : String
         {
+            var sql : String = [SQL.DELETE, SQL.FROM, _table].join(" ");
+            if (_where)
+            {
+                sql = [sql, SQL.WHERE, _where].join(" ");
+            }
 
+            if (_connection.acceptsLimitAndOrderForUpdateAndDelete())
+            {
+                if (_order)
+                {
+                    sql = [sql, SQL.ORDER, SQL.BY, _order].join(" ");
+                }
+
+                if (_limit)
+                {
+                    sql = _connection.limit(sql, null, _limit);
+                }
+            }
+            return sql;
         }
 
         private function buildInsert() : void
@@ -285,9 +303,41 @@ package com.lionart.activeaircord
 
         }
 
-        private function buildSelect() : void
+        private function buildSelect() : String
         {
+            var sql = [SQL.SELECT, _select, SQL.FROM, _table].join(" ");
 
+            if (_joins)
+            {
+                sql = [sql, _joins].join(" ");
+            }
+
+            if (_where)
+            {
+                sql = [sql, _where].join(" ");
+            }
+
+            if (_group)
+            {
+                sql = [sql, _group].join(" ");
+            }
+
+            if (_having)
+            {
+                sql = [sql, _having].join(" ");
+            }
+
+            if (_order)
+            {
+                sql = [sql, _order].join(" ");
+            }
+
+            if (_limit || _offset)
+            {
+                sql = _connection.limit(sql, _offset, _limit);
+            }
+
+            return sql;
         }
 
         private function buildUpdate() : void
@@ -295,9 +345,14 @@ package com.lionart.activeaircord
 
         }
 
-        private function quotedKeyNames() : void
+        private function quotedKeyNames() : Array
         {
-
+            var keys : Array = [];
+            for each (var field : String in _data)
+            {
+                keys.push(_connection.quoteName(_data[field]));
+            }
+            return keys;
         }
     }
 }

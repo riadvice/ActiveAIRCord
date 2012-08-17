@@ -165,10 +165,10 @@ package com.lionart.activeaircord
                 ["AngryPerson", "angry_people"],
                 ["MySQL", "my_sqls"]
                 ];
-            
+
             toKeyify = [
-                ["BuildingType","building_type_id"]
-            ];
+                ["BuildingType", "building_type_id"]
+                ];
         }
 
         [AfterClass]
@@ -217,7 +217,7 @@ package com.lionart.activeaircord
                 Assert.assertEquals(Inflector.tableize(couple[0]), couple[1]);
             }
         }
-        
+
         [Test]
         public function testKeyify() : void
         {
