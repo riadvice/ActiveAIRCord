@@ -14,39 +14,34 @@
    You should have received a copy of the GNU General Public License
    along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.lionart.activeaircord.models
+package com.lionart.activeaircord
 {
-    import com.lionart.activeaircord.Model;
 
-    import flash.utils.Dictionary;
-
-    public class Author extends Model
+    public class ColumnTest
     {
-        public static var pk : String = 'author_id';
+        private var column : Column;
 
-        public static var hasMany : Array = ['books'];
-
-        public static var hasOne : Array = [];
-
-        public static var belongsTo : Array = [];
-
-        private var _password : String
-
-        public function set password( value : String ) : void
+        [Before]
+        public function setUp() : void
         {
-            _password = value;
+            column = new Column();
         }
 
-        public function set name( value : String ) : void
+        [After]
+        public function tearDown() : void
         {
-            value = value.toUpperCase();
-            assignAttribute('name', value);
         }
 
-        public function returnSomething() : Dictionary
+        [BeforeClass]
+        public static function setUpBeforeClass() : void
         {
-            return new Dictionary({'sharks': 'lasers'});
         }
+
+        [AfterClass]
+        public static function tearDownAfterClass() : void
+        {
+        }
+
 
     }
 }
