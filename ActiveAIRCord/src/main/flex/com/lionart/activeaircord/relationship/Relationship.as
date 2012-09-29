@@ -100,7 +100,7 @@ package com.lionart.activeaircord.relationship
             //var availableOptions : Array = ArrayUtils.
         }
 
-        protected function unsetNonFinderOptions( $options ) : void
+        protected function unsetNonFinderOptions( options ) : void
         {
 
         }

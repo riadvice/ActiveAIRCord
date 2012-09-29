@@ -17,15 +17,17 @@
 package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.relationship.IRelationship;
-    import com.lionart.activeaircord.relationship.Relationship;
 
     import flash.utils.Dictionary;
+
+    import org.as3commons.lang.ClassUtils;
+    import org.as3commons.lang.DictionaryUtils;
 
     public class Table
     {
 
         public var clazz : Class;
-        public var conn;
+        public var conn : *;
         public var pk : String;
         public var lastSql : String;
 
@@ -34,30 +36,76 @@ package com.lionart.activeaircord
         public var dbName : String;
         public var sequence : String;
         public var callback : Function;
-        private var relationships : Array = [];
+        private var relationships : Dictionary = new Dictionary(true);
+        private static var cache : Dictionary = new Dictionary(true);
 
-        public static function load( $model_class_name )
+        public static function load( modelClass : Class )
         {
-
+            if (!cache[modelClass])
+            {
+                cache[modelClass] = new Table(modelClass);
+                Table(cache[modelClass]).setAssociations();
+            }
         }
 
-        public static function clearCache( modelClassName : String = null )
+        public static function clearCache( modelClass : Class = null )
         {
-
+            if (modelClass && DictionaryUtils.containsKey(cache, modelClass))
+            {
+                delete cache[modelClass];
+            }
+            else
+            {
+                cache = new Dictionary();
+            }
         }
 
-        public function Table()
+        public function Table( modelClass : Class = null )
         {
+            clazz = Reflections.getInstance().add(modelClass).getClass(modelClass);
+            reestablishConnection(false);
+            setTableName();
+            getMetaData();
+            setPrimaryKey();
+            setSequenceName();
+            setDelegates();
+            setSettersAndGetters();
         }
 
-        public function reestablishConnection( close : Boolean = true )
+        public function reestablishConnection( close : Boolean = true ) : *
         {
-
+            var connection : String = ClassUtils.getProperties(clazz, true)['connection'];
+            if (close)
+            {
+                ConnectionManager.dropConnection(connection);
+                clearCache();
+            }
+            return (conn = ConnectionManager.getConnection(connection));
         }
 
         public function createJoins( joins : Dictionary )
         {
+            if (!(joins is Dictionary))
+            {
+                return joins;
+            }
 
+            var ret : String, space : String, value : String = '';
+            for each (var key : String in joins)
+            {
+                value = joins[key];
+                ret += space;
+
+                if (value.indexOf(SQL.JOIN + ' ') == -1)
+                {
+                    if (DictionaryUtils.containsKey(relationships, value))
+                    {
+                        var rel : IRelationship = getRelationship(value);
+                            //if ( DictionaryUtils.containsKey(rel )
+                    }
+                }
+            }
+            return ret;
         }
 
         public function optionsToSql( options : Array )
@@ -90,9 +138,9 @@ package com.lionart.activeaircord
 
         }
 
-        public function getRelationship( name : String, strict : Boolean = false )
+        public function getRelationship( name : String, strict : Boolean = false ) : IRelationship
         {
-
+            return null;
         }
 
         public function hasRelationship( name : String )
@@ -115,7 +163,7 @@ package com.lionart.activeaircord
 
         }
 
-        private function addRelationship( relationship : IRelationship )
+        private function addRelationship( relationship : IRelationship ) : void
         {
 
         }
@@ -125,42 +173,42 @@ package com.lionart.activeaircord
 
         }
 
-        private function mapNames( hash : Dictionary, map : Array )
+        private function mapNames( hash : Dictionary, map : Array ) : void
         {
 
         }
 
-        private function processData( hash : Dictionary )
+        private function processData( hash : Dictionary ) : void
         {
 
         }
 
-        private function setPrimaryKey()
+        private function setPrimaryKey() : void
         {
 
         }
 
-        private function setTableName()
+        private function setTableName() : void
         {
 
         }
 
-        private function setSequenceName()
+        private function setSequenceName() : void
         {
 
         }
 
-        private function setAssociations()
+        private function setAssociations() : void
         {
 
         }
 
-        private function set_delegates()
+        private function setDelegates() : void
         {
 
         }
 
-        private function setSettersAndGetters()
+        private function setSettersAndGetters() : void
         {
 
         }

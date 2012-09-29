@@ -20,6 +20,8 @@ package com.lionart.activeaircord
     import flash.utils.Proxy;
     import flash.utils.flash_proxy;
 
+    import org.as3commons.lang.DictionaryUtils;
+
     public dynamic class Model extends Proxy
     {
 
@@ -34,14 +36,32 @@ package com.lionart.activeaircord
         public static var db : String;
         public static var tableName : String;
         public static var primaryKey : String;
+        public static var sequence : String;
+        public static var aliasAttribute : Dictionary = new Dictionary(true);
 
         public static const VALID_OPTIONS = ['conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having'];
 
 
-        public function Model()
+        public function Model( attributes : Dictionary = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {
             super();
-            _item = [];
+            _newRecord = newRecord;
+            if (!instantiatingViaFind)
+            {
+                for each (var column : Column in table().columns)
+                {
+                    attributes[column.inflectedName] = column.defaultValue;
+                }
+            }
+
+            setAttributesViaMassAssignment(attributes, guardAttributes);
+
+            if (instantiatingViaFind)
+            {
+                _dirty = [];
+            }
+
+            invokeCallback('after_consruct', false);
         }
 
         public function get errors() : Array
@@ -81,8 +101,18 @@ package com.lionart.activeaircord
 
         override flash_proxy function getProperty( name : * ) : *
         {
-            return _item[name];
+            // TODO : must look in attributes dictionary
+            if (hasOwnProperty(name))
+            {
+                return _item[name];
+            }
+            return readAttribute(name);
         }
+
+        /*override public function hasOwnProperty( V : * = null ) : Boolean
+           {
+           return DictionaryUtils.containsKey(attributes(), V) || DictionaryUtils.containsKey(aliasAttribute, V);
+           }*/
 
         override flash_proxy function setProperty( name : *, value : * ) : void
         {
@@ -113,14 +143,14 @@ package com.lionart.activeaircord
 
         }
 
-        public function attributes() : void
+        public function attributes() : Dictionary
         {
-
+            return _attributes;
         }
 
-        public function getPrimaryKey( first : Boolean = false ) : void
+        public function getPrimaryKey( first : Boolean = false ) : String
         {
-
+            return null;//table().primaryKey;
         }
 
         public function getRealAttributeName( name : String ) : void
@@ -178,9 +208,9 @@ package com.lionart.activeaircord
 
         }
 
-        public static function table() : void
+        public static function table() : Table
         {
-
+            return null;
         }
 
         public static function create( attributes : Array, validate : Boolean = true ) : void
@@ -233,9 +263,9 @@ package com.lionart.activeaircord
 
         }
 
-        public function isDirty() : void
+        public function isDirty() : Boolean
         {
-
+            return _dirty;
         }
 
         public function isValid() : void
@@ -268,7 +298,7 @@ package com.lionart.activeaircord
 
         }
 
-        private function setAttributesViaMassAssignment( attributes : Dictionary, guardAttributes : Dictionary ) : void
+        private function setAttributesViaMassAssignment( attributes : Dictionary, guardAttributes : Boolean ) : void
         {
 
         }

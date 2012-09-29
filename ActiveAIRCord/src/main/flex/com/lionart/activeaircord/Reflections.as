@@ -17,24 +17,47 @@
 package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
-
+    
     import flash.net.getClassByAlias;
     import flash.utils.Dictionary;
 
     public class Reflections
     {
+        private static var _instance : Reflections;
+
         private static var _reflections : Dictionary;
 
-        public static function add( className : String = null ) : void
+        private static var allowInstanciation : Boolean = false;
+
+        public function Reflections()
         {
-            var clazz : Class = getClassByAlias(className);
+            if (!allowInstanciation)
+            {
+                throw new Error("Reflections is a singleton class. Use getInstance() method.");
+            }
+        }
+
+        public static function getInstance() : Reflections
+        {
+            if (!_instance)
+            {
+                allowInstanciation = true;
+                _instance = new Reflections();
+                allowInstanciation = false;
+            }
+            return _instance;
+        }
+
+        public function add( clazz : Class = null ) : Reflections
+        {
             if (!_reflections[clazz])
             {
                 _reflections[clazz] = new clazz();
             }
+            return _instance;
         }
 
-        public static function destroy( clazz : Class ) : void
+        public function destroy( clazz : Class ) : void
         {
             if (!_reflections[clazz])
             {
@@ -42,16 +65,17 @@ package com.lionart.activeaircord
             }
         }
 
-        public static function getClass( className : String ) : *
+        public function getClass( clazz : Class ) : Class
         {
-            var clazz : Class = getClassByAlias(className);
-
             if (_reflections[clazz])
             {
                 return _reflections[clazz];
             }
-
-            throw ActiveRecordException("Class not found: " + className);
+            else
+            {
+                throw ActiveRecordException("Class not found: " + clazz);
+            }
+            return null;
         }
 
     }

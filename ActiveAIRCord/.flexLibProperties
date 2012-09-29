@@ -31,6 +31,7 @@
     <classEntry path="com.lionart.activeaircord.relationship.HasOne"/>
     <classEntry path="com.lionart.activeaircord.relationship.HasAndBelongsToMany"/>
     <classEntry path="com.lionart.activeaircord.relationship.BelongsTo"/>
+    <classEntry path="com.lionart.activeaircord.Cache"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
