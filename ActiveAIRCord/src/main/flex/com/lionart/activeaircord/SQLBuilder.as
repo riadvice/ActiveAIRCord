@@ -54,15 +54,21 @@ package com.lionart.activeaircord
             _table = table;
         }
 
+        public function toString() : String
+        {
+            // TODO
+            return '';
+        }
+
         public function get whereValues() : Array
         {
             return _whereValues;
         }
 
-        public function bindValues() : void
+        public function bindValues() : Array
         {
             // TODO : udpate me
-            Utils.flatternArray(_data);
+            return Utils.flatternArray(_data);
         }
 
         public function where( ... args ) : SQLBuilder

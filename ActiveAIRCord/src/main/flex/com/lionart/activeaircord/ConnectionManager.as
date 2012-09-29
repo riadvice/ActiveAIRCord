@@ -23,7 +23,7 @@ package com.lionart.activeaircord
     {
         private static var _connections : Dictionary;
 
-        public static function getConnection( name : String = null ) : SQLConnection
+        public static function getConnection( name : String = null ) : SQLiteConnection
         {
             name = name ? name : Configuration.defaultConnection;
             if (!_connections[name])

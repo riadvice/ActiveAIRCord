@@ -150,7 +150,7 @@ package com.lionart.activeaircord
 
         public function getPrimaryKey( first : Boolean = false ) : String
         {
-            return null;//table().primaryKey;
+            return null; //table().primaryKey;
         }
 
         public function getRealAttributeName( name : String ) : void

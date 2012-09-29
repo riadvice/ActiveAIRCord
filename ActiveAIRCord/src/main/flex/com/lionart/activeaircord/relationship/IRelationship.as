@@ -22,5 +22,6 @@ package com.lionart.activeaircord.relationship
     {
         function buildAssociation( model : Model, attributes : Array = null ) : void;
         function createAssociation( model : Model, attributes : Array = null ) : void;
+        function get attributeName() : String;
     }
 }

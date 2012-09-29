@@ -17,7 +17,7 @@
 package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
-    
+
     import flash.net.getClassByAlias;
     import flash.utils.Dictionary;
 

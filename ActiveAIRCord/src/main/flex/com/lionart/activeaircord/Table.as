@@ -16,6 +16,7 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.exceptions.RelationshipException;
     import com.lionart.activeaircord.relationship.IRelationship;
 
     import flash.utils.Dictionary;
@@ -27,12 +28,12 @@ package com.lionart.activeaircord
     {
 
         public var clazz : Class;
-        public var conn : *;
+        public var conn : SQLiteConnection;
         public var pk : String;
         public var lastSql : String;
 
         public var columns : Array = [];
-        public var table : Table;
+        public var tableName : String;
         public var dbName : String;
         public var sequence : String;
         public var callback : Function;
@@ -133,39 +134,77 @@ package com.lionart.activeaircord
 
         }
 
-        public function getFullyQualifiedTableName( quoteName : Boolean = true )
+        public function getFullyQualifiedTableName( quoteName : Boolean = true ) : String
         {
-
+            var table : String = '';
+            if (quoteName)
+            {
+                table = conn.quoteName(tableName);
+            }
+            else
+            {
+                table = tableName;
+            }
+            if (dbName)
+            {
+                table = conn.quoteName(dbName) + "." + table;
+            }
+            return table;
         }
 
         public function getRelationship( name : String, strict : Boolean = false ) : IRelationship
         {
-            return null;
+            if (hasRelationship(name))
+            {
+                return relationships[name];
+            }
+            else
+            {
+                throw new RelationshipException("Relationship named " + name + " has not been declared for class: {" + this.clazz + "}");
+            }
         }
 
-        public function hasRelationship( name : String )
+        public function hasRelationship( name : String ) : Boolean
         {
-
+            return DictionaryUtils.containsKey(relationships, name);
         }
 
         public function insert( data : *, pk : String = null, sequenceName : String = null )
         {
+            var data : * = processData(data);
 
+            var sql : SQLBuilder = new SQLBuilder(conn, getFullyQualifiedTableName());
+            sql.insert(data, pk, sequenceName);
+
+            // FIXME
+            var values : Array = data;
+            return conn.query(lastSql = sql.toString(), values);
         }
 
         public function update( data : *, where : String ) : void
         {
+            var data : * = processData(data);
 
+            var sql : SQLBuilder = new SQLBuilder(conn, getFullyQualifiedTableName());
+            sql.update(data).where(where);
+
+            var values : Array = sql.bindValues();
+            return conn.query(lastSql = sql.toString(), values);
         }
 
         public function destroy( data : * )
         {
+            var data : * = processData(data);
+            var sql : SQLBuilder = new SQLBuilder(conn, getFullyQualifiedTableName());
+            sql.destroy(data);
 
+            var values : Array = sql.bindValues();
+            return conn.query(lastSql = sql.toString(), values);
         }
 
         private function addRelationship( relationship : IRelationship ) : void
         {
-
+            relationships[relationship.attributeName] = relationship;
         }
 
         private function getMetaData()
