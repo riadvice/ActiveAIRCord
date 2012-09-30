@@ -120,9 +120,9 @@ package com.lionart.activeaircord.relationship
 
         }
 
-        public function constructInnerJoinSql( from_table : Table, usingThrough : Boolean = false, alias : String = null ) : void
+        public function constructInnerJoinSql( table : Table, usingThrough : Boolean = false, alias : String = null ) : String
         {
-
+            return null;
         }
 
         public function load( model : Model ) : void

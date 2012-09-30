@@ -16,6 +16,7 @@
  */
 package com.lionart.activeaircord
 {
+    import flash.utils.Dictionary;
 
     public class Callback
     {
@@ -41,7 +42,7 @@ package com.lionart.activeaircord
 
         private var _registry : Array = [];
 
-        public function Callback()
+        public function Callback( modelClass : Class )
         {
         }
 
@@ -55,7 +56,7 @@ package com.lionart.activeaircord
 
         }
 
-        public function register( name : String, closureOrMethodName : String = null, options : Array = null ) : void
+        public function register( name : String, closureOrMethodName : * = null, options : Dictionary = null ) : void
         {
 
         }

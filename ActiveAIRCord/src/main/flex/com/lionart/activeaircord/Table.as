@@ -21,6 +21,8 @@ package com.lionart.activeaircord
 
     import flash.utils.Dictionary;
 
+    import mx.collections.ArrayCollection;
+
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
 
@@ -36,7 +38,7 @@ package com.lionart.activeaircord
         public var tableName : String;
         public var dbName : String;
         public var sequence : String;
-        public var callback : Function;
+        public var callback : Callback;
         private var relationships : Dictionary = new Dictionary(true);
         private static var cache : Dictionary = new Dictionary(true);
 
@@ -49,7 +51,7 @@ package com.lionart.activeaircord
             }
         }
 
-        public static function clearCache( modelClass : Class = null )
+        public static function clearCache( modelClass : Class = null ) : void
         {
             if (modelClass && DictionaryUtils.containsKey(cache, modelClass))
             {
@@ -71,6 +73,10 @@ package com.lionart.activeaircord
             setSequenceName();
             setDelegates();
             setSettersAndGetters();
+
+            callback = new Callback(modelClass);
+            callback.register('before_save', function( model : Model ) : void {model.setTimestamps();}, new AdvancedDictionary(true, ['prepend'], [true]));
+            callback.register('after_save', function( model : Model ) : void {model.resetDirty();}, new AdvancedDictionary(true, ['prepend'], [true]));
         }
 
         public function reestablishConnection( close : Boolean = true ) : *
@@ -84,7 +90,7 @@ package com.lionart.activeaircord
             return (conn = ConnectionManager.getConnection(connection));
         }
 
-        public function createJoins( joins : Dictionary )
+        public function createJoins( joins : Dictionary ) : *
         {
             if (!(joins is Dictionary))
             {
@@ -97,31 +103,55 @@ package com.lionart.activeaircord
                 value = joins[key];
                 ret += space;
 
+                var existingTables : Dictionary = new Dictionary(true);
                 if (value.indexOf(SQL.JOIN + ' ') == -1)
                 {
                     if (DictionaryUtils.containsKey(relationships, value))
                     {
                         var rel : IRelationship = getRelationship(value);
-                            //if ( DictionaryUtils.containsKey(rel )
+                        var alias : String;
+                        if (DictionaryUtils.containsKey(existingTables, rel.className))
+                        {
+                            alias = value;
+                            existingTables[rel.className]++;
+                        }
+                        else
+                        {
+                            existingTables[rel.className] = true;
+                            alias = null;
+                        }
+
+                        ret += rel.constructInnerJoinSql(this, false, alias);
                     }
+                    else
+                    {
+                        throw new RelationshipException("Relationship named " + value + " has not been declared for class: {" + this.clazz + "}");
+                    }
+                }
+                else
+                {
+                    ret += value;
                 }
             }
             return ret;
         }
 
-        public function optionsToSql( options : Array )
+        public function optionsToSql( options : Dictionary ) : SQLBuilder
         {
-
+            return null;
         }
 
-        public function find( options : Array )
+        public function find( options : Dictionary ) : ArrayCollection
         {
-
+            var sql : SQLBuilder = optionsToSql(options);
+            var readOnly : Boolean = DictionaryUtils.containsKey(options, 'readonly') && options['readonly'];
+            var eagerLoad : Array = DictionaryUtils.containsKey(options, 'include') ? options['include'] : null;
+            return findBySql(sql.toString(), sql.whereValues, readOnly, eagerLoad);
         }
 
-        public function findBySql( sql : String, values : Array = null, readonly : Boolean = false, includes : Array = null )
+        public function findBySql( sql : String, values : Array = null, readonly : Boolean = false, includes : Array = null ) : ArrayCollection
         {
-
+            return null;
         }
 
         private function executeEagerLoad( models : Array = null, attrs : Array = null, includes : Array = null )

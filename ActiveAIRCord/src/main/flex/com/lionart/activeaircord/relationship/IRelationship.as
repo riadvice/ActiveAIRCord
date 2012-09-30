@@ -17,11 +17,14 @@
 package com.lionart.activeaircord.relationship
 {
     import com.lionart.activeaircord.Model;
+    import com.lionart.activeaircord.Table;
 
     public interface IRelationship
     {
         function buildAssociation( model : Model, attributes : Array = null ) : void;
         function createAssociation( model : Model, attributes : Array = null ) : void;
+        function constructInnerJoinSql( table : Table, usingThrough : Boolean = false, alias : String = null ) : String;
         function get attributeName() : String;
+        function get className() : String;
     }
 }
