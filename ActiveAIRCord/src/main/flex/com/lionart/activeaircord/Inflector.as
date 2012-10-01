@@ -59,7 +59,7 @@ package com.lionart.activeaircord
             [/^(ox)en/i, '$1'],
             [/(alias|status)(es)?$/i, '$1'],
             [/(octop|vir)(us|i)$/i, '$1us'],
-            [/(cris|test)(is|es)$/i, '$1is'],
+            [/(cris|test)('is'|es)$/i, '$1is'],
             [/(shoe)s$/i, '$1'],
             [/(o)es$/i, '$1'],
             [/(bus)(es)?$/i, '$1'],
