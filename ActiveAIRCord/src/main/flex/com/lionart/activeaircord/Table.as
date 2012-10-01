@@ -47,7 +47,7 @@ package com.lionart.activeaircord
             if (!cache[modelClass])
             {
                 cache[modelClass] = new Table(modelClass);
-                Table(cache[modelClass]).setAssociations();
+                (cache[modelClass]).setAssociations();
             }
         }
 
@@ -70,7 +70,6 @@ package com.lionart.activeaircord
             setTableName();
             getMetaData();
             setPrimaryKey();
-            setSequenceName();
             setDelegates();
             setSettersAndGetters();
 
@@ -203,14 +202,20 @@ package com.lionart.activeaircord
             return null;
         }
 
-        private function executeEagerLoad( models : Array = null, attrs : Array = null, includes : Array = null )
+        private function executeEagerLoad( models : Array = null, attrs : Array = null, includes : Array = null ) : void
         {
-
         }
 
-        public function getColumnByInflected_name( inflectedName : String )
+        public function getColumnByInflectedName( inflectedName : String ) : Column
         {
-
+            for each (var column : Column in columns)
+            {
+                if (column.inflectedName == inflectedName)
+                {
+                    return column;
+                }
+            }
+            return null;
         }
 
         public function getFullyQualifiedTableName( quoteName : Boolean = true ) : String
@@ -288,47 +293,34 @@ package com.lionart.activeaircord
 
         private function getMetaData()
         {
-
         }
 
         private function mapNames( hash : Dictionary, map : Array ) : void
         {
-
         }
 
         private function processData( hash : Dictionary ) : void
         {
-
         }
 
         private function setPrimaryKey() : void
         {
-
         }
 
         private function setTableName() : void
         {
-
-        }
-
-        private function setSequenceName() : void
-        {
-
         }
 
         private function setAssociations() : void
         {
-
         }
 
         private function setDelegates() : void
         {
-
         }
 
         private function setSettersAndGetters() : void
         {
-
         }
 
     }
