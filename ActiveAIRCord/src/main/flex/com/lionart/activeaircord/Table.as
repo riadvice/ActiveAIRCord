@@ -138,7 +138,56 @@ package com.lionart.activeaircord
 
         public function optionsToSql( options : Dictionary ) : SQLBuilder
         {
-            return null;
+            var table : String = DictionaryUtils.containsKey(options, 'from') ? options['from'] : getFullyQualifiedTableName();
+            var sql : SQLBuilder = new SQLBuilder(conn, table);
+
+            if (DictionaryUtils.containsKey(options, 'joins'))
+            {
+                sql.joins(createJoins(options['join']));
+
+                // by default, an inner join will not fetch the fields from the joined table
+                if (!DictionaryUtils.containsKey(options, 'select'))
+                {
+                    options['select'] = getFullyQualifiedTableName() + '.*';
+                }
+            }
+
+            if (DictionaryUtils.containsKey(options, 'select'))
+            {
+                sql.select(options['select']);
+            }
+
+            if (DictionaryUtils.containsKey(options, 'conditions'))
+            {
+                if (!(options['conditions'] is Dictionary))
+                {
+                    if (options['conditions'] is String)
+                    {
+                        options['conditions'] = [options['conditions']];
+                    }
+
+                        // TODO missing condition handling
+                }
+                else
+                {
+                    if (options['mapped_names'])
+                    {
+                        options['conditions'] = mapNames(options['conditions'], options['mapped_names']);
+                    }
+
+                    sql.where(options['conditions']);
+                }
+            }
+
+            for each (var sqlOption : String in['order', 'limit', 'offset', 'group', 'having'])
+            {
+                if (DictionaryUtils.containsKey(options, sqlOption))
+                {
+                    sql[sqlOption](options[sqlOption]);
+                }
+            }
+
+            return sql;
         }
 
         public function find( options : Dictionary ) : ArrayCollection
