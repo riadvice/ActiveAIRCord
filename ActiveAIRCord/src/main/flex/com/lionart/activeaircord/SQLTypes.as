@@ -26,7 +26,7 @@ package com.lionart.activeaircord
         public static const NUMBER : String = "REAL";
         public static const OBJECT : String = "OBJECT";
         public static const STRING : String = "TEXT";
-        public static const XML : String = "XML";
+        public static const Xml : String = "XML";
         public static const XMLLIST : String = "XMLLIST";
 
         /**
@@ -36,7 +36,10 @@ package com.lionart.activeaircord
         {
             switch (asType)
             {
-                case "int" || "uint":
+                case "int":
+                    return INTEGER;
+                    break;
+                case "uint":
                     return INTEGER;
                     break;
                 case "String":
@@ -52,7 +55,7 @@ package com.lionart.activeaircord
                     return BOOLEAN;
                     break;
                 case "XML":
-                    return XML;
+                    return Xml;
                     break;
                 case "XMLList":
                     return XMLLIST;
@@ -76,8 +79,8 @@ package com.lionart.activeaircord
                     return Date;
                 case BOOLEAN:
                     return Boolean;
-                case XML:
-                    return getClassByAlias("XML");
+                case Xml:
+                    return XML;
                 case XMLLIST:
                     return XMLList;
                 default:

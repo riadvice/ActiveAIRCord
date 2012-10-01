@@ -10,11 +10,13 @@
     <fx:Script>
         <![CDATA[
             import com.lionart.activeaircord.InflectorTest;
+            import com.lionart.activeaircord.SQLTypesTest;
             
             public function currentRunTestSuite():Array
             {
                 var testsToRun:Array = new Array();
                 testsToRun.push(com.lionart.activeaircord.InflectorTest);
+                testsToRun.push(com.lionart.activeaircord.SQLTypesTest);
                 return testsToRun;
             }
             
