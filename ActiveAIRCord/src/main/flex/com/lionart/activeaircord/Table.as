@@ -253,7 +253,7 @@ package com.lionart.activeaircord
             return DictionaryUtils.containsKey(relationships, name);
         }
 
-        public function insert( data : *, pk : String = null, sequenceName : String = null )
+        public function insert( data : *, pk : String = null, sequenceName : String = null ) : *
         {
             var data : * = processData(data);
 
@@ -265,7 +265,7 @@ package com.lionart.activeaircord
             return conn.query(lastSql = sql.toString(), values);
         }
 
-        public function update( data : *, where : String ) : void
+        public function update( data : *, where : String ) : *
         {
             var data : * = processData(data);
 

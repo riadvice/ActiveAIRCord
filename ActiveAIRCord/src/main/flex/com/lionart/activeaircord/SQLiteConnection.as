@@ -20,7 +20,9 @@ package com.lionart.activeaircord
 
     import flash.data.SQLConnection;
     import flash.net.Responder;
+    import flash.utils.Dictionary;
 
+    import org.as3commons.collections.utils.ArrayUtils;
     import org.as3commons.logging.api.ILogger;
 
     public class SQLiteConnection extends SQLConnection
@@ -66,9 +68,9 @@ package com.lionart.activeaircord
 
         }
 
-        public function query( sql : String, values : Array = null ) : void
+        public function query( sql : String, values : Array = null ) : String
         {
-
+            return '';
         }
 
         public function queryAndFetchOne( sql : String, values : Array = null ) : void
@@ -88,7 +90,7 @@ package com.lionart.activeaircord
 
         public function transaction() : void
         {
-
+            super.begin();
         }
 
         override public function commit( responder : Responder = null ) : void
@@ -99,11 +101,6 @@ package com.lionart.activeaircord
         override public function rollback( responder : Responder = null ) : void
         {
             super.rollback();
-        }
-
-        public function supportsSequences() : void
-        {
-
         }
 
         public function getSequenceName( table : String, columnName : String ) : void
@@ -125,21 +122,19 @@ package com.lionart.activeaircord
 
         public function limit( sql : String, offset : String, limit : String ) : String
         {
-            /*offset = !offset ? '' : parseInt( offset );
-               limit = parseInt( limit );
-               return "TODO";*/
-            return "";
+            return [sql, SQL.LIMIT, '{', !offset ? '' : parseInt(offset) + ',', '}', parseInt(limit)].join(' ');
         }
 
 
-        public function queryColumnInfo( table : String ) : void
+        public function queryColumnInfo( table : String ) : String
         {
-
+            // TODO : implement with SQLite supported syntax
+            return '';
         }
 
         public function queryForTables() : String
         {
-            return "TODO";
+            return query([SQL.SELECT, 'name', SQL.FROM, 'slite_master'].join(' '));
         }
 
         public function setEncoding( charset : String ) : void
@@ -152,9 +147,44 @@ package com.lionart.activeaircord
 
         }
 
-        public function createColumn( column : Column ) : Column
+        public function createColumn( column : Dictionary ) : Column
         {
             var c : Column = new Column();
+            c.inflectedName = Inflector.variablize(column['name']);
+            c.name = column['name'];
+            c.nullable = column['notnull'] ? false : true;
+            c.primaryKey = column['pk'] ? true : false;
+            c.autIncrement = ['INT', 'INTEGER'].indexOf(column['type']) && c.primaryKey;
+
+            column['type'] = String(column['type']).replace(/ +/, ' ');
+            var matches : Array = String(column['type']).split(' ');
+
+            if (matches && matches.length > 0)
+            {
+                c.rawType = String(matches[0]).toLowerCase();
+                if (matches.length > 1)
+                {
+                    c.length = parseInt(matches[1]);
+                }
+            }
+
+            c.mapRawType();
+
+            // FIXME : remove beceause useless
+            if (c.type == SQLTypes.DATE)
+            {
+                c.length = 19;
+            }
+
+            // From SQLite3 docs: The value is a signed integer, stored in 1, 2, 3, 4, 6,
+            // or 8 bytes depending on the magnitude of the value.
+            // so is it ok to assume it's possible an int can always go up to 8 bytes?
+            if (c.type == SQLTypes.INTEGER && !c.length)
+            {
+                c.length = 8;
+            }
+
+            c.defaultValue = c.cast(column['dflt_value'], this);
             return c;
 
         }

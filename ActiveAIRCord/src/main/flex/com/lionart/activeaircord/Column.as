@@ -131,7 +131,7 @@ package com.lionart.activeaircord
             _sequence = value;
         }
 
-        public function cast( value : * ) : *
+        public function cast( value : *, connection : SQLiteConnection ) : *
         {
             if (!value)
             {
