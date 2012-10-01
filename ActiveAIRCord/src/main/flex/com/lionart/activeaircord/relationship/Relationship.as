@@ -16,6 +16,9 @@
  */
 package com.lionart.activeaircord.relationship
 {
+    import avmplus.getQualifiedClassName;
+
+    import com.lionart.activeaircord.Inflector;
     import com.lionart.activeaircord.Model;
     import com.lionart.activeaircord.Table;
 
@@ -24,11 +27,46 @@ package com.lionart.activeaircord.relationship
     public class Relationship implements IRelationship
     {
         private var _attributeName : String;
-        private var _className : String;
+        private var _className : Class;
         private var _foreignKey : Array = [];
         protected var _options : Array = [];
         protected var _polyRelationship : Boolean = false;
         protected static const _validAssociationOptions : Array = ["class_name", "class", "foreign_key", "conditions", "select", "readonly", "namespace"];
+
+        public function Relationship( options : Array = null )
+        {
+            attributeName = options[0];
+            _options = mergeAssociationOptions(options);
+
+            // FIXME : must extract the correct class name depending on relationship
+            var relationship : String = getQualifiedClassName(this).toLowerCase();
+
+            if (relationship === 'hasmany' || relationship === 'hasandbelongstomany')
+            {
+                _polyRelationship = true;
+            }
+
+            if (_options['conditions'] && !(_options['conditions'] is Array))
+            {
+                _options['conditions'] = [_options['conditions']];
+            }
+
+            if (_options['class'])
+            {
+                setClassName(_options['class']);
+            }
+            else if (_options['class_name'])
+            {
+                setClassName(_options['class_name']);
+            }
+
+            attributeName = Inflector.variablize(attributeName).toLowerCase();
+
+            if (!foreignKey && _options['foreign_key'])
+            {
+                foreignKey = (_options['foreign_key'] is Array) ? _options['foreign_key'] : [_options['foreign_key']]
+            }
+        }
 
         public function get attributeName() : String
         {
@@ -40,12 +78,12 @@ package com.lionart.activeaircord.relationship
             _attributeName = value;
         }
 
-        public function get className() : String
+        public function get className() : Class
         {
             return _className;
         }
 
-        public function set className( value : String ) : void
+        public function set className( value : Class ) : void
         {
             _className = value;
         }
@@ -60,20 +98,14 @@ package com.lionart.activeaircord.relationship
             _foreignKey = value;
         }
 
-        public function Relationship( options : Array )
-        {
-            _attributeName = options[0];
-            options = mergeAssociationOptions(options);
-        }
-
         protected function getTable() : void
         {
-
+            Table.load(className);
         }
 
-        public function isPoly() : void
+        public function isPoly() : Boolean
         {
-
+            return _polyRelationship;
         }
 
         protected function queryAndAttachRelatedModelsEagerly( table : Table, models : Array, attributes : Array, includes : Array = null, queryKeys : Array = null, modelValuesKeys : Array = null ) : void
