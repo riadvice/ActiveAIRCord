@@ -68,6 +68,11 @@ package com.lionart.activeaircord
             try
             {
                 var connection : SQLiteConnection = new SQLiteConnection(info);
+                // TODO : add logging
+                if (info["charset"])
+                {
+                    connection.setEncoding(info["charset"]);
+                }
             }
             catch ( e : Error )
             {
