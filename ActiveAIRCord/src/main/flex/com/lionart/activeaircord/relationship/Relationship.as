@@ -22,12 +22,10 @@ package com.lionart.activeaircord.relationship
     import com.lionart.activeaircord.Model;
     import com.lionart.activeaircord.Table;
 
-    import org.as3commons.lang.ArrayUtils;
-
     public class Relationship implements IRelationship
     {
         private var _attributeName : String;
-        private var _className : Class;
+        private var _className : String;
         private var _foreignKey : Array = [];
         protected var _options : Array = [];
         protected var _polyRelationship : Boolean = false;
@@ -41,30 +39,30 @@ package com.lionart.activeaircord.relationship
             // FIXME : must extract the correct class name depending on relationship
             var relationship : String = getQualifiedClassName(this).toLowerCase();
 
-            if (relationship === 'hasmany' || relationship === 'hasandbelongstomany')
+            if (relationship === "hasmany" || relationship === "hasandbelongstomany")
             {
                 _polyRelationship = true;
             }
 
-            if (_options['conditions'] && !(_options['conditions'] is Array))
+            if (_options["conditions"] && !(_options["conditions"] is Array))
             {
-                _options['conditions'] = [_options['conditions']];
+                _options["conditions"] = [_options["conditions"]];
             }
 
-            if (_options['class'])
+            if (_options["class"])
             {
-                setClassName(_options['class']);
+                setClassName(_options["class"]);
             }
-            else if (_options['class_name'])
+            else if (_options["class_name"])
             {
-                setClassName(_options['class_name']);
+                setClassName(_options["class_name"]);
             }
 
             attributeName = Inflector.variablize(attributeName).toLowerCase();
 
-            if (!foreignKey && _options['foreign_key'])
+            if (!foreignKey && _options["foreign_key"])
             {
-                foreignKey = (_options['foreign_key'] is Array) ? _options['foreign_key'] : [_options['foreign_key']]
+                foreignKey = (_options["foreign_key"] is Array) ? _options["foreign_key"] : [_options["foreign_key"]]
             }
         }
 
@@ -78,12 +76,12 @@ package com.lionart.activeaircord.relationship
             _attributeName = value;
         }
 
-        public function get className() : Class
+        public function get className() : String
         {
             return _className;
         }
 
-        public function set className( value : Class ) : void
+        public function set className( value : String ) : void
         {
             _className = value;
         }

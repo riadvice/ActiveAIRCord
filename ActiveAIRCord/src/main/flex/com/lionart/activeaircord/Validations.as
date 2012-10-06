@@ -57,7 +57,7 @@ package com.lionart.activeaircord
         {
             _model = model;
             _record = new ValidationErrors(_model);
-            _clazz = Reflections.getInstance().getClass(Class(model)) as Class;
+            //_clazz = Reflections.getInstance().getClass(Class(model)) as Class;
 
             var properties : Object = ClassUtils.getProperties(_clazz);
             for each (var property : Field in properties)

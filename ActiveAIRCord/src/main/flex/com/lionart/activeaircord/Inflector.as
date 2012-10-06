@@ -24,61 +24,61 @@ package com.lionart.activeaircord
     {
 
         private static var plural : Array = [
-            [/(quiz)$/i, '$1zes'],
-            [/^(ox)$/i, '$1en'],
-            [/^(m|l)ouse$/i, '$1ice'],
-            [/(matr|vert|ind)(?:ix|ex)$/i, '$1ices'],
-            [/(x|ch|ss|sh)$/i, '$1es'],
-            [/([^aeiouy]|qu)y$/i, '$1ies'],
-            [/(hive)$/i, '$1s'],
-            [/(?:([^f])fe|([lr])f)$/i, '$1$2ves'],
-            [/(shea|lea|loa|thie)f$/i, '$1ves'],
-            [/sis$/i, 'ses'],
-            [/([ti])um$/i, '$1a'],
-            [/(bu)s$/i, '$1ses'],
-            [/(octop|vir)us$/i, '$1i'],
-            [/(octop|vir)i$/i, '$1i'],
-            [/(alias|status)$/i, '$1es'],
-            [/(buffal|tomat)o$/i, '$1oes'],
-            [/([ti])a$/i, '$1a'],
-            [/^(m|l)ice$/i, '$1ice'],
-            [/^(oxen)$/i, '$1'],
-            [/^(ax|test)is$/i, '$1es'],
-            [/(us)$/i, '$1es'],
-            [/s$/i, 's'],
-            [/$/, 's']
+            [/(quiz)$/i, "$1zes"],
+            [/^(ox)$/i, "$1en"],
+            [/^(m|l)ouse$/i, "$1ice"],
+            [/(matr|vert|ind)(?:ix|ex)$/i, "$1ices"],
+            [/(x|ch|ss|sh)$/i, "$1es"],
+            [/([^aeiouy]|qu)y$/i, "$1ies"],
+            [/(hive)$/i, "$1s"],
+            [/(?:([^f])fe|([lr])f)$/i, "$1$2ves"],
+            [/(shea|lea|loa|thie)f$/i, "$1ves"],
+            [/sis$/i, "ses"],
+            [/([ti])um$/i, "$1a"],
+            [/(bu)s$/i, "$1ses"],
+            [/(octop|vir)us$/i, "$1i"],
+            [/(octop|vir)i$/i, "$1i"],
+            [/(alias|status)$/i, "$1es"],
+            [/(buffal|tomat)o$/i, "$1oes"],
+            [/([ti])a$/i, "$1a"],
+            [/^(m|l)ice$/i, "$1ice"],
+            [/^(oxen)$/i, "$1"],
+            [/^(ax|test)is$/i, "$1es"],
+            [/(us)$/i, "$1es"],
+            [/s$/i, "s"],
+            [/$/, "s"]
             ];
 
 
         private static var singular : Array = [
-            [/^(a)x[ie]s$/i, '$1xis'],
-            [/(database)s$/i, '$1'],
-            [/(quiz)zes$/i, '$1'],
-            [/(matr)ices$/i, '$1ix'],
-            [/(vert|ind)ices$/i, '$1ex'],
-            [/^(ox)en/i, '$1'],
-            [/(alias|status)(es)?$/i, '$1'],
-            [/(octop|vir)(us|i)$/i, '$1us'],
-            [/(cris|test)('is'|es)$/i, '$1is'],
-            [/(shoe)s$/i, '$1'],
-            [/(o)es$/i, '$1'],
-            [/(bus)(es)?$/i, '$1'],
-            [/^(m|l)ice$/i, '$1ouse'],
-            [/(x|ch|ss|sh)es$/i, '$1'],
-            [/(m)ovies$/i, '$1ovie'],
-            [/(s)eries$/i, '$1eries'],
-            [/([^aeiouy]|qu)ies$/i, '$1y'],
-            [/([lr])ves$/i, '$1f'],
-            [/(tive)s$/i, '$1'],
-            [/(hive)s$/i, '$1'],
-            [/(shea|loa|lea|thie)ves$/i, '$1f'],
-            [/(^analy)(sis|ses)$/i, '$1sis'],
-            [/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)(sis|ses)$/i, '$1sis'],
-            [/([ti])a$/i, '$1um'],
-            [/(n)ews$/i, '$1ews'],
-            [/([^f])ves$/i, '$1fe'],
-            [/(ss)$/i, '$1'],
-            [/s$/i, '']
+            [/^(a)x[ie]s$/i, "$1xis"],
+            [/(database)s$/i, "$1"],
+            [/(quiz)zes$/i, "$1"],
+            [/(matr)ices$/i, "$1ix"],
+            [/(vert|ind)ices$/i, "$1ex"],
+            [/^(ox)en/i, "$1"],
+            [/(alias|status)(es)?$/i, "$1"],
+            [/(octop|vir)(us|i)$/i, "$1us"],
+            [/(cris|test)("is"|es)$/i, "$1is"],
+            [/(shoe)s$/i, "$1"],
+            [/(o)es$/i, "$1"],
+            [/(bus)(es)?$/i, "$1"],
+            [/^(m|l)ice$/i, "$1ouse"],
+            [/(x|ch|ss|sh)es$/i, "$1"],
+            [/(m)ovies$/i, "$1ovie"],
+            [/(s)eries$/i, "$1eries"],
+            [/([^aeiouy]|qu)ies$/i, "$1y"],
+            [/([lr])ves$/i, "$1f"],
+            [/(tive)s$/i, "$1"],
+            [/(hive)s$/i, "$1"],
+            [/(shea|loa|lea|thie)ves$/i, "$1f"],
+            [/(^analy)(sis|ses)$/i, "$1sis"],
+            [/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)(sis|ses)$/i, "$1sis"],
+            [/([ti])a$/i, "$1um"],
+            [/(n)ews$/i, "$1ews"],
+            [/([^f])ves$/i, "$1fe"],
+            [/(ss)$/i, "$1"],
+            [/s$/i, ""]
             ];
 
         private static var irregular : Array = [
@@ -222,7 +222,7 @@ package com.lionart.activeaircord
             var camelized : String = "";
             for (var i : int = 0; i < string.length; i++)
             {
-                if (string.charAt(i) == '_' && i + 1 < string.length)
+                if (string.charAt(i) == "_" && i + 1 < string.length)
                 {
                     camelized += string.charAt(++i).toUpperCase();
                 }
@@ -269,7 +269,7 @@ package com.lionart.activeaircord
         public static function underscorify( string : String ) : String
         {
             var pattern : RegExp = new RegExp("([a-z])([A-Z])", "g");
-            return string.replace(/[_\- ]+/g, "_").replace(pattern, '$1_$2');
+            return string.replace(/[_\- ]+/g, "_").replace(pattern, "$1_$2");
         }
 
         public static function tableize( string : String ) : String
@@ -279,7 +279,7 @@ package com.lionart.activeaircord
 
         public static function variablize( string : String ) : String
         {
-            return StringUtils.replace(' ', '_', StringUtils.replace('-', '_', StringUtils.trim(string.toLowerCase())));
+            return StringUtils.replace(" ", "_", StringUtils.replace("-", "_", StringUtils.trim(string.toLowerCase())));
         }
 
         public static function keyify( string : String ) : String

@@ -16,9 +16,9 @@
  */
 package com.lionart.activeaircord
 {
-    import flash.data.SQLConnection;
     import flash.utils.Dictionary;
 
+    import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.logging.api.ILogger;
 
     /**
@@ -36,10 +36,6 @@ package com.lionart.activeaircord
 
         private static var _logger : ILogger;
 
-        public static function initialize( initializer : Function ) : void
-        {
-        }
-
         public static function set connections( connections : Dictionary ) : void
         {
             _connections = connections;
@@ -56,14 +52,14 @@ package com.lionart.activeaircord
         /**
          * Returns an SQLConnection if found otherwise null.
          */
-        public static function getConnection( name : String ) : SQLConnection
+        public static function getConnection( name : String ) : String
         {
             return _connections[name] ? _connections[name] : null;
         }
 
-        public function getDefaultConnectionString() : void
+        public static function get defaulConnectionString() : String
         {
-
+            return DictionaryUtils.containsKey(_connections, _defaultConnection) ? _connections[_defaultConnection] : null;
         }
 
         public static function get defaultConnection() : String

@@ -88,7 +88,7 @@ package com.lionart.activeaircord.validation
 
         public function toString() : String
         {
-            return '';
+            return "";
         }
 
         public function isEmpty() : void

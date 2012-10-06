@@ -21,7 +21,7 @@ package com.lionart.activeaircord.relationship
 
     public class HasMany extends Relationship
     {
-        protected static var validAssociationOptions : Array = ['primary_key', 'order', 'group', 'having', 'limit', 'offset', 'through', 'source'];
+        protected static var validAssociationOptions : Array = ["primary_key", "order", "group", "having", "limit", "offset", "through", "source"];
 
         protected var primaryKey : String;
 

@@ -20,6 +20,7 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.relationship.IRelationship;
 
     import flash.utils.Dictionary;
+    import flash.utils.getQualifiedClassName;
 
     import mx.collections.ArrayCollection;
 
@@ -34,7 +35,7 @@ package com.lionart.activeaircord
         public var pk : String;
         public var lastSql : String;
 
-        public var columns : Array = [];
+        public var columns : Dictionary;
         public var tableName : String;
         public var dbName : String;
         public var sequence : String;
@@ -42,12 +43,12 @@ package com.lionart.activeaircord
         private var relationships : Dictionary = new Dictionary(true);
         private static var cache : Dictionary = new Dictionary(true);
 
-        public static function load( modelClass : Class )
+        public static function load( className : String )
         {
-            if (!cache[modelClass])
+            if (!cache[className])
             {
-                cache[modelClass] = new Table(modelClass);
-                (cache[modelClass]).setAssociations();
+                cache[className] = new Table(className);
+                (cache[className]).setAssociations();
             }
         }
 
@@ -63,9 +64,9 @@ package com.lionart.activeaircord
             }
         }
 
-        public function Table( modelClass : Class = null )
+        public function Table( className : String = null )
         {
-            clazz = Reflections.getInstance().add(modelClass).getClass(modelClass);
+            clazz = Reflections.getInstance().add(className).getClass(className);
             reestablishConnection(false);
             setTableName();
             getMetaData();
@@ -73,14 +74,14 @@ package com.lionart.activeaircord
             setDelegates();
             setSettersAndGetters();
 
-            callback = new Callback(modelClass);
-            callback.register('before_save', function( model : Model ) : void {model.setTimestamps();}, new AdvancedDictionary(true, ['prepend'], [true]));
-            callback.register('after_save', function( model : Model ) : void {model.resetDirty();}, new AdvancedDictionary(true, ['prepend'], [true]));
+            //callback = new Callback(className);
+            callback.register("before_save", function( model : Model ) : void {model.setTimestamps();}, new AdvancedDictionary(true, ["prepend"], [true]));
+            callback.register("after_save", function( model : Model ) : void {model.resetDirty();}, new AdvancedDictionary(true, ["prepend"], [true]));
         }
 
         public function reestablishConnection( close : Boolean = true ) : *
         {
-            var connection : String = ClassUtils.getProperties(clazz, true)['connection'];
+            var connection : String = ClassUtils.getProperties(clazz, true)["connection"];
             if (close)
             {
                 ConnectionManager.dropConnection(connection);
@@ -96,14 +97,14 @@ package com.lionart.activeaircord
                 return joins;
             }
 
-            var ret : String, space : String, value : String = '';
+            var ret : String, space : String, value : String = "";
             for each (var key : String in joins)
             {
                 value = joins[key];
                 ret += space;
 
                 var existingTables : Dictionary = new Dictionary(true);
-                if (value.indexOf(SQL.JOIN + ' ') == -1)
+                if (value.indexOf(SQL.JOIN + " ") == -1)
                 {
                     if (DictionaryUtils.containsKey(relationships, value))
                     {
@@ -137,48 +138,48 @@ package com.lionart.activeaircord
 
         public function optionsToSql( options : Dictionary ) : SQLBuilder
         {
-            var table : String = DictionaryUtils.containsKey(options, 'from') ? options['from'] : getFullyQualifiedTableName();
+            var table : String = DictionaryUtils.containsKey(options, "from") ? options["from"] : getFullyQualifiedTableName();
             var sql : SQLBuilder = new SQLBuilder(conn, table);
 
-            if (DictionaryUtils.containsKey(options, 'joins'))
+            if (DictionaryUtils.containsKey(options, "joins"))
             {
-                sql.joins(createJoins(options['join']));
+                sql.joins(createJoins(options["join"]));
 
                 // by default, an inner join will not fetch the fields from the joined table
-                if (!DictionaryUtils.containsKey(options, 'select'))
+                if (!DictionaryUtils.containsKey(options, "select"))
                 {
-                    options['select'] = getFullyQualifiedTableName() + '.*';
+                    options["select"] = getFullyQualifiedTableName() + ".*";
                 }
             }
 
-            if (DictionaryUtils.containsKey(options, 'select'))
+            if (DictionaryUtils.containsKey(options, "select"))
             {
-                sql.select(options['select']);
+                sql.select(options["select"]);
             }
 
-            if (DictionaryUtils.containsKey(options, 'conditions'))
+            if (DictionaryUtils.containsKey(options, "conditions"))
             {
-                if (!(options['conditions'] is Dictionary))
+                if (!(options["conditions"] is Dictionary))
                 {
-                    if (options['conditions'] is String)
+                    if (options["conditions"] is String)
                     {
-                        options['conditions'] = [options['conditions']];
+                        options["conditions"] = [options["conditions"]];
                     }
 
                         // TODO missing condition handling
                 }
                 else
                 {
-                    if (options['mapped_names'])
+                    if (options["mapped_names"])
                     {
-                        options['conditions'] = mapNames(options['conditions'], options['mapped_names']);
+                        options["conditions"] = mapNames(options["conditions"], options["mapped_names"]);
                     }
 
-                    sql.where(options['conditions']);
+                    sql.where(options["conditions"]);
                 }
             }
 
-            for each (var sqlOption : String in['order', 'limit', 'offset', 'group', 'having'])
+            for each (var sqlOption : String in["order", "limit", "offset", "group", "having"])
             {
                 if (DictionaryUtils.containsKey(options, sqlOption))
                 {
@@ -192,8 +193,8 @@ package com.lionart.activeaircord
         public function find( options : Dictionary ) : ArrayCollection
         {
             var sql : SQLBuilder = optionsToSql(options);
-            var readOnly : Boolean = DictionaryUtils.containsKey(options, 'readonly') && options['readonly'];
-            var eagerLoad : Array = DictionaryUtils.containsKey(options, 'include') ? options['include'] : null;
+            var readOnly : Boolean = DictionaryUtils.containsKey(options, "readonly") && options["readonly"];
+            var eagerLoad : Array = DictionaryUtils.containsKey(options, "include") ? options["include"] : null;
             return findBySql(sql.toString(), sql.whereValues, readOnly, eagerLoad);
         }
 
@@ -220,7 +221,7 @@ package com.lionart.activeaircord
 
         public function getFullyQualifiedTableName( quoteName : Boolean = true ) : String
         {
-            var table : String = '';
+            var table : String = "";
             if (quoteName)
             {
                 table = conn.quoteName(tableName);
@@ -291,8 +292,10 @@ package com.lionart.activeaircord
             relationships[relationship.attributeName] = relationship;
         }
 
-        private function getMetaData()
+        private function getMetaData() : void
         {
+            columns = conn.columns(getFullyQualifiedTableName());
+            //columns = Cache.get("meta_data-" + tblName, function( connection : SQLiteConnection, tblName : String ) : Array {return connection.columns(tblName)});
         }
 
         private function mapNames( hash : Dictionary, map : Array ) : void
@@ -309,6 +312,21 @@ package com.lionart.activeaircord
 
         private function setTableName() : void
         {
+            var table : String = ClassUtils.getProperties(clazz, true)['table'] || ClassUtils.getProperties(clazz, true)['table_name'];
+            if (table)
+            {
+                tableName = table;
+            }
+            else
+            {
+                table = Inflector.tableize(getQualifiedClassName(clazz));
+            }
+
+            var db : String = ClassUtils.getProperties(clazz, true)['db'] || ClassUtils.getProperties(clazz, true)['db_name'];
+            if (db)
+            {
+                dbName = db;
+            }
         }
 
         private function setAssociations() : void

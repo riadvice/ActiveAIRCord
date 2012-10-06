@@ -18,16 +18,18 @@ package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
 
+    import flash.data.SQLColumnSchema;
     import flash.data.SQLConnection;
+    import flash.data.SQLTableSchema;
+    import flash.filesystem.File;
     import flash.net.Responder;
     import flash.utils.Dictionary;
 
-    import org.as3commons.collections.utils.ArrayUtils;
     import org.as3commons.logging.api.ILogger;
+    import org.osmf.utils.URL;
 
     public class SQLiteConnection extends SQLConnection
     {
-
         public var _lastQuery : String;
 
         private var logging : Boolean = false;
@@ -36,26 +38,96 @@ package com.lionart.activeaircord
 
         public var _protocol : String;
 
-        public static const QUOTE_CHARACTER : String = '`';
+        public var _connectionString : String;
+
+        public static const QUOTE_CHARACTER : String = "`";
+
+        public function SQLiteConnection( info : Dictionary )
+        {
+            super();
+            var dbFile : File = new File(File.applicationDirectory.nativePath + File.separator + info["host"]);
+            // FIXME : if open mode is not create
+            /*if (!dbFile.exists)
+               {
+               throw new ActiveRecordException("Could not find sqlite db: " + info["host"]);
+               }*/
+            this.open(dbFile);
+        }
 
         public static function instance( connectionStringOrConnectionName : * = null ) : void
         {
 
         }
 
-        public static function parseConnectionUrl( connectionUrl : String ) : void
+        public static function parseConnectionUrl( connectionUrl : String ) : Dictionary
         {
+            var url : URL = new URL(connectionUrl);
 
+            if (url.host.length == 0)
+            {
+                throw new ActiveRecordException("Database host must be specified in the connection string.");
+            }
+            var info : Dictionary = new Dictionary(true);
+            info["protocol"] = url.protocol;
+            info["host"] = url.host;
+            info["db"] = url.path.length > 0 ? url.path.substr(1) : null;
+            info["user"] = url.userInfo.length > 0 ? url.userInfo : null;
+            info["pass"] = url.userInfo.length > 0 ? url.userInfo : null;
+
+            if (info["host"] == "unix(")
+            {
+                var socketDatabase : String = info["host"] + '/' + info["db"];
+                var unixRegex : RegExp = /^unix\((.+)\)\/?().*$/;
+                var result : Object = unixRegex.exec(socketDatabase);
+                if (result)
+                {
+                    info["host"] = result[1][0];
+                    info["dv"] = result[2][0];
+                }
+            }
+            else if (String(info["host"]).substr(0, 8) == "windows(")
+            {
+                info["host"] = String(info["host"]).substr(8) + "/" + String(info["db"]).substr(0, -1);
+                info["db"] = null;
+            }
+
+            if (info["db"])
+            {
+                info["host"] += "/" + info["db"];
+            }
+
+            if (url.port.length > 0)
+            {
+                info["port"] = url.port;
+            }
+
+            if (url.query.length > 0)
+            {
+                var params : Array = url.query.split("&");
+                for each (var param : String in params)
+                {
+                    var keyAndValue : Array = param.split("=");
+                    if (keyAndValue[0] == 'charset')
+                    {
+                        info["charset"] = keyAndValue[1];
+                    }
+                }
+            }
+            return info;
         }
 
-        public function SQLiteConnection()
+        public function columns( table : String ) : Dictionary
         {
-            super();
-        }
+            var columns : Dictionary = new Dictionary(true);
+            var schema : SQLTableSchema = queryColumnInfo(table);
 
-        public function columns( table : String ) : void
-        {
+            for each (var columnSchema : SQLColumnSchema in schema.columns)
+            {
+                var column : Column = createColumn(columnSchema);
+                columns[column.name] = columns;
+            }
 
+            return columns;
         }
 
         public function escape( string : String ) : String
@@ -70,7 +142,7 @@ package com.lionart.activeaircord
 
         public function query( sql : String, values : Array = null ) : String
         {
-            return '';
+            return "";
         }
 
         public function queryAndFetchOne( sql : String, values : Array = null ) : void
@@ -122,19 +194,19 @@ package com.lionart.activeaircord
 
         public function limit( sql : String, offset : String, limit : String ) : String
         {
-            return [sql, SQL.LIMIT, '{', !offset ? '' : parseInt(offset) + ',', '}', parseInt(limit)].join(' ');
+            return [sql, SQL.LIMIT, "{", !offset ? "" : parseInt(offset) + ",", "}", parseInt(limit)].join(" ");
         }
 
 
-        public function queryColumnInfo( table : String ) : String
+        public function queryColumnInfo( table : String ) : SQLTableSchema
         {
-            // TODO : implement with SQLite supported syntax
-            return '';
+            loadSchema(SQLTableSchema, table);
+            return getSchemaResult().tables[0];
         }
 
         public function queryForTables() : String
         {
-            return query([SQL.SELECT, 'name', SQL.FROM, 'slite_master'].join(' '));
+            return query([SQL.SELECT, "name", SQL.FROM, "slite_master"].join(" "));
         }
 
         public function setEncoding( charset : String ) : void
@@ -147,17 +219,17 @@ package com.lionart.activeaircord
 
         }
 
-        public function createColumn( column : Dictionary ) : Column
+        public function createColumn( column : SQLColumnSchema ) : Column
         {
             var c : Column = new Column();
-            c.inflectedName = Inflector.variablize(column['name']);
-            c.name = column['name'];
-            c.nullable = column['notnull'] ? false : true;
-            c.primaryKey = column['pk'] ? true : false;
-            c.autIncrement = ['INT', 'INTEGER'].indexOf(column['type']) && c.primaryKey;
+            c.inflectedName = Inflector.variablize(column.name);
+            c.name = column.name;
+            c.nullable = column.allowNull ? false : true;
+            c.primaryKey = column.primaryKey ? true : false;
+            c.autIncrement = (["INT", "INTEGER"].indexOf(column.dataType) && c.primaryKey) || column.autoIncrement;
 
-            column['type'] = String(column['type']).replace(/ +/, ' ');
-            var matches : Array = String(column['type']).split(' ');
+            var type : String = column.dataType.replace(/ +/, " ");
+            var matches : Array = String(type).split(" ");
 
             if (matches && matches.length > 0)
             {
@@ -184,9 +256,8 @@ package com.lionart.activeaircord
                 c.length = 8;
             }
 
-            c.defaultValue = c.cast(column['dflt_value'], this);
+            // TODO : c.defaultValue = c.cast(column["dflt_value"], this);
             return c;
-
         }
 
 

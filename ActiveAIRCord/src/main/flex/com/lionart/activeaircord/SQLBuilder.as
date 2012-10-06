@@ -57,7 +57,7 @@ package com.lionart.activeaircord
         public function toString() : String
         {
             // TODO
-            return '';
+            return "";
         }
 
         public function get whereValues() : Array
@@ -186,7 +186,7 @@ package com.lionart.activeaircord
                     parts[i] += " " + SQL.DESC;
                 }
             }
-            return parts.join(',');
+            return parts.join(",");
         }
 
         public static function createConditionsFromUnderscoredString( connection : SQLiteConnection, name : String, values : Array, map : Dictionary = null ) : Array

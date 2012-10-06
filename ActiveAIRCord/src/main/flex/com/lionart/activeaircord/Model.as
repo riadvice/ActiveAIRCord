@@ -39,7 +39,7 @@ package com.lionart.activeaircord
         public static var sequence : String;
         public static var aliasAttribute : Dictionary = new Dictionary(true);
 
-        public static const VALID_OPTIONS = ['conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having'];
+        public static const VALID_OPTIONS = ["conditions", "limit", "offset", "order", "select", "joins", "include", "readonly", "group", "from", "having"];
 
 
         public function Model( attributes : Dictionary = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
@@ -61,7 +61,7 @@ package com.lionart.activeaircord
                 _dirty = [];
             }
 
-            invokeCallback('after_consruct', false);
+            invokeCallback("after_consruct", false);
         }
 
         public function get errors() : Array
@@ -79,10 +79,10 @@ package com.lionart.activeaircord
             var res : *;
             switch (methodName.toString())
             {
-                /*case 'clear':
+                /*case "clear":
                    _item = new Array();
                    break;
-                   case 'sum':
+                   case "sum":
                    var sum:Number = 0;
                    for each (var i:* in _item) {
                    // ignore non-numeric values

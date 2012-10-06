@@ -48,11 +48,11 @@ package com.lionart.activeaircord
             return _instance;
         }
 
-        public function add( clazz : Class = null ) : Reflections
+        public function add( className : String = null ) : Reflections
         {
-            if (!_reflections[clazz])
+            if (!_reflections[className])
             {
-                _reflections[clazz] = new clazz();
+                _reflections[className] = new getClassByAlias(className)();
             }
             return _instance;
         }
@@ -65,15 +65,15 @@ package com.lionart.activeaircord
             }
         }
 
-        public function getClass( clazz : Class ) : Class
+        public function getClass( className : String ) : Class
         {
-            if (_reflections[clazz])
+            if (_reflections[className])
             {
-                return _reflections[clazz];
+                return _reflections[className];
             }
             else
             {
-                throw ActiveRecordException("Class not found: " + clazz);
+                throw ActiveRecordException("Class not found: " + className);
             }
             return null;
         }

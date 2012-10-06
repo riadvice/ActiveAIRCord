@@ -25,6 +25,6 @@ package com.lionart.activeaircord.relationship
         function createAssociation( model : Model, attributes : Array = null ) : void;
         function constructInnerJoinSql( table : Table, usingThrough : Boolean = false, alias : String = null ) : String;
         function get attributeName() : String;
-        function get className() : Class;
+        function get className() : String;
     }
 }

@@ -16,19 +16,20 @@
  */
 package com.lionart.activeaircord
 {
-    import flash.data.SQLConnection;
+    import com.lionart.activeaircord.exceptions.ActiveRecordException;
+
     import flash.utils.Dictionary;
 
     public class ConnectionManager
     {
-        private static var _connections : Dictionary;
+        private static var _connections : Dictionary = new Dictionary(true);
 
         public static function getConnection( name : String = null ) : SQLiteConnection
         {
             name = name ? name : Configuration.defaultConnection;
             if (!_connections[name])
             {
-                _connections[name] = Configuration.getConnection(name);
+                _connections[name] = createConnection(Configuration.getConnection(name));
             }
             return _connections[name];
         }
@@ -43,6 +44,37 @@ package com.lionart.activeaircord
                 // TODO : close the connection when deleted
                 delete _connections[name];
             }
+        }
+
+        private static function createConnection( nameOrValue : String ) : SQLiteConnection
+        {
+            var connectionString : String;
+            if (nameOrValue.indexOf('://') == -1)
+            {
+                connectionString = nameOrValue ? Configuration.getConnection(nameOrValue) : Configuration.defaulConnectionString;
+            }
+            else
+            {
+                connectionString = nameOrValue;
+            }
+
+            if (!connectionString)
+            {
+                throw new ActiveRecordException("The connection string is empty");
+            }
+
+            var info : Dictionary = SQLiteConnection.parseConnectionUrl(connectionString);
+
+            try
+            {
+                var connection : SQLiteConnection = new SQLiteConnection(info);
+            }
+            catch ( e : Error )
+            {
+                throw new ActiveRecordException(e.message);
+            }
+
+            return connection;
         }
     }
 
