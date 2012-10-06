@@ -311,7 +311,7 @@ package com.lionart.activeaircord
 
         private function buildSelect() : String
         {
-            var sql = [SQL.SELECT, _select, SQL.FROM, _table].join(" ");
+            var sql : String = [SQL.SELECT, _select, SQL.FROM, _table].join(" ");
 
             if (_joins)
             {

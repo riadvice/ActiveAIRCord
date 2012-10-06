@@ -17,7 +17,7 @@
 package com.lionart.activeaircord
 {
     import mx.utils.StringUtil;
-
+    
     import org.as3commons.lang.StringUtils;
 
     public final class Inflector
@@ -154,7 +154,7 @@ package com.lionart.activeaircord
             // check for matches using regular expressions
             for each (item in plural)
             {
-                if (item[0].test(string))
+                if (RegExp(item[0]).test(string))
                 {
                     return string.replace(item[0], item[1]);
                 }

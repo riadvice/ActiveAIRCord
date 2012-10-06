@@ -21,8 +21,8 @@ package com.lionart.activeaircord
     public class SQLBuilderTest extends DatabaseTest
     {
 
-        private var _tableName = "authors";
-        private var _className = "Author";
+        private var _tableName : String = "authors";
+        private var _className : String = "Author";
         private var _table : Table;
         private var _sql : SQLBuilder;
 

@@ -22,6 +22,8 @@ package com.lionart.activeaircord.relationship
     import com.lionart.activeaircord.Model;
     import com.lionart.activeaircord.Table;
 
+    import flash.utils.Dictionary;
+
     public class Relationship implements IRelationship
     {
         private var _attributeName : String;
@@ -130,7 +132,7 @@ package com.lionart.activeaircord.relationship
             //var availableOptions : Array = ArrayUtils.
         }
 
-        protected function unsetNonFinderOptions( options ) : void
+        protected function unsetNonFinderOptions( options : Dictionary ) : void
         {
 
         }
@@ -145,7 +147,7 @@ package com.lionart.activeaircord.relationship
 
         }
 
-        protected function createConditionsFromKeys( model : Model, conditionKeys = null, valueKeys = null ) : void
+        protected function createConditionsFromKeys( model : Model, conditionKeys : Array = null, valueKeys : Array = null ) : void
         {
 
         }

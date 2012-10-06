@@ -39,7 +39,7 @@ package com.lionart.activeaircord
         public static var sequence : String;
         public static var aliasAttribute : Dictionary = new Dictionary(true);
 
-        public static const VALID_OPTIONS = ["conditions", "limit", "offset", "order", "select", "joins", "include", "readonly", "group", "from", "having"];
+        public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select", "joins", "include", "readonly", "group", "from", "having"];
 
 
         public function Model( attributes : Dictionary = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
@@ -265,7 +265,7 @@ package com.lionart.activeaircord
 
         public function isDirty() : Boolean
         {
-            return _dirty;
+            return _dirty.length > 0;
         }
 
         public function isValid() : void

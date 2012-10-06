@@ -97,7 +97,7 @@ package com.lionart.activeaircord
 
         }
 
-        public static function addCondition( condition : String, conditions = null, conjuction : String = SQL.AND ) : void
+        public static function addCondition( condition : String, conditions : Array = null, conjuction : String = SQL.AND ) : void
         {
 
         }
@@ -109,7 +109,7 @@ package com.lionart.activeaircord
 
         public static function isOdd( number : Number ) : Boolean
         {
-            return number & 1;
+            return !(number & 1);
         }
 
         public static function isA( type : Class, variable : * ) : void

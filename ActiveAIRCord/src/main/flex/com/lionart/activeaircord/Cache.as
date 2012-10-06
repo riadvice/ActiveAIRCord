@@ -19,7 +19,7 @@ package com.lionart.activeaircord
 
     public class Cache
     {
-        public static function get( key : String, method : Function )
+        public static function get( key : String, method : Function ) : void
         {
 
         }

@@ -43,13 +43,14 @@ package com.lionart.activeaircord
         private var relationships : Dictionary = new Dictionary(true);
         private static var cache : Dictionary = new Dictionary(true);
 
-        public static function load( className : String )
+        public static function load( className : String ) : Table
         {
             if (!cache[className])
             {
                 cache[className] = new Table(className);
-                (cache[className]).setAssociations();
+                Table(cache[className]).setAssociations();
             }
+            return cache[className];
         }
 
         public static function clearCache( modelClass : Class = null ) : void
@@ -277,7 +278,7 @@ package com.lionart.activeaircord
             return conn.query(lastSql = sql.toString(), values);
         }
 
-        public function destroy( data : * )
+        public function destroy( data : * ) : String
         {
             var data : * = processData(data);
             var sql : SQLBuilder = new SQLBuilder(conn, getFullyQualifiedTableName());
