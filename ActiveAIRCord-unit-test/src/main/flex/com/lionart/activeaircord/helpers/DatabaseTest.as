@@ -20,7 +20,7 @@ package com.lionart.activeaircord.helpers
     import com.lionart.activeaircord.ConnectionManager;
     import com.lionart.activeaircord.SQLiteConnection;
     import com.lionart.activeaircord.Table;
-    
+
     import flexunit.framework.Assert;
 
     public class DatabaseTest
@@ -46,13 +46,19 @@ package com.lionart.activeaircord.helpers
             }
             catch ( e : Error )
             {
-                Assert.assertNotNull(conn);
+                Assert.fail("Database connection could not be established.");
             }
+
+            // TODO : add DatabaseLoader to load fixtures
         }
 
         [After]
         public function tearDown() : void
         {
+            if (_originalDefaultConnection)
+            {
+                Configuration.defaultConnection = _originalDefaultConnection;
+            }
         }
 
         [BeforeClass]
