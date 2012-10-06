@@ -57,15 +57,15 @@ package com.lionart.activeaircord
         [Test]
         public function testGetSQLType() : void
         {
-            Assert.assertEquals(SQLTypes.getSQLType('int'), SQLTypes.INTEGER);
-            Assert.assertEquals(SQLTypes.getSQLType('uint'), SQLTypes.INTEGER);
-            Assert.assertEquals(SQLTypes.getSQLType('String'), SQLTypes.STRING);
-            Assert.assertEquals(SQLTypes.getSQLType('Number'), SQLTypes.NUMBER);
-            Assert.assertEquals(SQLTypes.getSQLType('Date'), SQLTypes.DATE);
-            Assert.assertEquals(SQLTypes.getSQLType('Boolean'), SQLTypes.BOOLEAN);
-            Assert.assertEquals(SQLTypes.getSQLType('XML'), SQLTypes.Xml);
-            Assert.assertEquals(SQLTypes.getSQLType('XMLList'), SQLTypes.XMLLIST);
-            Assert.assertEquals(SQLTypes.getSQLType('Array'), SQLTypes.OBJECT);
+            Assert.assertEquals(SQLTypes.getSQLType("int"), SQLTypes.INTEGER);
+            Assert.assertEquals(SQLTypes.getSQLType("uint"), SQLTypes.INTEGER);
+            Assert.assertEquals(SQLTypes.getSQLType("String"), SQLTypes.STRING);
+            Assert.assertEquals(SQLTypes.getSQLType("Number"), SQLTypes.NUMBER);
+            Assert.assertEquals(SQLTypes.getSQLType("Date"), SQLTypes.DATE);
+            Assert.assertEquals(SQLTypes.getSQLType("Boolean"), SQLTypes.BOOLEAN);
+            Assert.assertEquals(SQLTypes.getSQLType("XML"), SQLTypes.Xml);
+            Assert.assertEquals(SQLTypes.getSQLType("XMLList"), SQLTypes.XMLLIST);
+            Assert.assertEquals(SQLTypes.getSQLType("Array"), SQLTypes.OBJECT);
         }
 
         [Test]

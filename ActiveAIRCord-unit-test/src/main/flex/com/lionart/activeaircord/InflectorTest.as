@@ -17,6 +17,8 @@
 package com.lionart.activeaircord
 {
 
+    import com.lionart.activeaircord.helpers.Config;
+    
     import flexunit.framework.Assert;
 
     public class InflectorTest
@@ -30,7 +32,7 @@ package com.lionart.activeaircord
         [Before]
         public function setUp() : void
         {
-
+            Config.initConfig();
         }
 
         [After]

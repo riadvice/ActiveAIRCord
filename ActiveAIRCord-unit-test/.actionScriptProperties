@@ -22,6 +22,9 @@
     <application path="FlexUnitApplication.mxml">
       <airExcludes/>
     </application>
+    <application path="FlexUnitCompilerApplication.mxml">
+      <airExcludes/>
+    </application>
   </applications>
   <modules/>
   <buildCSSFiles/>
