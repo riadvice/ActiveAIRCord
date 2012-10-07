@@ -20,6 +20,8 @@ package com.lionart.activeaircord
 
     import flash.data.SQLColumnSchema;
     import flash.data.SQLConnection;
+    import flash.data.SQLResult;
+    import flash.data.SQLStatement;
     import flash.data.SQLTableSchema;
     import flash.filesystem.File;
     import flash.net.Responder;
@@ -140,8 +142,21 @@ package com.lionart.activeaircord
 
         }
 
-        public function query( sql : String, values : Array = null ) : String
+        public function query( sql : String, values : Array = null ) : *
         {
+            _lastQuery = sql;
+            try
+            {
+                var statement : SQLStatement = new SQLStatement();
+                statement.sqlConnection = this;
+                statement.text = sql;
+                statement.execute();
+                var result : SQLResult = statement.getResult();
+            }
+            catch ( e : Error )
+            {
+                new ActiveRecordException(e.message);
+            }
             return "";
         }
 
@@ -155,9 +170,15 @@ package com.lionart.activeaircord
 
         }
 
-        public function tables() : void
+        public function tables() : Array
         {
-
+            var dbTables : Array = [];
+            var result : Array = [];
+            for each (var tableSchema : SQLTableSchema in queryForTables())
+            {
+                result.push(tableSchema.name);
+            }
+            return result;
         }
 
         public function transaction() : void
@@ -204,9 +225,11 @@ package com.lionart.activeaircord
             return getSchemaResult().tables[0];
         }
 
-        public function queryForTables() : String
+        public function queryForTables() : Array
         {
-            return query([SQL.SELECT, "name", SQL.FROM, "slite_master"].join(" "));
+            loadSchema();
+            return getSchemaResult().tables;
+            //return query([SQL.SELECT, "name", SQL.FROM, "sqlite_master"].join(" "));
         }
 
         public function setEncoding( charset : String ) : void
