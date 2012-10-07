@@ -49,7 +49,8 @@ package com.lionart.activeaircord.helpers
                 Assert.fail("Database connection could not be established.");
             }
 
-            // TODO : add DatabaseLoader to load fixtures
+            var loader : DatabaseLoader = new DatabaseLoader(conn);
+            loader.resetTableData();
         }
 
         [After]
