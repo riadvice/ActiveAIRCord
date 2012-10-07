@@ -1,0 +1,11 @@
+book_id;author_id;secondary_author_id;name;special
+1;9;7;"nascetur";0
+2;5;5;"non";0
+3;8;9;"rhoncus";0
+4;4;5;"augue";0
+5;2;3;"montes";0
+6;2;9;"lectus";1
+7;10;10;"dignissim";1
+8;6;7;"velit";1
+9;4;5;"sed";1
+10;4;4;"tellus";1
