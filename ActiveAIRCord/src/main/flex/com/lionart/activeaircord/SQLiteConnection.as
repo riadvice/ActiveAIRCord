@@ -227,9 +227,22 @@ package com.lionart.activeaircord
 
         public function queryForTables() : Array
         {
-            loadSchema();
+            try
+            {
+                loadSchema();
+            }
+            catch ( e : Error )
+            {
+                if (e.errorID == 3115)
+                {
+                    return [];
+                }
+                else
+                {
+                    throw new ActiveRecordException(e.message);
+                }
+            }
             return getSchemaResult().tables;
-            //return query([SQL.SELECT, "name", SQL.FROM, "sqlite_master"].join(" "));
         }
 
         public function setEncoding( charset : String ) : void
