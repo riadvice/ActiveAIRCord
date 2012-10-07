@@ -18,8 +18,12 @@ package com.lionart.activeaircord.helpers
 {
     import com.lionart.activeaircord.SQL;
     import com.lionart.activeaircord.SQLiteConnection;
-
+    
     import flash.filesystem.File;
+    import flash.filesystem.FileMode;
+    import flash.filesystem.FileStream;
+    
+    import org.as3commons.lang.StringUtils;
 
     public class DatabaseLoader
     {
@@ -34,7 +38,19 @@ package com.lionart.activeaircord.helpers
 
         public function executeSQLScript( connection : SQLiteConnection ) : void
         {
-
+            var sqlFile : File = new File(File.applicationDirectory.nativePath + File.separator + "sql" + File.separator + "sqlite.sql");
+            var fileStream:FileStream = new FileStream();
+            fileStream.open(sqlFile, FileMode.READ);
+            var allQueries : String =  fileStream.readUTFBytes(fileStream.bytesAvailable);
+            fileStream.close();
+            for each (var query : String in allQueries.split(";"))
+            {
+                if ( StringUtils.trim(query) != "")
+                {
+                    _connection.query( query );
+                }
+                trace(query);
+            }
         }
 
         public function dropTables() : void
