@@ -18,11 +18,11 @@ package com.lionart.activeaircord.helpers
 {
     import com.lionart.activeaircord.SQL;
     import com.lionart.activeaircord.SQLiteConnection;
-    
+
     import flash.filesystem.File;
     import flash.filesystem.FileMode;
     import flash.filesystem.FileStream;
-    
+
     import org.as3commons.lang.StringUtils;
 
     public class DatabaseLoader
@@ -39,17 +39,16 @@ package com.lionart.activeaircord.helpers
         public function executeSQLScript( connection : SQLiteConnection ) : void
         {
             var sqlFile : File = new File(File.applicationDirectory.nativePath + File.separator + "sql" + File.separator + "sqlite.sql");
-            var fileStream:FileStream = new FileStream();
+            var fileStream : FileStream = new FileStream();
             fileStream.open(sqlFile, FileMode.READ);
-            var allQueries : String =  fileStream.readUTFBytes(fileStream.bytesAvailable);
+            var allQueries : String = fileStream.readUTFBytes(fileStream.bytesAvailable);
             fileStream.close();
             for each (var query : String in allQueries.split(";"))
             {
-                if ( StringUtils.trim(query) != "")
+                if (StringUtils.trim(query) != "")
                 {
-                    _connection.query( query );
+                    _connection.query(query);
                 }
-                trace(query);
             }
         }
 
@@ -68,7 +67,11 @@ package com.lionart.activeaircord.helpers
 
         public function resetTableData() : void
         {
-
+            for each (var table : String in getFixtureTable())
+            {
+                _connection.query([SQL.DELETE, SQL.FROM, _connection.quoteName(table)].join(" "));
+                loadFixtureData(table);
+            }
         }
 
         public function getFixtureTable() : Array
@@ -87,6 +90,24 @@ package com.lionart.activeaircord.helpers
                 }
             }
             return tables;
+        }
+
+        public function loadFixtureData( table : String ) : void
+        {
+            var csvFile : File = new File(File.applicationDirectory.nativePath + File.separator + "fixtures" + File.separator + table + ".csv");
+            var fileStream : FileStream = new FileStream();
+            fileStream.open(csvFile, FileMode.READ);
+            var csvContent : String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+            fileStream.close();
+
+            csvContent = csvContent.replace(/;/g, ",");
+            csvContent = csvContent.replace(/\r/g, "");
+            var lines : Array = csvContent.split("\n");
+            for (var i : int = 1; i < lines.length - 1; i++)
+            {
+                // TODO : data must be passed securely
+                _connection.query([SQL.INSERT, SQL.INTO, table, "(", lines[0], ")", SQL.VALUES, "(", lines[i], ")"].join(" "));
+            }
         }
     }
 }
