@@ -18,14 +18,15 @@ package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
 
-    import flash.net.getClassByAlias;
     import flash.utils.Dictionary;
+
+    import org.as3commons.lang.ClassUtils;
 
     public class Reflections
     {
         private static var _instance : Reflections;
 
-        private static var _reflections : Dictionary;
+        private static var _reflections : Dictionary = new Dictionary(true);
 
         private static var allowInstanciation : Boolean = false;
 
@@ -52,7 +53,7 @@ package com.lionart.activeaircord
         {
             if (!_reflections[className])
             {
-                _reflections[className] = new getClassByAlias(className)();
+                _reflections[className] = ClassUtils.forName(Configuration.presistencePackage + "." + className);
             }
             return _instance;
         }
@@ -65,7 +66,7 @@ package com.lionart.activeaircord
             }
         }
 
-        public function getClass( className : String ) : Class
+        public function getClass( className : String ) : *
         {
             if (_reflections[className])
             {

@@ -126,7 +126,7 @@ package com.lionart.activeaircord
             for each (var columnSchema : SQLColumnSchema in schema.columns)
             {
                 var column : Column = createColumn(columnSchema);
-                columns[column.name] = columns;
+                columns[column.name] = column;
             }
 
             return columns;

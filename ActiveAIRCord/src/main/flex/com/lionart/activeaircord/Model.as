@@ -20,8 +20,6 @@ package com.lionart.activeaircord
     import flash.utils.Proxy;
     import flash.utils.flash_proxy;
 
-    import org.as3commons.lang.DictionaryUtils;
-
     public dynamic class Model extends Proxy
     {
 

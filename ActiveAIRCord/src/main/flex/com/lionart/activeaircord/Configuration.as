@@ -32,7 +32,7 @@ package com.lionart.activeaircord
 
         private static var _logging : Boolean = false;
 
-        public static var _persistencePackage : String;
+        private static var _persistencePackage : String;
 
         private static var _logger : ILogger;
 

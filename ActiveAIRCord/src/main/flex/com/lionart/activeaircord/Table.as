@@ -20,7 +20,6 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.relationship.IRelationship;
 
     import flash.utils.Dictionary;
-    import flash.utils.getQualifiedClassName;
 
     import mx.collections.ArrayCollection;
 
@@ -30,12 +29,13 @@ package com.lionart.activeaircord
     public class Table
     {
 
-        public var clazz : Class;
+        public var clazz : *;
         public var conn : SQLiteConnection;
-        public var pk : String;
+        public var pk : Array;
         public var lastSql : String;
 
-        public var columns : Dictionary;
+        public var columns : Dictionary = new Dictionary(true);
+        ;
         public var tableName : String;
         public var dbName : String;
         public var sequence : String;
@@ -82,7 +82,7 @@ package com.lionart.activeaircord
 
         public function reestablishConnection( close : Boolean = true ) : *
         {
-            var connection : String = ClassUtils.getProperties(clazz, true)["connection"];
+            var connection : String = clazz["connection"];
             if (close)
             {
                 ConnectionManager.dropConnection(connection);
@@ -295,8 +295,7 @@ package com.lionart.activeaircord
 
         private function getMetaData() : void
         {
-            columns = conn.columns(getFullyQualifiedTableName());
-            //columns = Cache.get("meta_data-" + tblName, function( connection : SQLiteConnection, tblName : String ) : Array {return connection.columns(tblName)});
+            columns = conn.columns(tableName);
         }
 
         private function mapNames( hash : Dictionary, map : Array ) : void
@@ -309,21 +308,38 @@ package com.lionart.activeaircord
 
         private function setPrimaryKey() : void
         {
+            var primaryKey : * = clazz["pk"] || clazz["primary_key"];
+            if (primaryKey)
+            {
+                pk = (primaryKey is Array) ? primaryKey : [primaryKey];
+            }
+            else
+            {
+                pk = [];
+
+                for each (var column : Column in columns)
+                {
+                    if (column.primaryKey)
+                    {
+                        pk.push(column.inflectedName);
+                    }
+                }
+            }
         }
 
         private function setTableName() : void
         {
-            var table : String = ClassUtils.getProperties(clazz, true)['table'] || ClassUtils.getProperties(clazz, true)['table_name'];
+            var table : String = clazz["table"] || clazz["table_name"];
             if (table)
             {
                 tableName = table;
             }
             else
             {
-                table = Inflector.tableize(getQualifiedClassName(clazz));
+                tableName = Inflector.tableize(ClassUtils.getName(clazz));
             }
 
-            var db : String = ClassUtils.getProperties(clazz, true)['db'] || ClassUtils.getProperties(clazz, true)['db_name'];
+            var db : String = clazz["db"] || clazz["db_name"];
             if (db)
             {
                 dbName = db;
@@ -336,6 +352,7 @@ package com.lionart.activeaircord
 
         private function setDelegates() : void
         {
+            
         }
 
         private function setSettersAndGetters() : void
