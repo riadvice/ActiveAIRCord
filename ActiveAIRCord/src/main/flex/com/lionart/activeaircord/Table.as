@@ -17,14 +17,21 @@
 package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.RelationshipException;
+    import com.lionart.activeaircord.relationship.BelongsTo;
+    import com.lionart.activeaircord.relationship.HasAndBelongsToMany;
+    import com.lionart.activeaircord.relationship.HasMany;
+    import com.lionart.activeaircord.relationship.HasOne;
     import com.lionart.activeaircord.relationship.IRelationship;
-
+    
     import flash.utils.Dictionary;
-
+    
     import mx.collections.ArrayCollection;
-
+    
+    import org.as3commons.collections.utils.ArrayUtils;
+    import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
+    import org.as3commons.lang.ObjectUtils;
 
     public class Table
     {
@@ -347,6 +354,40 @@ package com.lionart.activeaircord
 
         private function setAssociations() : void
         {
+            var staticProperties : Array = ObjectUtils.getKeys(ClassUtils.getProperties(clazz, true));
+            for each (var propertyName : String in staticProperties)
+            {
+                var definitions : * = clazz[propertyName];
+                if (!definitions)
+                {
+                    continue;
+                }
+                var relationship : IRelationship;
+                var definition : Array = [];
+                switch (propertyName)
+                {
+                    case "has_many":
+                        relationship = new HasMany(definition);
+                        break;
+
+                    case "has_one":
+                        relationship = new HasOne(definition);
+                        break;
+
+                    case "belongs_to":
+                        relationship = new BelongsTo(definition);
+                        break;
+
+                    case "has_and_belongs_to_many":
+                        relationship = new HasAndBelongsToMany(definition);
+                        break;
+                }
+                
+                if (relationship)
+                {
+                    addRelationship(relationship);
+                }
+            }
         }
 
         private function setDelegates() : void
