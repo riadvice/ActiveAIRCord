@@ -73,9 +73,8 @@ package com.lionart.activeaircord
             getMetaData();
             setPrimaryKey();
             setDelegates();
-            setSettersAndGetters();
 
-            //callback = new Callback(className);
+            callback = new Callback(className);
             callback.register("before_save", function( model : Model ) : void {model.setTimestamps();}, new AdvancedDictionary(true, ["prepend"], [true]));
             callback.register("after_save", function( model : Model ) : void {model.resetDirty();}, new AdvancedDictionary(true, ["prepend"], [true]));
         }
@@ -352,11 +351,12 @@ package com.lionart.activeaircord
 
         private function setDelegates() : void
         {
-            
-        }
-
-        private function setSettersAndGetters() : void
-        {
+            var delegates : Array = clazz["delegate"];
+            var arr : Array = [];
+            if (delegates)
+            {
+                // TODO
+            }
         }
 
     }

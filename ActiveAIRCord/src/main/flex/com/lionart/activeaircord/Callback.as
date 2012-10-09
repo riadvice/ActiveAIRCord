@@ -16,7 +16,11 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.exceptions.ActiveRecordException;
+
     import flash.utils.Dictionary;
+
+    import org.as3commons.lang.ArrayUtils;
 
     public class Callback
     {
@@ -42,8 +46,22 @@ package com.lionart.activeaircord
 
         private var _registry : Array = [];
 
-        public function Callback( modelClass : Class )
+        public function Callback( modelClass : String )
         {
+            _klass = Reflections.getInstance().getClass(modelClass);
+
+            for each (var name : String in VALID_CALLBACKS)
+            {
+                var definition : * = _klass[name];
+                if (!(definition is Array))
+                {
+                    definition = [definition];
+                }
+                for each (var method : String in definition)
+                {
+                    register(name, method);
+                }
+            }
         }
 
         public function getCallbacks() : void
@@ -56,9 +74,27 @@ package com.lionart.activeaircord
 
         }
 
-        public function register( name : String, closureOrMethodName : * = null, options : Dictionary = null ) : void
+        public function register( name : String, functionOrMethodName : * = null, options : Dictionary = null ) : void
         {
-
+            options ||= new Dictionary();
+            options["prepend"] = false;
+            if (!functionOrMethodName)
+            {
+                functionOrMethodName = name;
+            }
+            if (!ArrayUtils.contains(VALID_CALLBACKS, name))
+            {
+                throw new ActiveRecordException("Invalid callback: " + name);
+            }
+            if (!(functionOrMethodName is Function))
+            {
+                // TODO
+            }
+            if (!_registry[name])
+            {
+                _registry[name] = [];
+            }
+            // TODO
         }
     }
 }
