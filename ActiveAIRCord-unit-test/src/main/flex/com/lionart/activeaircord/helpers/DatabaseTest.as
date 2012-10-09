@@ -20,6 +20,7 @@ package com.lionart.activeaircord.helpers
     import com.lionart.activeaircord.ConnectionManager;
     import com.lionart.activeaircord.SQLiteConnection;
     import com.lionart.activeaircord.Table;
+    import com.lionart.activeaircord.models.Author;
 
     import flexunit.framework.Assert;
 
@@ -33,6 +34,7 @@ package com.lionart.activeaircord.helpers
         [Before]
         public function setUp() : void
         {
+            var clazz : Class = Author;
             connectionName = 'sqlite';
             Table.clearCache();
             _originalDefaultConnection = Configuration.defaultConnection;
