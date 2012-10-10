@@ -46,7 +46,7 @@ package com.lionart.activeaircord
             _newRecord = newRecord;
             if (!instantiatingViaFind)
             {
-                for each (var column : Column in table().columns)
+                for each (var column : Column in Table.forClass(this).columns)
                 {
                     attributes[column.inflectedName] = column.defaultValue;
                 }
@@ -206,9 +206,9 @@ package com.lionart.activeaircord
 
         }
 
-        public static function table() : Table
+        private static function internalTable() : void
         {
-            return null;
+
         }
 
         public static function create( attributes : Array, validate : Boolean = true ) : void

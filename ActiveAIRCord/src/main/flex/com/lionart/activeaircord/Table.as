@@ -22,13 +22,11 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.relationship.HasMany;
     import com.lionart.activeaircord.relationship.HasOne;
     import com.lionart.activeaircord.relationship.IRelationship;
-    
+
     import flash.utils.Dictionary;
-    
+
     import mx.collections.ArrayCollection;
-    
-    import org.as3commons.collections.utils.ArrayUtils;
-    import org.as3commons.lang.ArrayUtils;
+
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
@@ -71,6 +69,13 @@ package com.lionart.activeaircord
                 cache = new Dictionary();
             }
         }
+
+        public static function forClass( classOrObject : * ) : Table
+        {
+            var className : String = classOrObject is Class ? ClassUtils.getName(classOrObject) : ClassUtils.getName(ClassUtils.forInstance(classOrObject));
+            return load(className)
+        }
+
 
         public function Table( className : String = null )
         {
@@ -382,7 +387,7 @@ package com.lionart.activeaircord
                         relationship = new HasAndBelongsToMany(definition);
                         break;
                 }
-                
+
                 if (relationship)
                 {
                     addRelationship(relationship);
