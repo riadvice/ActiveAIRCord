@@ -16,6 +16,11 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.models.Author;
+
+    import flexunit.framework.Assert;
+
+    import org.as3commons.lang.DictionaryUtils;
 
     public class ActiveAIRCordTest
     {
@@ -41,8 +46,10 @@ package com.lionart.activeaircord
         }
 
         [Test]
-        public function activeAIRCord() : void
+        public function shouldHaveAllColumnAttributesWhenInitializingWithArray() : void
         {
+            var author : Author = new Author(new AdvancedDictionary(true, ["name"], ["Tito"]));
+            Assert.assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 9)
         }
 
 

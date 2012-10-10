@@ -22,15 +22,20 @@ package com.lionart.activeaircord.models
 
     public class Author extends Model
     {
-        public static var pk : String = "author_id";
+        public static const pk : String = "author_id";
 
-        public static var hasMany : Array = ["books"];
+        public static const hasMany : Array = ["books"];
 
-        public static var hasOne : Array = [];
+        public static const hasOne : Array = [];
 
-        public static var belongsTo : Array = [];
+        public static const belongsTo : Array = [];
 
         private var _password : String
+
+        public function Author( attributes : Dictionary = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
+        {
+            super(attributes, guardAttributes, instantiatingViaFind, newRecord);
+        }
 
         public function set password( value : String ) : void
         {
