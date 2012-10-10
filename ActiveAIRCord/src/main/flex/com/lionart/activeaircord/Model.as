@@ -20,6 +20,8 @@ package com.lionart.activeaircord
     import flash.utils.Proxy;
     import flash.utils.flash_proxy;
 
+    import org.as3commons.lang.DictionaryUtils;
+
     public dynamic class Model extends Proxy
     {
 
@@ -107,19 +109,38 @@ package com.lionart.activeaircord
             return readAttribute(name);
         }
 
-        /*override public function hasOwnProperty( V : * = null ) : Boolean
-           {
-           return DictionaryUtils.containsKey(attributes(), V) || DictionaryUtils.containsKey(aliasAttribute, V);
-           }*/
-
         override flash_proxy function setProperty( name : *, value : * ) : void
         {
             _item[name] = value;
         }
 
-        public function assignAttribute( name : String, value : * ) : void
+        override flash_proxy function hasProperty( name : * ) : Boolean
         {
+            return DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);;
+        }
 
+        public function assignAttribute( name : String, value : * ) : *
+        {
+            var table : Table = Table.forClass(this);
+            if (!(value is Object))
+            {
+                if (DictionaryUtils.containsKey(table.columns, name))
+                {
+                    value = Column(table.columns[name]).cast(value, this['connection']);
+                }
+                else
+                {
+                    var col : Column = table.getColumnByInflectedName(name);
+                    if (col != null)
+                    {
+                        value = col.cast(value, this['connection']);
+                    }
+                }
+            }
+
+            attributes()[name] = value;
+            flagDirty(name);
+            return value;
         }
 
         public function readAttribute( name : String ) : void
@@ -298,7 +319,44 @@ package com.lionart.activeaircord
 
         private function setAttributesViaMassAssignment( attributes : Dictionary, guardAttributes : Boolean ) : void
         {
-
+            var table : Table = Table.forClass(this);
+            var exceptions : Array = [];
+            var useAttrAccessible : Boolean = this['attr_accessible'];
+            var useAttrProtected : Boolean = this['attr_protected'];
+            var conn : SQLiteConnection = this['connection'];
+            for each (var attribute : String in attributes)
+            {
+                var value : String;
+                var name : String;
+                if (DictionaryUtils.containsKey(table.columns, attributes))
+                {
+                    value = Column(table.columns[attribute]).cast(attributes[attribute], conn);
+                    name = Column(table.columns[attribute]).inflectedName;
+                }
+                if (guardAttributes)
+                {
+                    if (useAttrAccessible && !DictionaryUtils.containsKey(this['attr_accessible'], name))
+                    {
+                        continue;
+                    }
+                    if (useAttrProtected && !DictionaryUtils.containsKey(this['attr_protected'], name))
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        this['name'] = value;
+                    }
+                    catch ( e : Error )
+                    {
+                        exceptions.push(e.message);
+                    }
+                }
+                else
+                {
+                    assignAttribute(name, value);
+                }
+            }
         }
 
         public function setRelationshipFromEagerLoad( name : String, model : Model = null ) : void
