@@ -16,7 +16,14 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.helpers.DatabaseTest;
+
+    import org.flexunit.assertThat;
+    import org.hamcrest.core.allOf;
+    import org.hamcrest.core.throws;
+    import org.hamcrest.object.hasPropertyWithValue;
+    import org.hamcrest.object.instanceOf;
 
     public class SQLBuilderTest extends DatabaseTest
     {
@@ -50,8 +57,9 @@ package com.lionart.activeaircord
         }
 
         [Test]
-        public function sqlBuilder() : void
+        public function testNoConnection() : void
         {
+            assertThat(function() : void {new SQLBuilder(null, "authors")}, throws(allOf(instanceOf(ActiveRecordException), hasPropertyWithValue("message", "A valid database connection is required."))));
         }
 
 
