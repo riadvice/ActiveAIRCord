@@ -16,10 +16,13 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.exceptions.ReadOnlyException;
+
     import flash.utils.Dictionary;
     import flash.utils.Proxy;
     import flash.utils.flash_proxy;
-    
+
+    import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
 
     public dynamic class Model extends Proxy
@@ -28,7 +31,7 @@ package com.lionart.activeaircord
         private var _item : Array;
         private var _errors : Array;
         private var _attributes : Dictionary = new Dictionary(true);
-        private var _dirty : Array;
+        private var _dirty : Dictionary;
         private var _readOnly : Boolean = false;
         private var _relationShips : Dictionary = new Dictionary(true);
         private var _newRecord : Boolean = true;
@@ -58,7 +61,7 @@ package com.lionart.activeaircord
 
             if (instantiatingViaFind)
             {
-                _dirty = [];
+                _dirty = new Dictionary();
             }
 
             invokeCallback("after_consruct", false);
@@ -149,12 +152,21 @@ package com.lionart.activeaircord
 
         public function flagDirty( name : String ) : void
         {
-
+            if (!_dirty)
+            {
+                _dirty = new Dictionary();
+            }
+            _dirty[name] = true;
         }
 
-        public function dirtyAttributes() : void
+        public function dirtyAttributes() : Array
         {
-
+            if (!_dirty)
+            {
+                return null;
+            }
+            // TODO
+            return null;
         }
 
         public function attributeIsDirty( attribute : String ) : void
@@ -167,19 +179,29 @@ package com.lionart.activeaircord
             return _attributes;
         }
 
-        public function getPrimaryKey( first : Boolean = false ) : String
+        public function getPrimaryKey( first : Boolean = false ) : *
         {
-            return null; //table().primaryKey;
+            var pk : Array = Table.forClass(this).pk;
+            return first ? pk[0] : pk;
         }
 
-        public function getRealAttributeName( name : String ) : void
+        public function getRealAttributeName( name : String ) : String
         {
-
+            if (DictionaryUtils.containsKey(attributes(), name))
+            {
+                return name;
+            }
+            if (DictionaryUtils.containsKey(this['alias_attribute'], name))
+            {
+                return this['alias_attribute'][name];
+            }
+            return null;
         }
 
-        public function getValidationRules() : void
+        public function getValidationRules() : Dictionary
         {
-
+            var validator : Validations = new Validations(this);
+            return validator.rules();
         }
 
         public function getValuesFor( attributes : Array ) : void
@@ -197,19 +219,22 @@ package com.lionart.activeaircord
 
         }
 
-        public function isReadonly() : void
+        public function isReadonly() : Boolean
         {
-
+            return _readOnly;
         }
 
-        public function isNewRecord() : void
+        public function isNewRecord() : Boolean
         {
-
+            return _newRecord;
         }
 
         private function verifyNotReadonly( methodName : String ) : void
         {
-
+            if (isReadonly())
+            {
+                throw new ReadOnlyException(ClassUtils.getName(ClassUtils.forInstance(this)) + "\n" + methodName);
+            }
         }
 
         public function readonly( readonly : Boolean = true ) : void
@@ -234,7 +259,6 @@ package com.lionart.activeaircord
 
         public static function create( attributes : Array, validate : Boolean = true ) : void
         {
-
         }
 
         public function save( validate : Boolean = true ) : void
