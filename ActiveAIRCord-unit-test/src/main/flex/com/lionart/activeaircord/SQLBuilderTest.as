@@ -20,6 +20,7 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.helpers.DatabaseTest;
 
     import org.flexunit.assertThat;
+    import org.flexunit.asserts.assertEquals;
     import org.hamcrest.core.allOf;
     import org.hamcrest.core.throws;
     import org.hamcrest.object.hasPropertyWithValue;
@@ -60,6 +61,20 @@ package com.lionart.activeaircord
         public function testNoConnection() : void
         {
             assertThat(function() : void {new SQLBuilder(null, "authors")}, throws(allOf(instanceOf(ActiveRecordException), hasPropertyWithValue("message", "A valid database connection is required."))));
+        }
+
+        [Test]
+        public function testNothing() : void
+        {
+            assertEquals("SELECT ALL FROM authors", _sql.toString());
+        }
+
+        [Test]
+        public function testWhereWithArray() : void
+        {
+            _sql.where("id=? AND name IN(?)", 1, ['Tito', 'Mexican']);
+            //assert_sql_has("SELECT ALL FROM authors WHERE id=? AND name IN(?,?)",_sql.toString());
+            assertEquals([1, 'Tito', 'Mexican'], _sql.whereValues);
         }
 
 

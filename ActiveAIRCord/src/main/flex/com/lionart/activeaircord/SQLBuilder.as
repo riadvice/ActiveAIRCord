@@ -56,8 +56,8 @@ package com.lionart.activeaircord
 
         public function toString() : String
         {
-            // TODO
-            return "";
+            var methodName : String = "build" + _operation.charAt(0) + _operation.substr(1).toLowerCase();
+            return this[methodName]();
         }
 
         public function get whereValues() : Array
@@ -73,7 +73,7 @@ package com.lionart.activeaircord
 
         public function where( ... args ) : SQLBuilder
         {
-            applyWhereConditions(args);
+            applyWhereConditions.apply(this, args)
             return this;
         }
 
@@ -277,7 +277,21 @@ package com.lionart.activeaircord
             }
             else if (numArgs > 0)
             {
-                var values : Array = args.slice(0);
+                var values : Array = args.slice(1);
+
+                for each (var param : * in values)
+                {
+                    if (param is Array)
+                    {
+                        var expression : Expressions = new Expressions(_connection, args[0]);
+                        expression.bindValues(values);
+                        _where = expression.toString();
+                        _whereValues = Utils.flatternArray(expression.values);
+                        return;
+                    }
+                }
+                _where = args[0];
+                _whereValues = values;
             }
         }
 
@@ -348,7 +362,8 @@ package com.lionart.activeaircord
 
         private function buildUpdate() : void
         {
-
+            var keys : String = quotedKeyNames().join();
+            var sql : String = "INSERT INTO " + _table + "(" + keys + ") VALUES(?)";
         }
 
         private function quotedKeyNames() : Array

@@ -116,7 +116,7 @@ package com.lionart.activeaircord
 
         override flash_proxy function hasProperty( name : * ) : Boolean
         {
-            return DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);;
+            return DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);
         }
 
         public function assignAttribute( name : String, value : * ) : *
