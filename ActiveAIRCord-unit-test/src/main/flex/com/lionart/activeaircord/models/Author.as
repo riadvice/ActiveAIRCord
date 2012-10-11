@@ -17,7 +17,7 @@
 package com.lionart.activeaircord.models
 {
     import com.lionart.activeaircord.Model;
-
+    
     import flash.utils.Dictionary;
 
     public class Author extends Model
@@ -32,7 +32,7 @@ package com.lionart.activeaircord.models
 
         private var _password : String
 
-        public function Author( attributes : Dictionary = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
+        public function Author( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {
             super(attributes, guardAttributes, instantiatingViaFind, newRecord);
         }

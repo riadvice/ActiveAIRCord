@@ -19,7 +19,7 @@ package com.lionart.activeaircord
     import flash.utils.Dictionary;
     import flash.utils.Proxy;
     import flash.utils.flash_proxy;
-
+    
     import org.as3commons.lang.DictionaryUtils;
 
     public dynamic class Model extends Proxy
@@ -42,7 +42,7 @@ package com.lionart.activeaircord
         public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select", "joins", "include", "readonly", "group", "from", "having"];
 
 
-        public function Model( attributes : Dictionary = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
+        public function Model( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {
             super();
             _newRecord = newRecord;
@@ -317,7 +317,7 @@ package com.lionart.activeaircord
 
         }
 
-        private function setAttributesViaMassAssignment( attributes : Dictionary, guardAttributes : Boolean ) : void
+        private function setAttributesViaMassAssignment( attributes : Object, guardAttributes : Boolean ) : void
         {
             var table : Table = Table.forClass(this);
             var exceptions : Array = [];
