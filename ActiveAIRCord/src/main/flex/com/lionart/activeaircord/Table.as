@@ -278,7 +278,7 @@ package com.lionart.activeaircord
             return conn.query(lastSql = sql.toString(), values);
         }
 
-        public function update( data : *, where : String ) : *
+        public function update( data : *, where : Array ) : *
         {
             var data : * = processData(data);
 

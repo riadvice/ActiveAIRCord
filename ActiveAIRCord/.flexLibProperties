@@ -13,8 +13,6 @@
     <classEntry path="com.lionart.activeaircord.Expressions"/>
     <classEntry path="com.lionart.activeaircord.exceptions.ExpressionsException"/>
     <classEntry path="com.lionart.activeaircord.Validations"/>
-    <classEntry path="com.lionart.activeaircord.AdvancedDictionary"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.AdvancedDictionaryException"/>
     <classEntry path="com.lionart.activeaircord.validation.ValidationErrors"/>
     <classEntry path="com.lionart.activeaircord.Reflections"/>
     <classEntry path="com.lionart.activeaircord.exceptions.ModelException"/>
@@ -32,6 +30,7 @@
     <classEntry path="com.lionart.activeaircord.relationship.HasAndBelongsToMany"/>
     <classEntry path="com.lionart.activeaircord.relationship.BelongsTo"/>
     <classEntry path="com.lionart.activeaircord.Cache"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.DatabaseException"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

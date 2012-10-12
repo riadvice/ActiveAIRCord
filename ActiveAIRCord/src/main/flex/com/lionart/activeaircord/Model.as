@@ -16,6 +16,7 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.exceptions.ReadOnlyException;
 
     import flash.utils.Dictionary;
@@ -261,19 +262,42 @@ package com.lionart.activeaircord
         {
         }
 
-        public function save( validate : Boolean = true ) : void
+        public function save( validate : Boolean = true ) : Boolean
         {
-
+            verifyNotReadonly('save');
+            return isNewRecord() ? insert(validate) : update(validate);
         }
 
-        private function insert( validate : Boolean = true ) : void
+        private function insert( validate : Boolean = true ) : Boolean
         {
-
+            return true;
         }
 
-        private function update( validate : Boolean = true ) : void
+        private function update( validation : Boolean = true ) : Boolean
         {
+            verifyNotReadonly('update');
 
+            if (validation && !validate())
+            {
+                return false;
+            }
+
+            if (isDirty())
+            {
+                var pk : Array = valuesForPk();
+                if (!pk)
+                {
+                    throw new ActiveRecordException("Cannot update, no primary key defined for: " + ClassUtils.forInstance(this).toString());
+                }
+                if (!invokeCallback('before_update', false))
+                {
+                    return false;
+                }
+                var dirty : Array = dirtyAttributes();
+                Table.forClass(this).update(dirty, pk);
+                invokeCallback('after_update', false);
+            }
+            return true;
         }
 
         public static function deleteAll( options : Array = null ) : void
@@ -291,9 +315,9 @@ package com.lionart.activeaircord
 
         }
 
-        public function valuesForPk() : void
+        public function valuesForPk() : Array
         {
-
+            return null;
         }
 
         public function valuesFor( attributeNames : Array ) : void
@@ -301,9 +325,9 @@ package com.lionart.activeaircord
 
         }
 
-        private function validate() : void
+        private function validate() : Boolean
         {
-
+            return true;
         }
 
         public function isDirty() : Boolean
