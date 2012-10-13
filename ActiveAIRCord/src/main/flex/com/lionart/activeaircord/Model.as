@@ -19,6 +19,7 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.exceptions.ReadOnlyException;
 
+    import flash.data.SQLResult;
     import flash.utils.Dictionary;
     import flash.utils.Proxy;
     import flash.utils.flash_proxy;
@@ -130,14 +131,14 @@ package com.lionart.activeaircord
             {
                 if (DictionaryUtils.containsKey(table.columns, name))
                 {
-                    value = Column(table.columns[name]).cast(value, this['connection']);
+                    value = Column(table.columns[name]).cast(value, this["connection"]);
                 }
                 else
                 {
                     var col : Column = table.getColumnByInflectedName(name);
                     if (col != null)
                     {
-                        value = col.cast(value, this['connection']);
+                        value = col.cast(value, this["connection"]);
                     }
                 }
             }
@@ -192,9 +193,9 @@ package com.lionart.activeaircord
             {
                 return name;
             }
-            if (DictionaryUtils.containsKey(this['alias_attribute'], name))
+            if (DictionaryUtils.containsKey(this["alias_attribute"], name))
             {
-                return this['alias_attribute'][name];
+                return this["alias_attribute"][name];
             }
             return null;
         }
@@ -284,7 +285,7 @@ package com.lionart.activeaircord
             var pk : Array = getPrimaryKey(true);
             table.insert(attributes);
 
-            invokeCallback('after_create', false);
+            invokeCallback("after_create", false);
             _newRecord = false;
 
             return true;
@@ -306,20 +307,42 @@ package com.lionart.activeaircord
                 {
                     throw new ActiveRecordException("Cannot update, no primary key defined for: " + ClassUtils.forInstance(this).toString());
                 }
-                if (!invokeCallback('before_update', false))
+                if (!invokeCallback("before_update", false))
                 {
                     return false;
                 }
                 var dirty : Dictionary = dirtyAttributes();
                 Table.forClass(this).update(dirty, pk);
-                invokeCallback('after_update', false);
+                invokeCallback("after_update", false);
             }
             return true;
         }
 
-        public static function deleteAll( options : Array = null ) : void
+        public function deleteAll( options : Dictionary = null ) : int
         {
+            var table : Table = Table.forClass(this);
+            var conn : SQLiteConnection = connection;
+            var sql : SQLBuilder = new SQLBuilder(conn, table.getFullyQualifiedTableName());
 
+            // FIXME : pass object instead of Dictionary
+            var conditions : Dictionary = options["conditions"];
+
+            // TODO : call custom user function
+            sql.destroy(conditions);
+
+            if (options["limit"])
+            {
+                sql.limit(options["limit"]);
+            }
+
+            if (options["order"])
+            {
+                sql.limit(options["order"]);
+            }
+
+            var values : Array = sql.bindValues();
+            var result : SQLResult = conn.query((table.lastSql = sql.toString()), values);
+            return result.rowsAffected;
         }
 
         public static function updateAll( options : Array = null ) : void
@@ -329,7 +352,7 @@ package com.lionart.activeaircord
 
         public function destroy() : Boolean
         {
-            verifyNotReadonly('destroy');
+            verifyNotReadonly("destroy");
 
             var pk : Dictionary = valuesForPk();
 
@@ -411,9 +434,9 @@ package com.lionart.activeaircord
         {
             var table : Table = Table.forClass(this);
             var exceptions : Array = [];
-            var useAttrAccessible : Boolean = this['attr_accessible'];
-            var useAttrProtected : Boolean = this['attr_protected'];
-            var conn : SQLiteConnection = this['connection'];
+            var useAttrAccessible : Boolean = this["attr_accessible"];
+            var useAttrProtected : Boolean = this["attr_protected"];
+            var conn : SQLiteConnection = this["connection"];
             for each (var attribute : String in attributes)
             {
                 var value : String;
@@ -425,17 +448,17 @@ package com.lionart.activeaircord
                 }
                 if (guardAttributes)
                 {
-                    if (useAttrAccessible && !DictionaryUtils.containsKey(this['attr_accessible'], name))
+                    if (useAttrAccessible && !DictionaryUtils.containsKey(this["attr_accessible"], name))
                     {
                         continue;
                     }
-                    if (useAttrProtected && !DictionaryUtils.containsKey(this['attr_protected'], name))
+                    if (useAttrProtected && !DictionaryUtils.containsKey(this["attr_protected"], name))
                     {
                         continue;
                     }
                     try
                     {
-                        this['name'] = value;
+                        this["name"] = value;
                     }
                     catch ( e : Error )
                     {
