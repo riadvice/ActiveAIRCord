@@ -40,7 +40,6 @@ package com.lionart.activeaircord
         public var lastSql : String;
 
         public var columns : Dictionary = new Dictionary(true);
-        ;
         public var tableName : String;
         public var dbName : String;
         public var sequence : String;
@@ -93,7 +92,7 @@ package com.lionart.activeaircord
 
         public function reestablishConnection( close : Boolean = true ) : *
         {
-            var connection : String = clazz["connection"];
+            var connection : String = clazz["connection"]();
             if (close)
             {
                 ConnectionManager.dropConnection(connection);
@@ -340,7 +339,7 @@ package com.lionart.activeaircord
 
         private function setTableName() : void
         {
-            var table : String = clazz["table"] || clazz["table_name"];
+            var table : String = clazz["table"]() || clazz["tableName"]();
             if (table)
             {
                 tableName = table;
@@ -350,7 +349,7 @@ package com.lionart.activeaircord
                 tableName = Inflector.tableize(ClassUtils.getName(clazz));
             }
 
-            var db : String = clazz["db"] || clazz["db_name"];
+            var db : String = clazz["db"] || clazz["dbName"];
             if (db)
             {
                 dbName = db;

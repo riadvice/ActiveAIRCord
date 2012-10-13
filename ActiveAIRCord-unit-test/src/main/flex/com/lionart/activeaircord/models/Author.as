@@ -17,10 +17,10 @@
 package com.lionart.activeaircord.models
 {
     import com.lionart.activeaircord.Model;
-    
+
     import flash.utils.Dictionary;
 
-    public class Author extends Model
+    public dynamic class Author extends Model
     {
         public static const pk : String = "author_id";
 
@@ -31,6 +31,8 @@ package com.lionart.activeaircord.models
         public static const belongsTo : Array = [];
 
         private var _password : String
+
+        staticInitializer(prototype.constructor);
 
         public function Author( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {

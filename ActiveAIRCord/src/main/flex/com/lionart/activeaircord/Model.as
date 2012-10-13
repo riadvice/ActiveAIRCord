@@ -18,10 +18,15 @@ package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.exceptions.ReadOnlyException;
+
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
     import flash.utils.Proxy;
+    import flash.utils.describeType;
     import flash.utils.flash_proxy;
+    import flash.utils.getDefinitionByName;
+    import flash.utils.getQualifiedClassName;
+
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
 
@@ -30,27 +35,54 @@ package com.lionart.activeaircord
 
         public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select", "joins", "include", "readonly", "group", "from", "having"];
         public static var aliasAttribute : Dictionary = new Dictionary(true);
-        public static var connection : SQLiteConnection;
+        public static var _connection : SQLiteConnection;
         public static var db : String;
         public static var primaryKey : String;
         public static var sequence : String;
-        public static var tableName : String;
 
-        public static function all() : void
+        private static var INHERITED_STATIC_FUNCTIONS : Array = ["tableName", "connection", "reestablishConnection", "table", "create", "deleteAll", "updateAll", "all", "count",
+            "exists", "first", "last", "find", "findByPk", "findBySql", "query"];
+
+        /* Special methods to call static methods from inheritance classes */
+
+        public static function staticInitializer( klass : Class ) : void
+        {
+            var typeInfo : XML = describeType(klass);
+            for each (var s : String in INHERITED_STATIC_FUNCTIONS)
+            {
+                klass[s] = getMethod(typeInfo.@name, s);
+            }
+        }
+
+        public static function getMethod( objectName : String, methodName : String ) : Function
+        {
+            return function( ... args ) : Object {
+                return Model[methodName](objectName, methodName, args);
+            };
+        }
+
+        public static function table( objectName : String, methodName : String, ... args ) : Table
+        {
+            return null;
+        }
+
+        public static function all( objectName : String, methodName : String, ... args ) : void
         {
 
         }
 
-        public static function count() : void
+        public static function count( objectName : String, methodName : String, ... args ) : void
         {
 
         }
 
-        public static function create( attributes : Array, validate : Boolean = true ) : void
+        public static function create( objectName : String, methodName : String, ... args ) : void
         {
+            var attributes : Array = args[0];
+            var validate : Boolean = args[1] ? args[1] : true;
         }
 
-        public static function exists() : void
+        public static function exists( objectName : String, methodName : String, ... args ) : void
         {
 
         }
@@ -60,32 +92,34 @@ package com.lionart.activeaircord
 
         }
 
-        public static function find() : void
+        public static function find( objectName : String, methodName : String, ... args ) : void
         {
 
         }
 
-        public static function findByPk( values : Array, options : Array ) : void
+        public static function findByPk( objectName : String, methodName : String, ... args ) : void
+        {
+            var values : Array = args[0];
+            var options : Array = args[1];
+        }
+
+        public static function findBySql( objectName : String, methodName : String, ... args ) : void
+        {
+            var sql : String = args[0];
+            var values : Array = args[1] ? args[1] : null;
+        }
+
+        public static function first( objectName : String, methodName : String, ... args ) : void
         {
 
         }
 
-        public static function findBySql( sql : String, values : Array = null ) : void
+        public static function connection( objectName : String, methodName : String, ... args ) : void
         {
 
         }
 
-        public static function first() : void
-        {
-
-        }
-
-        public static function getConnection() : void
-        {
-
-        }
-
-        public static function getTableName() : void
+        public static function tableName( objectName : String, methodName : String, ... args ) : void
         {
 
         }
@@ -95,7 +129,7 @@ package com.lionart.activeaircord
 
         }
 
-        public static function last() : void
+        public static function last( objectName : String, methodName : String, ... args ) : void
         {
 
         }
@@ -105,12 +139,13 @@ package com.lionart.activeaircord
 
         }
 
-        public static function query( sql : String, values : Array = null ) : void
+        public static function query( objectName : String, methodName : String, ... args ) : void
         {
-
+            var sql : String = args[0];
+            var values : Array = args[1] ? args[1] : null;
         }
 
-        public static function reestablishConnection() : void
+        public static function reestablishConnection( objectName : String, methodName : String, ... args ) : void
         {
 
         }
@@ -120,10 +155,11 @@ package com.lionart.activeaircord
 
         }
 
-        public function updateAll( options : Dictionary = null ) : int
+        public static function updateAll( objectName : String, methodName : String, ... args ) : int
         {
-            var table : Table = Table.forClass(this);
-            var conn : SQLiteConnection = connection;
+            var options : Dictionary = args ? args[0] : null;
+            var table : Table = Table.forClass(getDefinitionByName(objectName) as Class);
+            var conn : SQLiteConnection = _connection;
             var sql : SQLBuilder = new SQLBuilder(conn, table.getFullyQualifiedTableName());
 
             sql.update(options["set"]);
@@ -153,6 +189,7 @@ package com.lionart.activeaircord
 
         }
 
+
         public function Model( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {
             super();
@@ -161,7 +198,8 @@ package com.lionart.activeaircord
             {
                 for each (var column : Column in Table.forClass(this).columns)
                 {
-                    attributes[column.inflectedName] = column.defaultValue;
+                    // FIXME
+                    //attributes[column.inflectedName] = column.defaultValue;
                 }
             }
 
@@ -223,10 +261,11 @@ package com.lionart.activeaircord
 
         }
 
-        public function deleteAll( options : Dictionary = null ) : int
+        public static function deleteAll( objectName : String, methodName : String, ... args ) : int
         {
-            var table : Table = Table.forClass(this);
-            var conn : SQLiteConnection = connection;
+            var options : Dictionary = args ? args[0] : null;
+            var table : Table = Table.forClass(getDefinitionByName(objectName) as Class);
+            var conn : SQLiteConnection = _connection;
             var sql : SQLBuilder = new SQLBuilder(conn, table.getFullyQualifiedTableName());
 
             // FIXME : pass object instead of Dictionary
@@ -394,7 +433,16 @@ package com.lionart.activeaircord
 
         public function setTimestamps() : void
         {
+            var now : Date = new Date();
 
+            if (this["updatedAt"])
+            {
+                this["updatedAt"] = now;
+            }
+            if (this["createdAt"] && isNewRecord())
+            {
+                this["createdAt"] = now;
+            }
         }
 
         public function toArray( options : Array = null ) : void
@@ -446,27 +494,42 @@ package com.lionart.activeaircord
 
         flash_proxy override function callProperty( methodName : *, ... parameters ) : *
         {
-            var res : *;
-            switch (methodName.toString())
+            try
             {
-                /*case "clear":
-                   _item = new Array();
-                   break;
-                   case "sum":
-                   var sum:Number = 0;
-                   for each (var i:* in _item) {
-                   // ignore non-numeric values
-                   if (!isNaN(i)) {
-                   sum += i;
-                   }
-                   }
-                   res = sum;
-                   break;*/
-                default:
-                    res = _item[methodName].apply(_item, parameters);
-                    break;
+                var clazz : Class = getDefinitionByName(getQualifiedClassName(this)) as Class;
+                return clazz.prototype[methodName].apply(methodName, parameters);
             }
-            return res;
+            catch ( e : Error )
+            {
+                return methodMissing(methodName, parameters);
+            }
+        /*var res : *;
+           switch (methodName.toString())
+           {
+           /*case "clear":
+           _item = new Array();
+           break;
+           case "sum":
+           var sum:Number = 0;
+           for each (var i:* in _item) {
+           // ignore non-numeric values
+           if (!isNaN(i)) {
+           sum += i;
+           }
+           }
+           res = sum;
+           break;*/
+        /*default:
+           res = _item[methodName].apply(_item, parameters);
+           break;
+           }
+           return res;*/
+        }
+
+        protected function methodMissing( method : *, args : Array ) : Object
+        {
+            throw(new Error("Method Missing"));
+            return null;
         }
 
         flash_proxy override function getProperty( name : * ) : *
