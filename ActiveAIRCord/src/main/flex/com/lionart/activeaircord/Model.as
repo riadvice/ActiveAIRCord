@@ -170,9 +170,9 @@ package com.lionart.activeaircord
             return null;
         }
 
-        public function attributeIsDirty( attribute : String ) : void
+        public function attributeIsDirty( attribute : String ) : Boolean
         {
-
+            return _dirty && _dirty[attribute] && DictionaryUtils.containsKey(attributes(), attribute);
         }
 
         public function attributes() : Dictionary
@@ -301,7 +301,7 @@ package com.lionart.activeaircord
 
             if (isDirty())
             {
-                var pk : Array = valuesForPk();
+                var pk : Dictionary = valuesForPk();
                 if (!pk)
                 {
                     throw new ActiveRecordException("Cannot update, no primary key defined for: " + ClassUtils.forInstance(this).toString());
@@ -327,19 +327,44 @@ package com.lionart.activeaircord
 
         }
 
-        public function destroy() : void
+        public function destroy() : Boolean
         {
+            verifyNotReadonly('destroy');
 
+            var pk : Dictionary = valuesForPk();
+
+            // FIXME : calculate dictionary length using a different way
+            if (DictionaryUtils.getKeys(pk).length == 0)
+            {
+                throw new ActiveRecordException("Cannot delete, no primary key defined for: " + ClassUtils.getName(ClassUtils.forInstance(this)));
+            }
+
+            if (invokeCallback("before_destroy", false))
+            {
+                return false;
+            }
+
+            Table.forClass(this).destroy(pk);
+            invokeCallback("after_destroy", false)
+
+            return true;
         }
 
-        public function valuesForPk() : Array
+        public function valuesForPk() : Dictionary
         {
-            return null;
+            return valuesFor(Table.forClass(this).pk);
         }
 
-        public function valuesFor( attributeNames : Array ) : void
+        public function valuesFor( attributeNames : Array ) : Dictionary
         {
+            var filter : Dictionary = new Dictionary();
 
+            for each (var name : String in attributeNames)
+            {
+                filter[name] = this[name];
+            }
+
+            return filter;
         }
 
         private function validate() : Boolean
