@@ -16,7 +16,7 @@
  */
 package com.lionart.activeaircord
 {
-    import flash.net.getClassByAlias;
+
 
     public class SQLTypes
     {

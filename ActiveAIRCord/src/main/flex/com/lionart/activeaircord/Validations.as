@@ -19,7 +19,6 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.validation.ValidationErrors;
 
     import flash.utils.Dictionary;
-    import flash.utils.getQualifiedClassName;
 
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.reflect.Field;

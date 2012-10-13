@@ -28,7 +28,7 @@ package com.lionart.activeaircord
         public static const EQUALS : String = "=";
         public static const PARAM : String = "?";
 
-        private var _expressions : Array;
+        private var _expressions : Array = [];
         private var _values : Array = [];
         private var _connection : SQLiteConnection;
 

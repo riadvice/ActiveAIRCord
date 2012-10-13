@@ -68,7 +68,7 @@ package com.lionart.activeaircord
         public function bindValues() : Array
         {
             // TODO : udpate me
-            return Utils.flatternArray(_data);
+            return Utils.flattenArray(_data);
         }
 
         public function where( ... args ) : SQLBuilder
@@ -273,7 +273,7 @@ package com.lionart.activeaircord
                 var dict : Dictionary = !_joins ? args[0] : prependTableNameToFields(args[0]);
                 var exp : Expressions = new Expressions(_connection, dict);
                 _where = exp.toString();
-                _whereValues = Utils.flatternArray(exp.values);
+                _whereValues = Utils.flattenArray(exp.values);
             }
             else if (numArgs > 0)
             {
@@ -286,7 +286,7 @@ package com.lionart.activeaircord
                         var expression : Expressions = new Expressions(_connection, args[0]);
                         expression.bindValues(values);
                         _where = expression.toString();
-                        _whereValues = Utils.flatternArray(expression.values);
+                        _whereValues = Utils.flattenArray(expression.values);
                         return;
                     }
                 }

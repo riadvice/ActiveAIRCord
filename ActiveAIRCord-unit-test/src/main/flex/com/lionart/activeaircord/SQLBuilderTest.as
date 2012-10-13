@@ -74,7 +74,7 @@ package com.lionart.activeaircord
         {
             _sql.where("id=? AND name IN(?)", 1, ['Tito', 'Mexican']);
             //assert_sql_has("SELECT ALL FROM authors WHERE id=? AND name IN(?,?)",_sql.toString());
-            assertEquals([1, 'Tito', 'Mexican'], _sql.whereValues);
+            assertThat([1, "Tito", "Mexican"], _sql.whereValues);
         }
 
 

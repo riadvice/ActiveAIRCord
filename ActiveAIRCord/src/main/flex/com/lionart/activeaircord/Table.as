@@ -69,13 +69,6 @@ package com.lionart.activeaircord
             }
         }
 
-        public static function forClass( classOrObject : * ) : Table
-        {
-            var className : String = classOrObject is Class ? ClassUtils.getName(classOrObject) : ClassUtils.getName(ClassUtils.forInstance(classOrObject));
-            return load(className)
-        }
-
-
         public function Table( className : String = null )
         {
             clazz = Reflections.getInstance().add(className).getClass(className);
@@ -339,7 +332,7 @@ package com.lionart.activeaircord
 
         private function setTableName() : void
         {
-            var table : String = clazz["table"]() || clazz["tableName"]();
+            var table : String = clazz["table"] || clazz["tableName"];
             if (table)
             {
                 tableName = table;

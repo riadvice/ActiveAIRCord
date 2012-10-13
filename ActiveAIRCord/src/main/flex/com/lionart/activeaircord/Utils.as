@@ -16,6 +16,8 @@
  */
 package com.lionart.activeaircord
 {
+    import org.as3commons.lang.ArrayUtils;
+
 
     public final class Utils
     {
@@ -24,22 +26,23 @@ package com.lionart.activeaircord
             return null;
         }
 
-        public static function flatternArray( array : Array ) : Array
+        public static function flattenArray( array : Array ) : Array
         {
             var result : Array = [];
             var i : int = 0;
 
-            while (i < array.length)
+            for each (var value : * in array)
             {
-                if (array[i] is Array)
+                if (value is Array)
                 {
-                    result.push((array[i] as Array).splice());
+                    ArrayUtils.addAll(result, value as Array);
                 }
                 else
                 {
-                    ++i;
+                    result.push(value);
                 }
             }
+
             return result;
         }
 

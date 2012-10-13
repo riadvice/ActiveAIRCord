@@ -40,7 +40,7 @@ package com.lionart.activeaircord
             "before_destroy",
             "after_destroy"];
 
-        private var _klass : Class;
+        private var _clazz : Class;
 
         private var _publicMethods : Array;
 
@@ -48,11 +48,11 @@ package com.lionart.activeaircord
 
         public function Callback( modelClass : String )
         {
-            _klass = Reflections.getInstance().getClass(modelClass);
+            _clazz = Reflections.getInstance().getClass(modelClass);
 
             for each (var name : String in VALID_CALLBACKS)
             {
-                var definition : * = _klass[name];
+                var definition : * = _clazz[name];
                 if (!(definition is Array))
                 {
                     definition = [definition];
