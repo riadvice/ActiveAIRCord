@@ -160,7 +160,7 @@ package com.lionart.activeaircord
             _dirty[name] = true;
         }
 
-        public function dirtyAttributes() : Array
+        public function dirtyAttributes() : Dictionary
         {
             if (!_dirty)
             {
@@ -264,18 +264,35 @@ package com.lionart.activeaircord
 
         public function save( validate : Boolean = true ) : Boolean
         {
-            verifyNotReadonly('save');
+            verifyNotReadonly("save");
             return isNewRecord() ? insert(validate) : update(validate);
         }
 
-        private function insert( validate : Boolean = true ) : Boolean
+        private function insert( validation : Boolean = true ) : Boolean
         {
+            verifyNotReadonly("insert");
+            if (validation && !validate() || invokeCallback("before_create", false))
+            {
+                return false;
+            }
+            var table : Table = Table.forClass(this);
+            var attributes : Dictionary;
+            if (!(attributes = dirtyAttributes()))
+            {
+                attributes = _attributes;
+            }
+            var pk : Array = getPrimaryKey(true);
+            table.insert(attributes);
+
+            invokeCallback('after_create', false);
+            _newRecord = false;
+
             return true;
         }
 
         private function update( validation : Boolean = true ) : Boolean
         {
-            verifyNotReadonly('update');
+            verifyNotReadonly("update");
 
             if (validation && !validate())
             {
@@ -293,7 +310,7 @@ package com.lionart.activeaircord
                 {
                     return false;
                 }
-                var dirty : Array = dirtyAttributes();
+                var dirty : Dictionary = dirtyAttributes();
                 Table.forClass(this).update(dirty, pk);
                 invokeCallback('after_update', false);
             }
