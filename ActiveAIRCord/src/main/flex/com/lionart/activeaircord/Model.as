@@ -18,6 +18,7 @@ package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.exceptions.ReadOnlyException;
+    import com.lionart.activeaircord.exceptions.RecordNotFound;
 
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
@@ -27,6 +28,9 @@ package com.lionart.activeaircord
     import flash.utils.getDefinitionByName;
     import flash.utils.getQualifiedClassName;
 
+    import mx.collections.ArrayCollection;
+
+    import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
 
@@ -65,14 +69,32 @@ package com.lionart.activeaircord
             return Table.load(ClassUtils.getName(clazz));
         }
 
-        public static function all( clazz : Class, methodName : String, ... args ) : void
+        public static function all( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
-
+            return clazz["find"](ArrayUtils.addAll(args, ["all"]));
         }
 
-        public static function count( clazz : Class, methodName : String, ... args ) : void
+        public static function count( clazz : Class, methodName : String, ... args ) : int
         {
+            var options : Dictionary = extractAndValidateOptions(args);
+            options["select"] = [SQL.COUNT + "(" + SQL.ALL + ")"].join();
 
+            if (!ArrayUtils.isEmpty(args) && args[0] != null && !ArrayUtils.isEmpty(args[0]))
+            {
+                if (args[0] is Dictionary)
+                {
+                    options["conditions"] = args[0];
+                }
+                else
+                {
+                    options["condition"] = pkConditions(args);
+                }
+            }
+
+            var table : Table = clazz["table"]();
+            var sql : SQLBuilder = table.optionsToSql(options);
+            var values : Array = sql.whereValues;
+            return SQLiteConnection(clazz["connection"]()).queryAndFetchOne(sql.toString(), values) as int;
         }
 
         public static function create( clazz : Class, methodName : String, ... args ) : void
@@ -81,36 +103,128 @@ package com.lionart.activeaircord
             var validate : Boolean = args[1] ? args[1] : true;
         }
 
-        public static function exists( clazz : Class, methodName : String, ... args ) : void
+        public static function exists( clazz : Class, methodName : String, ... args ) : Boolean
         {
-
+            return clazz["count"]() > 0 ? true : false;
         }
 
-        public static function extractAndValidateOptions( array : Array ) : void
+        public static function extractAndValidateOptions( array : Array ) : Dictionary
         {
+            var options : Dictionary = new Dictionary();
 
+            if (array)
+            {
+                var last : * = array[array.length - 1];
+                try
+                {
+                    if (isOptionsHash(last))
+                    {
+                        array.pop();
+                        options = last;
+                    }
+                }
+                catch ( e : ActiveRecordException )
+                {
+                    if (!(last is Dictionary))
+                    {
+                        throw e;
+                    }
+                    options["conditions"] = last;
+                }
+            }
+            return options;
         }
 
-        public static function find( clazz : Class, methodName : String, ... args ) : void
+        public static function find( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
+            if (!args || args.length == 0)
+            {
+                throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " without an ID");
+            }
 
+            var options : Dictionary = extractAndValidateOptions(args);
+            var numArgs : int = args.length;
+            var single : Boolean = true;
+
+            if (numArgs > 0 && (args[0] == "all" || args[0] == "first" || args[0] == "last"))
+            {
+                switch (numArgs)
+                {
+                    case "all":
+                        single = false;
+                        break;
+
+                    case "last":
+                        if (!DictionaryUtils.containsKey(options, "order"))
+                        {
+                            options["order"] = [SQL.DESC, Table(clazz["table"]()).pk, SQL.DESC].join(" ");
+                        }
+                        else
+                        {
+                            options["order"] = SQLBuilder.reverseOrder(options["order"]);
+                        }
+                        break;
+                    case "first":
+                        options["limit"] = 1;
+                        options["offset"] = 0;
+                        break;
+                    default:
+                        break;
+                }
+                args = args.splice(1);
+                numArgs--;
+            }
+            else if (args.length == numArgs == 1)
+            {
+                args = args[0];
+            }
+
+            // anything left in $args is a find by pk
+            if (numArgs > 0 && !options["conditions"])
+            {
+                return clazz["findByPk"](args, options);
+            }
+
+            options["mappedNames"] = clazz["aliasAttribute"];
+            var list : ArrayCollection = Table(clazz["table"]()).find(options);
+
+            return single ? (list.length > 0 ? list[0] : null) : list;
         }
 
-        public static function findByPk( clazz : Class, methodName : String, ... args ) : void
+        public static function findByPk( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
             var values : Array = args[0];
-            var options : Array = args[1];
+            var options : Dictionary = args[1];
+            options["conditions"] = clazz["pkConditions"](values);
+            var list : ArrayCollection = Table(clazz["table"]()).find(options);
+            var results : int = list.length;
+            var expected : int = values.length
+
+            if (results != expected)
+            {
+                if (expected == 1)
+                {
+                    if (!(values is ArrayCollection))
+                    {
+                        throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " with ID=" + values.join(","));
+                    }
+                }
+                throw new RecordNotFound("Couldn't find all " + ClassUtils.getName(clazz) + " with IDs (" + values.join(",") + ") (found " + results + ", but was looking for " + expected + ")");
+            }
+
+            return expected == 1 ? list[0] : list;
         }
 
-        public static function findBySql( clazz : Class, methodName : String, ... args ) : void
+        public static function findBySql( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
             var sql : String = args[0];
             var values : Array = args[1] ? args[1] : null;
+            return Table(clazz["table"]()).findBySql(sql, values, true);
         }
 
-        public static function first( clazz : Class, methodName : String, ... args ) : void
+        public static function first( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
-
+            return clazz["find"](ArrayUtils.addAll(args, ["first"]));
         }
 
         public static function connection( clazz : Class, methodName : String, ... args ) : void
@@ -128,9 +242,9 @@ package com.lionart.activeaircord
 
         }
 
-        public static function last( clazz : Class, methodName : String, ... args ) : void
+        public static function last( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
-
+            return clazz["find"](ArrayUtils.addAll(args, ["last"]));
         }
 
         public static function pkConditions( args : Array ) : void

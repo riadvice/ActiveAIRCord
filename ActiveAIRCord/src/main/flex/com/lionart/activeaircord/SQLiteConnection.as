@@ -160,7 +160,7 @@ package com.lionart.activeaircord
             return "";
         }
 
-        public function queryAndFetchOne( sql : String, values : Array = null ) : void
+        public function queryAndFetchOne( sql : String, values : Array = null ) : *
         {
 
         }

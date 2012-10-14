@@ -47,6 +47,7 @@ package com.lionart.activeaircord
         public static const COMMIT : String = "COMMIT";
         public static const CONFLICT : String = "CONFLICT";
         public static const CONSTRAINT : String = "CONSTRAINT";
+        public static const COUNT : String = "COUNT";
         public static const CREATE : String = "CREATE";
         public static const CROSS : String = "CROSS";
         public static const CURRENT_DATE : String = "CURRENT_DATE";

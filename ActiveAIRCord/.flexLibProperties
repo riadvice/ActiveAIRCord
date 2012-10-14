@@ -31,6 +31,7 @@
     <classEntry path="com.lionart.activeaircord.relationship.BelongsTo"/>
     <classEntry path="com.lionart.activeaircord.Cache"/>
     <classEntry path="com.lionart.activeaircord.exceptions.DatabaseException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.RecordNotFound"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
