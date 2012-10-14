@@ -16,7 +16,7 @@
  */
 package com.lionart.activeaircord
 {
-    import flexunit.framework.Assert;
+    import org.flexunit.asserts.assertEquals;
 
     public class SQLTypesTest
     {
@@ -44,41 +44,41 @@ package com.lionart.activeaircord
         [Test]
         public function testGetASType() : void
         {
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.INTEGER), int);
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.STRING), String);
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.NUMBER), Number);
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.DATE), Date);
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.BOOLEAN), Boolean);
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.Xml), XML);
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.XMLLIST), XMLList);
-            Assert.assertEquals(SQLTypes.getASType(SQLTypes.OBJECT), Object);
+            assertEquals(SQLTypes.getASType(SQLTypes.INTEGER), int);
+            assertEquals(SQLTypes.getASType(SQLTypes.STRING), String);
+            assertEquals(SQLTypes.getASType(SQLTypes.NUMBER), Number);
+            assertEquals(SQLTypes.getASType(SQLTypes.DATE), Date);
+            assertEquals(SQLTypes.getASType(SQLTypes.BOOLEAN), Boolean);
+            assertEquals(SQLTypes.getASType(SQLTypes.Xml), XML);
+            assertEquals(SQLTypes.getASType(SQLTypes.XMLLIST), XMLList);
+            assertEquals(SQLTypes.getASType(SQLTypes.OBJECT), Object);
         }
 
         [Test]
         public function testGetSQLType() : void
         {
-            Assert.assertEquals(SQLTypes.getSQLType("int"), SQLTypes.INTEGER);
-            Assert.assertEquals(SQLTypes.getSQLType("uint"), SQLTypes.INTEGER);
-            Assert.assertEquals(SQLTypes.getSQLType("String"), SQLTypes.STRING);
-            Assert.assertEquals(SQLTypes.getSQLType("Number"), SQLTypes.NUMBER);
-            Assert.assertEquals(SQLTypes.getSQLType("Date"), SQLTypes.DATE);
-            Assert.assertEquals(SQLTypes.getSQLType("Boolean"), SQLTypes.BOOLEAN);
-            Assert.assertEquals(SQLTypes.getSQLType("XML"), SQLTypes.Xml);
-            Assert.assertEquals(SQLTypes.getSQLType("XMLList"), SQLTypes.XMLLIST);
-            Assert.assertEquals(SQLTypes.getSQLType("Array"), SQLTypes.OBJECT);
+            assertEquals(SQLTypes.getSQLType("int"), SQLTypes.INTEGER);
+            assertEquals(SQLTypes.getSQLType("uint"), SQLTypes.INTEGER);
+            assertEquals(SQLTypes.getSQLType("String"), SQLTypes.STRING);
+            assertEquals(SQLTypes.getSQLType("Number"), SQLTypes.NUMBER);
+            assertEquals(SQLTypes.getSQLType("Date"), SQLTypes.DATE);
+            assertEquals(SQLTypes.getSQLType("Boolean"), SQLTypes.BOOLEAN);
+            assertEquals(SQLTypes.getSQLType("XML"), SQLTypes.Xml);
+            assertEquals(SQLTypes.getSQLType("XMLList"), SQLTypes.XMLLIST);
+            assertEquals(SQLTypes.getSQLType("Array"), SQLTypes.OBJECT);
         }
 
         [Test]
         public function testSQLTypes() : void
         {
-            Assert.assertEquals(SQLTypes.BOOLEAN, "BOOLEAN");
-            Assert.assertEquals(SQLTypes.DATE, "DATE");
-            Assert.assertEquals(SQLTypes.INTEGER, "INTEGER");
-            Assert.assertEquals(SQLTypes.NUMBER, "REAL");
-            Assert.assertEquals(SQLTypes.OBJECT, "OBJECT");
-            Assert.assertEquals(SQLTypes.STRING, "TEXT");
-            Assert.assertEquals(SQLTypes.Xml, "XML");
-            Assert.assertEquals(SQLTypes.XMLLIST, "XMLLIST");
+            assertEquals(SQLTypes.BOOLEAN, "BOOLEAN");
+            assertEquals(SQLTypes.DATE, "DATE");
+            assertEquals(SQLTypes.INTEGER, "INTEGER");
+            assertEquals(SQLTypes.NUMBER, "REAL");
+            assertEquals(SQLTypes.OBJECT, "OBJECT");
+            assertEquals(SQLTypes.STRING, "TEXT");
+            assertEquals(SQLTypes.Xml, "XML");
+            assertEquals(SQLTypes.XMLLIST, "XMLLIST");
         }
     }
 }

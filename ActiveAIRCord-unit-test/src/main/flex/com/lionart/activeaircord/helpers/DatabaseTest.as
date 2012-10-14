@@ -22,7 +22,7 @@ package com.lionart.activeaircord.helpers
     import com.lionart.activeaircord.Table;
     import com.lionart.activeaircord.models.Author;
 
-    import flexunit.framework.Assert;
+    import org.flexunit.asserts.fail;
 
     public class DatabaseTest
     {
@@ -48,7 +48,7 @@ package com.lionart.activeaircord.helpers
             }
             catch ( e : Error )
             {
-                Assert.fail("Database connection could not be established.");
+                fail("Database connection could not be established.");
             }
 
             var loader : DatabaseLoader = new DatabaseLoader(conn);

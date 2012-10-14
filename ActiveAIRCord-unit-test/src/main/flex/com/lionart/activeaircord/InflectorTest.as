@@ -18,8 +18,8 @@ package com.lionart.activeaircord
 {
 
     import com.lionart.activeaircord.helpers.Config;
-    
-    import flexunit.framework.Assert;
+
+    import org.flexunit.asserts.assertEquals;
 
     public class InflectorTest
     {
@@ -181,7 +181,7 @@ package com.lionart.activeaircord
         [Test]
         public function testCamelize() : void
         {
-            Assert.assertEquals(Inflector.camelize("One_Two_Three"), "oneTwoThree");
+            assertEquals(Inflector.camelize("One_Two_Three"), "oneTwoThree");
         }
 
         [Test]
@@ -189,7 +189,7 @@ package com.lionart.activeaircord
         {
             for each (var couple : Array in singularToPlural)
             {
-                Assert.assertEquals(Inflector.pluralize(couple[0]), couple[1]);
+                assertEquals(Inflector.pluralize(couple[0]), couple[1]);
             }
         }
 
@@ -198,7 +198,7 @@ package com.lionart.activeaircord
         {
             for each (var couple : Array in singularToPlural)
             {
-                Assert.assertEquals(Inflector.singularize(couple[1]), couple[0]);
+                assertEquals(Inflector.singularize(couple[1]), couple[0]);
             }
         }
 
@@ -207,7 +207,7 @@ package com.lionart.activeaircord
         {
             for each (var couple : Array in toUnderscore)
             {
-                Assert.assertEquals(Inflector.underscorify(couple[0]), couple[1]);
+                assertEquals(Inflector.underscorify(couple[0]), couple[1]);
             }
         }
 
@@ -216,7 +216,7 @@ package com.lionart.activeaircord
         {
             for each (var couple : Array in toTabelize)
             {
-                Assert.assertEquals(Inflector.tableize(couple[0]), couple[1]);
+                assertEquals(Inflector.tableize(couple[0]), couple[1]);
             }
         }
 
@@ -225,7 +225,7 @@ package com.lionart.activeaircord
         {
             for each (var couple : Array in toKeyify)
             {
-                Assert.assertEquals(Inflector.keyify(couple[0]), couple[1]);
+                assertEquals(Inflector.keyify(couple[0]), couple[1]);
             }
         }
     }

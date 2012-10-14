@@ -20,9 +20,11 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.helpers.DatabaseTest;
     import com.lionart.activeaircord.models.Author;
 
-    import flexunit.framework.Assert;
+    import flash.utils.Dictionary;
 
     import org.as3commons.lang.DictionaryUtils;
+    import org.flexunit.asserts.assertFalse;
+    import org.flexunit.asserts.assertTrue;
     import org.hamcrest.assertThat;
     import org.hamcrest.core.allOf;
     import org.hamcrest.core.throws;
@@ -31,10 +33,18 @@ package com.lionart.activeaircord
     public class ActiveAIRCordTest extends DatabaseTest
     {
 
+        private var optionsDict : Dictionary;
+        private var optionsObj : Object;
+
         [Before]
         override public function setUp() : void
         {
             super.setUp();
+            optionsDict = new Dictionary(true);
+            optionsDict["conditions"] = "condition";
+            optionsDict["order"] = "desc";
+
+            optionsObj = {"conditions": "condition", "order": "asc"};
         }
 
         [After]
@@ -56,11 +66,11 @@ package com.lionart.activeaircord
         [Test]
         public function testOptionsIsNot() : void
         {
-            Assert.assertFalse(Author["isOptionsHash"](null));
-            Assert.assertFalse(Author["isOptionsHash"](''));
-            Assert.assertFalse(Author["isOptionsHash"]('tito'));
-            Assert.assertFalse(Author["isOptionsHash"](new Array()));
-            Assert.assertFalse(Author["isOptionsHash"]([1, 2, 3]));
+            assertFalse(Author["isOptionsHash"](null));
+            assertFalse(Author["isOptionsHash"](''));
+            assertFalse(Author["isOptionsHash"]('tito'));
+            assertFalse(Author["isOptionsHash"](new Array()));
+            assertFalse(Author["isOptionsHash"]([1, 2, 3]));
         }
 
         [Test]
@@ -70,10 +80,23 @@ package com.lionart.activeaircord
         }
 
         [Test]
+        public function testOptionsIsHash() : void
+        {
+            assertTrue(Author["isOptionsHash"](optionsDict));
+            assertTrue(Author["isOptionsHash"](optionsObj));
+        }
+
+        [Test]
+        public function testExtractAndValidateOptions() : void
+        {
+
+        }
+
+        [Test]
         public function testShouldHaveAllColumnAttributesWhenInitializingWithArray() : void
         {
             var author : Author = new Author({name: "Tito"});
-            Assert.assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
+            assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
         }
 
 
