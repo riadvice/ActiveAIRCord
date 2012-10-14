@@ -44,7 +44,7 @@ package com.lionart.activeaircord
         public static var primaryKey : String;
         public static var sequence : String;
 
-        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "connection", "reestablishConnection", "getTable", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query"];
+        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "connection", "reestablishConnection", "getTable", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "extractAndValidateOptions"];
 
         /* Special methods to call static methods from inheritance classes */
 
@@ -107,7 +107,7 @@ package com.lionart.activeaircord
 
         public static function count( clazz : Class, methodName : String, ... args ) : int
         {
-            var options : Dictionary = extractAndValidateOptions(args);
+            var options : Dictionary = clazz["extractAndValidateOptions"](args);
             options["select"] = [SQL.COUNT + "(" + SQL.ALL + ")"].join();
 
             if (!ArrayUtils.isEmpty(args) && args[0] != null && !ArrayUtils.isEmpty(args[0]))
@@ -139,8 +139,9 @@ package com.lionart.activeaircord
             return clazz["count"]() > 0 ? true : false;
         }
 
-        public static function extractAndValidateOptions( array : Array ) : Dictionary
+        public static function extractAndValidateOptions( clazz : Class, methodName : String, ... args ) : Dictionary
         {
+            var array : Array = args[0];
             var options : Dictionary = new Dictionary();
 
             if (array)
@@ -148,7 +149,7 @@ package com.lionart.activeaircord
                 var last : * = array[array.length - 1];
                 try
                 {
-                    if (isOptionsHash(last))
+                    if (clazz["isOptionsHash"](last))
                     {
                         array.pop();
                         options = last;
@@ -173,7 +174,7 @@ package com.lionart.activeaircord
                 throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " without an ID");
             }
 
-            var options : Dictionary = extractAndValidateOptions(args);
+            var options : Dictionary = clazz["extractAndValidateOptions"](args);
             var numArgs : int = args.length;
             var single : Boolean = true;
 
@@ -268,9 +269,28 @@ package com.lionart.activeaircord
             return Table(clazz["getTable"]()).tableName;
         }
 
-        public static function isOptionsHash( array : Array, throws : Boolean = true ) : void
+        public static function isOptionsHash( clazz : Class, methodName : String, ... args ) : Boolean
         {
+            var array : * = args[0];
+            var throws : Boolean = args.length == 2 ? args[1] : true;
+            if (array is Dictionary)
+            {
+                var keys : Array = DictionaryUtils.getKeys(array);
+                var diff : Array = Utils.arrayDiff(keys, VALID_OPTIONS);
 
+                if (!ArrayUtils.isEmpty(diff) && throws)
+                {
+                    throw new ActiveRecordException("Unknown key(s): " + diff.join(","));
+                }
+
+                var intersect : Array = Utils.arrayIntersect(keys, VALID_OPTIONS);
+
+                if (!ArrayUtils.isEmpty(intersect))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static function last( clazz : Class, methodName : String, ... args ) : ArrayCollection

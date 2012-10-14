@@ -16,23 +16,26 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.helpers.DatabaseTest;
     import com.lionart.activeaircord.models.Author;
 
     import flexunit.framework.Assert;
 
     import org.as3commons.lang.DictionaryUtils;
 
-    public class ActiveAIRCordTest
+    public class ActiveAIRCordTest extends DatabaseTest
     {
 
         [Before]
-        public function setUp() : void
+        override public function setUp() : void
         {
+            super.setUp();
         }
 
         [After]
-        public function tearDown() : void
+        override public function tearDown() : void
         {
+            super.tearDown();
         }
 
         [BeforeClass]
@@ -43,6 +46,16 @@ package com.lionart.activeaircord
         [AfterClass]
         public static function tearDownAfterClass() : void
         {
+        }
+
+        [Test]
+        public function testOptionsIsNot() : void
+        {
+            Assert.assertFalse(Author["isOptionsHash"](null));
+            Assert.assertFalse(Author["isOptionsHash"](''));
+            Assert.assertFalse(Author["isOptionsHash"]('tito'));
+            Assert.assertFalse(Author["isOptionsHash"](new Array()));
+            Assert.assertFalse(Author["isOptionsHash"]([1, 2, 3]));
         }
 
         [Test]

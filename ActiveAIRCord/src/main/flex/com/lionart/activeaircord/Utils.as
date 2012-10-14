@@ -16,6 +16,8 @@
  */
 package com.lionart.activeaircord
 {
+    import flash.utils.Dictionary;
+
     import org.as3commons.lang.ArrayUtils;
 
 
@@ -123,6 +125,45 @@ package com.lionart.activeaircord
         public static function isBlank( variable : String ) : void
         {
 
+        }
+
+        public static function dictDiff( dictOne : Dictionary, dictTwo : Dictionary ) : Dictionary
+        {
+            var result : Dictionary = new Dictionary(true);
+            for each (var key : * in dictOne)
+            {
+                if (!dictTwo[key])
+                {
+                    result[key] = dictOne[key];
+                }
+            }
+            return result;
+        }
+
+        public static function arrayDiff( arrayOne : Array, arrayTwo : Array ) : Array
+        {
+            var result : Array = [];
+            for (var i : int = 0; i < arrayOne.length; i++)
+            {
+                if (arrayTwo.indexOf(arrayOne[i]) == -1)
+                {
+                    result.push(arrayOne[i]);
+                }
+            }
+            return result;
+        }
+
+        public static function arrayIntersect( arrayOne : Array, arrayTwo : Array ) : Array
+        {
+            var result : Array = [];
+            for (var i : int = 0; i < arrayOne.length; i++)
+            {
+                if (arrayTwo.indexOf(arrayOne[i]) != -1)
+                {
+                    result.push(arrayOne[i]);
+                }
+            }
+            return result;
         }
 
     }
