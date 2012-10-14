@@ -33,6 +33,7 @@ package com.lionart.activeaircord
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
+    import org.as3commons.lang.ObjectUtils;
 
     public dynamic class Model extends Proxy
     {
@@ -271,8 +272,13 @@ package com.lionart.activeaircord
 
         public static function isOptionsHash( clazz : Class, methodName : String, ... args ) : Boolean
         {
-            var array : * = args[0];
-            var throws : Boolean = args.length == 2 ? args[1] : true;
+            // FIXME : look why the array is multidimentionnal
+            var array : * = args[0][0];
+            var throws : Boolean = args[0].length == 2 ? args[0][1] : true;
+            if (array && ClassUtils.forInstance(array) == Object)
+            {
+                array = ObjectUtils.toDictionary(array);
+            }
             if (array is Dictionary)
             {
                 var keys : Array = DictionaryUtils.getKeys(array);

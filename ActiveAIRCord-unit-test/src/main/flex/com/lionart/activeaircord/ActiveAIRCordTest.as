@@ -16,12 +16,17 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.helpers.DatabaseTest;
     import com.lionart.activeaircord.models.Author;
 
     import flexunit.framework.Assert;
 
     import org.as3commons.lang.DictionaryUtils;
+    import org.hamcrest.assertThat;
+    import org.hamcrest.core.allOf;
+    import org.hamcrest.core.throws;
+    import org.hamcrest.object.instanceOf;
 
     public class ActiveAIRCordTest extends DatabaseTest
     {
@@ -59,7 +64,13 @@ package com.lionart.activeaircord
         }
 
         [Test]
-        public function shouldHaveAllColumnAttributesWhenInitializingWithArray() : void
+        public function testOptionsHashWithUnknownKeys() : void
+        {
+            assertThat(function() : void {Author["isOptionsHash"]({"conditions": "blah", "sharks": "laserz", "dubya": "bush"})}, throws(allOf(instanceOf(ActiveRecordException))));
+        }
+
+        [Test]
+        public function testShouldHaveAllColumnAttributesWhenInitializingWithArray() : void
         {
             var author : Author = new Author({name: "Tito"});
             Assert.assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
