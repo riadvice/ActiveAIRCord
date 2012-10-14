@@ -17,7 +17,7 @@
 package com.lionart.activeaircord
 {
     import mx.utils.StringUtil;
-    
+
     import org.as3commons.lang.StringUtils;
 
     public final class Inflector
@@ -279,7 +279,7 @@ package com.lionart.activeaircord
 
         public static function variablize( string : String ) : String
         {
-            return StringUtils.replace(" ", "_", StringUtils.replace("-", "_", StringUtils.trim(string.toLowerCase())));
+            return StringUtils.trim(string.toLowerCase()).replace(" ", "_").replace("-", "_");
         }
 
         public static function keyify( string : String ) : String

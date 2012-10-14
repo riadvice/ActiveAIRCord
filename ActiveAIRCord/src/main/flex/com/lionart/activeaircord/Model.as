@@ -64,6 +64,37 @@ package com.lionart.activeaircord
             };
         }
 
+        private var _attributes : Dictionary = new Dictionary(true);
+        private var _dirty : Dictionary;
+        private var _errors : Array;
+
+        private var _item : Array;
+        private var _newRecord : Boolean = true;
+        private var _readOnly : Boolean = false;
+        private var _relationShips : Dictionary = new Dictionary(true);
+
+        public function Model( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
+        {
+            super();
+            _newRecord = newRecord;
+            if (!instantiatingViaFind)
+            {
+                for each (var column : Column in Table(ClassUtils.forInstance(this)["getTable"]()).columns)
+                {
+                    _attributes[column.inflectedName] = column.defaultValue;
+                }
+            }
+
+            setAttributesViaMassAssignment(attributes, guardAttributes);
+
+            if (instantiatingViaFind)
+            {
+                _dirty = new Dictionary();
+            }
+
+            invokeCallback("after_consruct", false);
+        }
+
         public static function getTable( clazz : Class, methodName : String, ... args ) : Table
         {
             return Table.load(ClassUtils.getName(clazz));
@@ -91,7 +122,7 @@ package com.lionart.activeaircord
                 }
             }
 
-            var table : Table = clazz["table"]();
+            var table : Table = clazz["getTable"]();
             var sql : SQLBuilder = table.optionsToSql(options);
             var values : Array = sql.whereValues;
             return SQLiteConnection(clazz["connection"]()).queryAndFetchOne(sql.toString(), values) as int;
@@ -157,7 +188,7 @@ package com.lionart.activeaircord
                     case "last":
                         if (!DictionaryUtils.containsKey(options, "order"))
                         {
-                            options["order"] = [SQL.DESC, Table(clazz["table"]()).pk, SQL.DESC].join(" ");
+                            options["order"] = [SQL.DESC, Table(clazz["getTable"]()).pk, SQL.DESC].join(" ");
                         }
                         else
                         {
@@ -186,7 +217,7 @@ package com.lionart.activeaircord
             }
 
             options["mappedNames"] = clazz["aliasAttribute"];
-            var list : ArrayCollection = Table(clazz["table"]()).find(options);
+            var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
 
             return single ? (list.length > 0 ? list[0] : null) : list;
         }
@@ -196,7 +227,7 @@ package com.lionart.activeaircord
             var values : Array = args[0];
             var options : Dictionary = args[1];
             options["conditions"] = clazz["pkConditions"](values);
-            var list : ArrayCollection = Table(clazz["table"]()).find(options);
+            var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
             var results : int = list.length;
             var expected : int = values.length
 
@@ -219,7 +250,7 @@ package com.lionart.activeaircord
         {
             var sql : String = args[0];
             var values : Array = args[1] ? args[1] : null;
-            return Table(clazz["table"]()).findBySql(sql, values, true);
+            return Table(clazz["getTable"]()).findBySql(sql, values, true);
         }
 
         public static function first( clazz : Class, methodName : String, ... args ) : ArrayCollection
@@ -232,9 +263,9 @@ package com.lionart.activeaircord
 
         }
 
-        public static function getTableName( clazz : Class, methodName : String, ... args ) : void
+        public static function getTableName( clazz : Class, methodName : String, ... args ) : String
         {
-
+            return Table(clazz["getTable"]()).tableName;
         }
 
         public static function isOptionsHash( array : Array, throws : Boolean = true ) : void
@@ -301,39 +332,6 @@ package com.lionart.activeaircord
         {
 
         }
-
-
-        public function Model( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
-        {
-            super();
-            _newRecord = newRecord;
-            if (!instantiatingViaFind)
-            {
-                for each (var column : Column in prototype.constructor["getTable"]().columns)
-                {
-                    // FIXME
-                    //attributes[column.inflectedName] = column.defaultValue;
-                }
-            }
-
-            setAttributesViaMassAssignment(attributes, guardAttributes);
-
-            if (instantiatingViaFind)
-            {
-                _dirty = new Dictionary();
-            }
-
-            invokeCallback("after_consruct", false);
-        }
-
-        private var _attributes : Dictionary = new Dictionary(true);
-        private var _dirty : Dictionary;
-        private var _errors : Array;
-
-        private var _item : Array;
-        private var _newRecord : Boolean = true;
-        private var _readOnly : Boolean = false;
-        private var _relationShips : Dictionary = new Dictionary(true);
 
         public function assignAttribute( name : String, value : * ) : *
         {
@@ -479,9 +477,19 @@ package com.lionart.activeaircord
             return validator.rules();
         }
 
-        public function getValuesFor( attributes : Array ) : void
+        public function getValuesFor( attributes : Dictionary ) : Dictionary
         {
+            var result : Dictionary = new Dictionary(true);
 
+            for (var key : String in attributes)
+            {
+                if (DictionaryUtils.containsKey(_attributes, key))
+                {
+                    result[key] = _attributes[key]
+                }
+            }
+
+            return result;
         }
 
         public function isDirty() : Boolean
@@ -489,9 +497,9 @@ package com.lionart.activeaircord
             return _dirty.length > 0;
         }
 
-        public function isInvalid() : void
+        public function isInvalid() : Boolean
         {
-
+            return !validate();
         }
 
         public function isNewRecord() : Boolean
@@ -504,9 +512,9 @@ package com.lionart.activeaircord
             return _readOnly;
         }
 
-        public function isValid() : void
+        public function isValid() : Boolean
         {
-
+            return validate();
         }
 
         public function readAttribute( name : String ) : void
@@ -704,7 +712,7 @@ package com.lionart.activeaircord
 
         private function setAttributesViaMassAssignment( attributes : Object, guardAttributes : Boolean ) : void
         {
-            var table : Table = prototype.constructor["getTable"]();
+            var table : Table = ClassUtils.forInstance(this)["getTable"]();
             var exceptions : Array = [];
             var useAttrAccessible : Boolean = this["attr_accessible"];
             var useAttrProtected : Boolean = this["attr_protected"];
@@ -765,7 +773,7 @@ package com.lionart.activeaircord
                     return false;
                 }
                 var dirty : Dictionary = dirtyAttributes();
-                prototype.constructor["getTable"]().update(dirty, pk);
+                ClassUtils.forInstance(this)["getTable"]().update(dirty, pk);
                 invokeCallback("after_update", false);
             }
             return true;

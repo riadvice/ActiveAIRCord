@@ -49,7 +49,7 @@ package com.lionart.activeaircord
         public function shouldHaveAllColumnAttributesWhenInitializingWithArray() : void
         {
             var author : Author = new Author({name: "Tito"});
-            Assert.assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 9)
+            Assert.assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
         }
 
 
