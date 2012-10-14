@@ -142,7 +142,7 @@ package com.lionart.activeaircord
 
         public static function extractAndValidateOptions( clazz : Class, methodName : String, ... args ) : Dictionary
         {
-            var array : Array = args[0];
+            var array : Array = args[0][0];
             var options : Dictionary = new Dictionary();
 
             if (array)

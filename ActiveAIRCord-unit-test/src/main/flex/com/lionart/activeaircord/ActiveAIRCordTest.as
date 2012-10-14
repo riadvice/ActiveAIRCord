@@ -23,6 +23,7 @@ package com.lionart.activeaircord
     import flash.utils.Dictionary;
 
     import org.as3commons.lang.DictionaryUtils;
+    import org.flexunit.asserts.assertEquals;
     import org.flexunit.asserts.assertFalse;
     import org.flexunit.asserts.assertTrue;
     import org.hamcrest.assertThat;
@@ -89,8 +90,42 @@ package com.lionart.activeaircord
         [Test]
         public function testExtractAndValidateOptions() : void
         {
-
+            var arguments : Array = ["first", optionsDict];
+            assertEquals(optionsDict, Author["extractAndValidateOptions"](arguments));
+            assertThat(["first"], arguments);
+            // TODO : test with simple object
         }
+
+        [Test]
+        public function testExtractAndValidateOptionsWithArrayInArgs() : void
+        {
+            var arguments : Array = ["first", [1, 2], optionsDict];
+            assertEquals(optionsDict, Author["extractAndValidateOptions"](arguments))
+        }
+
+        [Test]
+        public function testExtractAndValidateOptionsRemovesOptionsHash() : void
+        {
+            var arguments : Array = ["first", optionsDict];
+            Author["extractAndValidateOptions"](arguments);
+            assertThat(["first"], arguments);
+        }
+
+        [Test]
+        public function testExtractAndValidateOptionsNope() : void
+        {
+            var arguments : Array = ["first"];
+            assertThat(new Dictionary(), Author["extractAndValidateOptions"](arguments));
+            assertThat(["first"], arguments);
+        }
+
+        [Test]
+        public function testExtractAndValidateOptionsNopeBecauseWasntAtEnd() : void
+        {
+            var args : Array = ["first", optionsDict, [1, 2]];
+            assertEquals(DictionaryUtils.getKeys(Author["extractAndValidateOptions"](args)).length, 0);
+        }
+
 
         [Test]
         public function testShouldHaveAllColumnAttributesWhenInitializingWithArray() : void
