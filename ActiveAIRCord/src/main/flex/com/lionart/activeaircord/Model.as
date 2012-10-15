@@ -45,7 +45,7 @@ package com.lionart.activeaircord
         public static var primaryKey : String;
         public static var sequence : String;
 
-        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "connection", "reestablishConnection", "getTable", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "extractAndValidateOptions"];
+        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "connection", "reestablishConnection", "getTable", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "pkConditions", "extractAndValidateOptions"];
 
         /* Special methods to call static methods from inheritance classes */
 
@@ -119,7 +119,7 @@ package com.lionart.activeaircord
                 }
                 else
                 {
-                    options["condition"] = pkConditions(args);
+                    options["condition"] = clazz["pkConditions"](args);
                 }
             }
 
@@ -226,8 +226,8 @@ package com.lionart.activeaircord
 
         public static function findByPk( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
-            var values : Array = args[0];
-            var options : Dictionary = args[1];
+            var values : Array = args[0][0];
+            var options : Dictionary = args[0][1];
             options["conditions"] = clazz["pkConditions"](values);
             var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
             var results : int = list.length;
@@ -304,9 +304,13 @@ package com.lionart.activeaircord
             return clazz["find"](ArrayUtils.addAll(args, ["last"]));
         }
 
-        public static function pkConditions( args : Array ) : void
+        public static function pkConditions( clazz : Class, methodName : String, ... args ) : Dictionary
         {
-
+            var array : Array = args[0][0];
+            var table : Table = clazz["getTable"]();
+            var result : Dictionary = new Dictionary();
+            result[table.pk[0]] = array;
+            return result;
         }
 
         public static function query( clazz : Class, methodName : String, ... args ) : void
@@ -617,7 +621,7 @@ package com.lionart.activeaircord
 
         }
 
-        public function updateAttributes( attributes : Array ) : void
+        public function updateAttributes( attributes : Dictionary ) : void
         {
 
         }

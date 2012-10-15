@@ -17,8 +17,10 @@
 package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
+    import com.lionart.activeaircord.exceptions.UndefinedPropertyException;
     import com.lionart.activeaircord.helpers.DatabaseTest;
     import com.lionart.activeaircord.models.Author;
+    import com.lionart.activeaircord.models.Book;
 
     import flash.utils.Dictionary;
 
@@ -29,7 +31,9 @@ package com.lionart.activeaircord
     import org.hamcrest.assertThat;
     import org.hamcrest.core.allOf;
     import org.hamcrest.core.throws;
+    import org.hamcrest.object.hasProperty;
     import org.hamcrest.object.instanceOf;
+    import org.hamcrest.text.containsString;
 
     public class ActiveAIRCordTest extends DatabaseTest
     {
@@ -126,6 +130,55 @@ package com.lionart.activeaircord
             assertEquals(DictionaryUtils.getKeys(Author["extractAndValidateOptions"](args)).length, 0);
         }
 
+        [Test]
+        public function testInvalidAttribute() : void
+        {
+            var options : Dictionary = new Dictionary();
+            options["conditions"] = "author_id=1";
+            var author : Author = Author["find"]("first", options);
+            assertThat(function() : void {author.invalidField}, throws(allOf(instanceOf(UndefinedPropertyException))));
+        }
+
+        [Test]
+        public function testInvalidAttributes() : void
+        {
+            var book : Book = Book["find"](1);
+            var attributes : Dictionary = new Dictionary(true);
+            attributes["name"] = "new name";
+            attributes["invalid_attribute"] = true;
+            attributes["another_invalid_attribute"] = "new something";
+            try
+            {
+                book.updateAttributes(attributes);
+            }
+            catch ( e : UndefinedPropertyException )
+            {
+                var exceptions : Array = String(e.message).split("\r\n");
+            }
+
+            assertEquals(1, String(exceptions[0]).match(new RegExp("invalid_attribute", "g")).length);
+            assertEquals(1, String(exceptions[0]).match(new RegExp("another_invalid_attribute", "g")).length);
+        }
+
+        [Test]
+        public function testGetterUndefinedPropertyExceptionIncludesModelName() : void
+        {
+            var author : Author = new Author();
+            assertThat(function() : void {author.this_better_not_exist}, throws(allOf(instanceOf(UndefinedPropertyException), hasProperty("message", containsString("Author.this_better_not_exist")))));
+        }
+
+        [Test]
+        public function testMassAssignmentUndefinedPropertyExceptionIncludesModelName() : void
+        {
+            assertThat(function() : void {new Author({"this_better_not_exist": "hi"})}, throws(allOf(instanceOf(UndefinedPropertyException), hasProperty("message", containsString("Author.this_better_not_exist")))));
+        }
+
+        [Test]
+        public function testSetterUndefinedPropertyExceptionIncludesModelName() : void
+        {
+            var author : Author = new Author();
+            assertThat(function() : void {author.this_better_not_exist = "hi"}, throws(allOf(instanceOf(UndefinedPropertyException), hasProperty("message", containsString("Author.this_better_not_exist")))));
+        }
 
         [Test]
         public function testShouldHaveAllColumnAttributesWhenInitializingWithArray() : void
@@ -133,7 +186,6 @@ package com.lionart.activeaircord
             var author : Author = new Author({name: "Tito"});
             assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
         }
-
 
     }
 }
