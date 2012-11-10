@@ -61,7 +61,7 @@ package com.lionart.activeaircord
         public static function getMethod( objectName : String, methodName : String ) : Function
         {
             return function( ... args ) : Object {
-                return Model[methodName](getDefinitionByName(objectName), methodName, args);
+                return Model[methodName](getDefinitionByName(objectName), methodName, args[0]);
             };
         }
 
@@ -142,7 +142,7 @@ package com.lionart.activeaircord
 
         public static function extractAndValidateOptions( clazz : Class, methodName : String, ... args ) : Dictionary
         {
-            var array : Array = args[0][0];
+            var array : Array = args[0];
             var options : Dictionary = new Dictionary();
 
             if (array)
@@ -226,8 +226,8 @@ package com.lionart.activeaircord
 
         public static function findByPk( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
-            var values : Array = args[0][0];
-            var options : Dictionary = args[0][1];
+            var values : Array = args[0];
+            var options : Dictionary = args[1];
             options["conditions"] = clazz["pkConditions"](values);
             var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
             var results : int = list.length;
@@ -273,8 +273,8 @@ package com.lionart.activeaircord
         public static function isOptionsHash( clazz : Class, methodName : String, ... args ) : Boolean
         {
             // FIXME : look why the array is multidimentionnal
-            var array : * = args[0][0];
-            var throws : Boolean = args[0].length == 2 ? args[0][1] : true;
+            var array : * = args[0];
+            var throws : Boolean = args.length == 2 ? args[1] : true;
             if (array && ClassUtils.forInstance(array) == Object)
             {
                 array = ObjectUtils.toDictionary(array);
@@ -306,7 +306,7 @@ package com.lionart.activeaircord
 
         public static function pkConditions( clazz : Class, methodName : String, ... args ) : Dictionary
         {
-            var array : Array = args[0][0];
+            var array : Array = args[0];
             var table : Table = clazz["getTable"]();
             var result : Dictionary = new Dictionary();
             result[table.pk[0]] = array;
