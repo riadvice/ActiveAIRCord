@@ -20,7 +20,7 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.exceptions.ReadOnlyException;
     import com.lionart.activeaircord.exceptions.RecordNotFound;
     import com.lionart.activeaircord.exceptions.UndefinedPropertyException;
-
+    
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
     import flash.utils.Proxy;
@@ -28,9 +28,9 @@ package com.lionart.activeaircord
     import flash.utils.flash_proxy;
     import flash.utils.getDefinitionByName;
     import flash.utils.getQualifiedClassName;
-
+    
     import mx.collections.ArrayCollection;
-
+    
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
@@ -62,7 +62,20 @@ package com.lionart.activeaircord
         public static function getMethod( objectName : String, methodName : String ) : Function
         {
             return function( ... args ) : Object {
-                return Model[methodName](getDefinitionByName(objectName), methodName, args[0]);
+                // FIXME : this workaround is not the final solution to pass the correct arguments
+                // to the called method. Passing one or more arguments : the behavior changes, it
+                // must be understood correctly to be handled correctly
+                var argsToPass : *;
+                if (methodName == 'find' && args.length > 1)
+                {
+                    argsToPass = args;
+                }
+                else
+                {
+                    argsToPass = args[0];
+                }
+                //var argsToPass : Array = (args.length > 1 || (args.length == 1 && (args[0] is Array))) ? args : args[0];
+                return Model[methodName](getDefinitionByName(objectName), methodName, argsToPass);
             };
         }
 
@@ -114,7 +127,7 @@ package com.lionart.activeaircord
         public static function count( clazz : Class, methodName : String, ... args ) : int
         {
             var options : Dictionary = clazz["extractAndValidateOptions"](args);
-            options["select"] = [SQL.COUNT + "(" + SQL.ALL + ")"].join();
+            options["select"] = [SQL.COUNT + "(" + SQL.ASTERISK + ")"].join();
 
             if (!ArrayUtils.isEmpty(args) && args[0] != null && !ArrayUtils.isEmpty(args[0]))
             {
@@ -173,22 +186,24 @@ package com.lionart.activeaircord
             return options;
         }
 
-        public static function find( clazz : Class, methodName : String, ... args ) : ArrayCollection
+        public static function find( clazz : Class, methodName : String, ... args ) : *
         {
-            if (!args || args.length == 0)
+            // FIXME : this method must work whatever args are passed to it
+            var params : Array = args[0];
+            if (!params || params.length == 0)
             {
                 throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " without an ID");
             }
 
-            var options : Dictionary = clazz["extractAndValidateOptions"](args);
-            var numArgs : int = args.length;
+            var options : Dictionary = clazz["extractAndValidateOptions"](params);
+            var numArgs : int = params.length;
             var single : Boolean = true;
             // Only one argument is passed
             var oneArgs : * = null;
 
-            if (numArgs > 0 && (args[0] == "all" || args[0] == "first" || args[0] == "last"))
+            if (numArgs > 0 && (params[0] == "all" || params[0] == "first" || params[0] == "last"))
             {
-                switch (args[0])
+                switch (params[0])
                 {
                     case "all":
                         single = false;
@@ -211,33 +226,33 @@ package com.lionart.activeaircord
                     default:
                         break;
                 }
-                args = args.splice(1);
+                params = params.splice(1);
                 numArgs--;
             }
-            else if (args.length == numArgs == 1)
+            else if (params.length == numArgs == 1)
             {
-                oneArgs = args[0];
+                oneArgs = params[0];
             }
 
             // anything left in $args is a find by pk
             if (numArgs > 0 && !options["conditions"])
             {
-                return clazz["findByPk"](oneArgs ? oneArgs : args, options);
+                return clazz["findByPk"](oneArgs ? oneArgs : params, options);
             }
 
             options["mappedNames"] = clazz["aliasAttribute"] || new Array();
-            var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
+            var list : Array = Table(clazz["getTable"]()).find(options);
 
             return single ? (list.length > 0 ? list[0] : null) : list;
         }
 
-        public static function findByPk( clazz : Class, methodName : String, ... args ) : ArrayCollection
+        public static function findByPk( clazz : Class, methodName : String, ... args ) : Array
         {
             var values : * = args[0];
             // FIXME : options is not passed via getMethod the second time
             var options : Dictionary = args[1] || new Dictionary(true);
             options["conditions"] = clazz["pkConditions"](values);
-            var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
+            var list : Array = Table(clazz["getTable"]()).find(options);
             var results : int = list.length;
             // FIXME
             var expected : int = (values is Array) ? values.length : 1
@@ -263,7 +278,7 @@ package com.lionart.activeaircord
             return expected == 1 ? list[0] : list;
         }
 
-        public static function findBySql( clazz : Class, methodName : String, ... args ) : ArrayCollection
+        public static function findBySql( clazz : Class, methodName : String, ... args ) : Array
         {
             var sql : String = args[0];
             var values : Array = args[1] ? args[1] : null;
@@ -287,7 +302,6 @@ package com.lionart.activeaircord
 
         public static function isOptionsHash( clazz : Class, methodName : String, ... args ) : Boolean
         {
-            // FIXME : look why the array is multidimentionnal
             var array : * = args[0];
             var throws : Boolean = args.length == 2 ? args[1] : true;
             if (array && ClassUtils.forInstance(array) == Object)

@@ -144,5 +144,7 @@ package com.lionart.activeaircord
         public static const VIRTUAL : String = "VIRTUAL";
         public static const WHEN : String = "WHEN";
         public static const WHERE : String = "WHERE";
+        
+        public static const ASTERISK : String = "*";
     }
 }

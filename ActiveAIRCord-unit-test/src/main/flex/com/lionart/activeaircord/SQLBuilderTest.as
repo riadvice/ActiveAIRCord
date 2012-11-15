@@ -66,7 +66,7 @@ package com.lionart.activeaircord
         [Test]
         public function testNothing() : void
         {
-            assertEquals("SELECT ALL FROM authors", _sql.toString());
+            assertEquals("SELECT * FROM authors", _sql.toString());
         }
 
         [Test]

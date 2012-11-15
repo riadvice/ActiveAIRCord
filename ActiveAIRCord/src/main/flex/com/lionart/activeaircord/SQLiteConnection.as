@@ -144,6 +144,7 @@ package com.lionart.activeaircord
 
         public function query( sql : String, values : Array = null ) : *
         {
+            // TODO : add logging
             _lastQuery = sql;
             try
             {
@@ -157,7 +158,7 @@ package com.lionart.activeaircord
             {
                 new ActiveRecordException(e.message);
             }
-            return "";
+            return result;
         }
 
         public function queryAndFetchOne( sql : String, values : Array = null ) : *
@@ -215,7 +216,7 @@ package com.lionart.activeaircord
 
         public function limit( sql : String, offset : String, limit : String ) : String
         {
-            return [sql, SQL.LIMIT, "{", !offset ? "" : parseInt(offset) + ",", "}", parseInt(limit)].join(" ");
+            return [sql, SQL.LIMIT, !offset ? "" : parseInt(offset) + ",", parseInt(limit)].join(" ");
         }
 
 

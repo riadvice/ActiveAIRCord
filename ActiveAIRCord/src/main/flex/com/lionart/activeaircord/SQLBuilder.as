@@ -27,7 +27,7 @@ package com.lionart.activeaircord
         private var _connection : SQLiteConnection;
         private var _operation : String = SQL.SELECT;
         private var _table : String;
-        private var _select : String = SQL.ALL;
+        private var _select : String = SQL.ASTERISK;
         private var _joins : Array;
         private var _order : String;
         private var _limit : String;

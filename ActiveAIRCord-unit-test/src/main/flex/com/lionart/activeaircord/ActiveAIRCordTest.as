@@ -136,8 +136,7 @@ package com.lionart.activeaircord
             var options : Dictionary = new Dictionary();
             options["conditions"] = "author_id=1";
             var author : Author = Author["find"]("first", options);
-            // TODO
-            // assertThat(function() : void {author.invalidField}, throws(allOf(instanceOf(UndefinedPropertyException))));
+            assertThat(function() : void {author.invalidField}, throws(allOf(instanceOf(UndefinedPropertyException))));
         }
 
         //[Test]
