@@ -22,11 +22,13 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.relationship.HasMany;
     import com.lionart.activeaircord.relationship.HasOne;
     import com.lionart.activeaircord.relationship.IRelationship;
-    
+
+    import flash.data.SQLResult;
     import flash.utils.Dictionary;
-    
+
     import mx.collections.ArrayCollection;
-    
+
+    import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
@@ -194,7 +196,7 @@ package com.lionart.activeaircord
             return sql;
         }
 
-        public function find( options : Dictionary ) : ArrayCollection
+        public function find( options : Dictionary ) : Array
         {
             var sql : SQLBuilder = optionsToSql(options);
             var readOnly : Boolean = DictionaryUtils.containsKey(options, "readonly") && options["readonly"];
@@ -202,9 +204,34 @@ package com.lionart.activeaircord
             return findBySql(sql.toString(), sql.whereValues, readOnly, eagerLoad);
         }
 
-        public function findBySql( sql : String, values : Array = null, readonly : Boolean = false, includes : Array = null ) : ArrayCollection
+        public function findBySql( sql : String, values : Array = null, readonly : Boolean = false, includes : Array = null ) : Array
         {
-            return new ArrayCollection();
+            lastSql = sql;
+            var collectAttrsForIncludes : Boolean = (includes == null) ? false : true;
+            var list : Array = [];
+            var attrs : Array = [];
+
+            var result : SQLResult = conn.query(sql, processData(values));
+            for each (var row : Object in result.data)
+            {
+                var model : Model = ClassUtils.newInstance(clazz, [row, false, true, false]);
+                if (readonly)
+                {
+                    model.readonly();
+                }
+                if (collectAttrsForIncludes)
+                {
+                    attrs.push(model.attributes());
+                }
+                list.push(model);
+            }
+
+            if (collectAttrsForIncludes && !ArrayUtils.isEmpty(list))
+            {
+                executeEagerLoad(list, attrs, includes);
+            }
+
+            return list;
         }
 
         private function executeEagerLoad( models : Array = null, attrs : Array = null, includes : Array = null ) : void
@@ -305,8 +332,14 @@ package com.lionart.activeaircord
         {
         }
 
-        private function processData( hash : Dictionary ) : void
+        private function processData( hash : * ) : *
         {
+            // TODO
+            if (!hash)
+            {
+                return hash;
+            }
+            return hash;
         }
 
         private function setPrimaryKey() : void
