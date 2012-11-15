@@ -204,7 +204,7 @@ package com.lionart.activeaircord
 
         public function findBySql( sql : String, values : Array = null, readonly : Boolean = false, includes : Array = null ) : ArrayCollection
         {
-            return null;
+            return new ArrayCollection();
         }
 
         private function executeEagerLoad( models : Array = null, attrs : Array = null, includes : Array = null ) : void

@@ -188,7 +188,7 @@ package com.lionart.activeaircord
 
             if (numArgs > 0 && (args[0] == "all" || args[0] == "first" || args[0] == "last"))
             {
-                switch (numArgs)
+                switch (args[0])
                 {
                     case "all":
                         single = false;
@@ -225,7 +225,7 @@ package com.lionart.activeaircord
                 return clazz["findByPk"](oneArgs ? oneArgs : args, options);
             }
 
-            options["mappedNames"] = clazz["aliasAttribute"];
+            options["mappedNames"] = clazz["aliasAttribute"] || new Array();
             var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
 
             return single ? (list.length > 0 ? list[0] : null) : list;
@@ -233,21 +233,29 @@ package com.lionart.activeaircord
 
         public static function findByPk( clazz : Class, methodName : String, ... args ) : ArrayCollection
         {
-            var values : Array = args[0];
-            var options : Dictionary = args[1];
+            var values : * = args[0];
+            // FIXME : options is not passed via getMethod the second time
+            var options : Dictionary = args[1] || new Dictionary(true);
             options["conditions"] = clazz["pkConditions"](values);
             var list : ArrayCollection = Table(clazz["getTable"]()).find(options);
             var results : int = list.length;
-            var expected : int = values.length
+            // FIXME
+            var expected : int = (values is Array) ? values.length : 1
 
             if (results != expected)
             {
                 if (expected == 1)
                 {
-                    if (!(values is ArrayCollection))
+                    var expectedValues : Array;
+                    if (!(values is Array))
                     {
-                        throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " with ID=" + values.join(","));
+                        expectedValues = new Array(values);
                     }
+                    else
+                    {
+                        expectedValues = values;
+                    }
+                    throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " with ID=" + expectedValues.join(","));
                 }
                 throw new RecordNotFound("Couldn't find all " + ClassUtils.getName(clazz) + " with IDs (" + values.join(",") + ") (found " + results + ", but was looking for " + expected + ")");
             }
@@ -313,10 +321,9 @@ package com.lionart.activeaircord
 
         public static function pkConditions( clazz : Class, methodName : String, ... args ) : Dictionary
         {
-            var array : Array = args[0];
             var table : Table = clazz["getTable"]();
             var result : Dictionary = new Dictionary();
-            result[table.pk[0]] = array;
+            result[table.pk[0]] = args[0];
             return result;
         }
 

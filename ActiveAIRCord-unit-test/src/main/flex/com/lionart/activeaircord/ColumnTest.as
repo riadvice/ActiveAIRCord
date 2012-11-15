@@ -16,15 +16,31 @@
  */
 package com.lionart.activeaircord
 {
+    import com.lionart.activeaircord.exceptions.DatabaseException;
+
+    import org.flexunit.asserts.assertEquals;
+    import org.flexunit.asserts.assertTrue;
+    import org.flexunit.asserts.fail;
+    import org.hamcrest.assertThat;
+    import org.hamcrest.core.isA;
 
     public class ColumnTest
     {
         private var column : Column;
+        private var conn : SQLiteConnection;
 
         [Before]
         public function setUp() : void
         {
             column = new Column();
+            try
+            {
+                conn = ConnectionManager.getConnection(Configuration.defaultConnection);
+            }
+            catch ( e : DatabaseException )
+            {
+                fail("failed to connect using default connection. " + e.message);
+            }
         }
 
         [After]
@@ -42,6 +58,39 @@ package com.lionart.activeaircord
         {
         }
 
+        public function assertMappedType( type : String, rawType : * ) : void
+        {
+            column.rawType = rawType;
+            assertEquals(type, column.mapRawType())
+        }
+
+        public function assertCast( type : String, castedValue : *, originalValue : * ) : void
+        {
+            column.type = type;
+            var value : * = column.cast(originalValue, conn);
+
+            if (originalValue != null && type == SQLTypes.DATE)
+            {
+                assertThat(value, isA(Date))
+            }
+            else
+            {
+                assertThat(castedValue, value);
+            }
+        }
+
+        [Test]
+        public function testMapRawTypeDates() : void
+        {
+            // assertMappedType(SQLTypes.BOOLEAN, "Boolean");
+            assertMappedType(SQLTypes.DATE, "Date");
+            // assertMappedType(SQLTypes.INTEGER, "int");
+            // assertMappedType(SQLTypes.NUMBER, "Number");
+            //assertMappedType(SQLTypes.OBJECT, "Object");
+            // assertMappedType(SQLTypes.STRING, "String");
+            // assertMappedType(SQLTypes.Xml, "XML");
+            // assertMappedType(SQLTypes.XMLLIST, "XMLList");
+        }
 
     }
 }
