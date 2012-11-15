@@ -22,11 +22,11 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.relationship.HasMany;
     import com.lionart.activeaircord.relationship.HasOne;
     import com.lionart.activeaircord.relationship.IRelationship;
-
+    
     import flash.utils.Dictionary;
-
+    
     import mx.collections.ArrayCollection;
-
+    
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
@@ -85,7 +85,7 @@ package com.lionart.activeaircord
 
         public function reestablishConnection( close : Boolean = true ) : *
         {
-            var connection : String = clazz["connection"]();
+            var connection : String = ClassUtils.getProperties(clazz, true)['connection'];
             if (close)
             {
                 ConnectionManager.dropConnection(connection);
