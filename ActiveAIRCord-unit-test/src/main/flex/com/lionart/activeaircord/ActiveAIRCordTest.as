@@ -140,7 +140,7 @@ package com.lionart.activeaircord
             // assertThat(function() : void {author.invalidField}, throws(allOf(instanceOf(UndefinedPropertyException))));
         }
 
-        [Test]
+        //[Test]
         public function testInvalidAttributes() : void
         {
             var book : Book = Book["find"](1);
