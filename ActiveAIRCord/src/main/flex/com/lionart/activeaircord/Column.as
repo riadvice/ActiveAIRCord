@@ -144,7 +144,7 @@ package com.lionart.activeaircord
             }
         }
 
-        public function mapRawType() : *
+        public function mapRawType() : String
         {
             if (!_type)
             {

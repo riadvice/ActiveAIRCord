@@ -19,6 +19,7 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.exceptions.ReadOnlyException;
     import com.lionart.activeaircord.exceptions.RecordNotFound;
+    import com.lionart.activeaircord.exceptions.UndefinedPropertyException;
 
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
@@ -45,7 +46,7 @@ package com.lionart.activeaircord
         public static var primaryKey : String;
         public static var sequence : String;
 
-        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "connection", "reestablishConnection", "getTable", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "pkConditions", "extractAndValidateOptions"];
+        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "getConnection", "reestablishConnection", "getTable", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "pkConditions", "extractAndValidateOptions"];
 
         /* Special methods to call static methods from inheritance classes */
 
@@ -74,9 +75,13 @@ package com.lionart.activeaircord
         private var _readOnly : Boolean = false;
         private var _relationShips : Dictionary = new Dictionary(true);
 
+        private var _clazz : Class;
+
         public function Model( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {
             super();
+
+            _clazz = ClassUtils.forInstance(this);
             _newRecord = newRecord;
             if (!instantiatingViaFind)
             {
@@ -178,6 +183,8 @@ package com.lionart.activeaircord
             var options : Dictionary = clazz["extractAndValidateOptions"](args);
             var numArgs : int = args.length;
             var single : Boolean = true;
+            // Only one argument is passed
+            var oneArgs : * = null;
 
             if (numArgs > 0 && (args[0] == "all" || args[0] == "first" || args[0] == "last"))
             {
@@ -209,13 +216,13 @@ package com.lionart.activeaircord
             }
             else if (args.length == numArgs == 1)
             {
-                args = args[0];
+                oneArgs = args[0];
             }
 
             // anything left in $args is a find by pk
             if (numArgs > 0 && !options["conditions"])
             {
-                return clazz["findByPk"](args, options);
+                return clazz["findByPk"](oneArgs ? oneArgs : args, options);
             }
 
             options["mappedNames"] = clazz["aliasAttribute"];
@@ -260,9 +267,9 @@ package com.lionart.activeaircord
             return clazz["find"](ArrayUtils.addAll(args, ["first"]));
         }
 
-        public static function connection( clazz : Class, methodName : String, ... args ) : void
+        public static function getConnection( clazz : Class, methodName : String, ... args ) : SQLiteConnection
         {
-
+            return Table(clazz["getTable"]()).conn;
         }
 
         public static function getTableName( clazz : Class, methodName : String, ... args ) : String
@@ -319,6 +326,11 @@ package com.lionart.activeaircord
             var values : Array = args[1] ? args[1] : null;
         }
 
+        public static function connection( clazz : Class, methodName : String, ... args ) : SQLiteConnection
+        {
+            return Table(clazz["getTable"]()).conn;
+        }
+
         public static function reestablishConnection( clazz : Class, methodName : String, ... args ) : void
         {
 
@@ -365,19 +377,19 @@ package com.lionart.activeaircord
 
         public function assignAttribute( name : String, value : * ) : *
         {
-            var table : Table = prototype.constructor["getTable"]();
+            var table : Table = ClassUtils.forInstance(this)["getTable"]();
             if (!(value is Object))
             {
                 if (DictionaryUtils.containsKey(table.columns, name))
                 {
-                    value = Column(table.columns[name]).cast(value, this["connection"]);
+                    value = Column(table.columns[name]).cast(value, _clazz["getConnection"]());
                 }
                 else
                 {
                     var col : Column = table.getColumnByInflectedName(name);
                     if (col != null)
                     {
-                        value = col.cast(value, this["connection"]);
+                        value = col.cast(value, _clazz["getConnection"]());
                     }
                 }
             }
@@ -439,7 +451,7 @@ package com.lionart.activeaircord
             // FIXME : calculate dictionary length using a different way
             if (DictionaryUtils.getKeys(pk).length == 0)
             {
-                throw new ActiveRecordException("Cannot delete, no primary key defined for: " + ClassUtils.getName(ClassUtils.forInstance(this)));
+                throw new ActiveRecordException("Cannot delete, no primary key defined for: " + _clazz);
             }
 
             if (invokeCallback("before_destroy", false))
@@ -547,8 +559,19 @@ package com.lionart.activeaircord
             return validate();
         }
 
-        public function readAttribute( name : String ) : void
+        public function readAttribute( name : String ) : *
         {
+            if (hasOwnProperty(name))
+            {
+                return _item[name];
+            }
+            if (DictionaryUtils.containsKey(attributes(), name))
+            {
+                return attributes()[name];
+            }
+
+            // TODO : complete
+            throw new UndefinedPropertyException(ClassUtils.getName(_clazz), name);
         }
 
         public function readonly( readonly : Boolean = true ) : void
@@ -686,11 +709,12 @@ package com.lionart.activeaircord
         flash_proxy override function getProperty( name : * ) : *
         {
             // TODO : must look in attributes dictionary
-            if (hasOwnProperty(name))
+            var propName : String = (name is QName) ? QName(name).localName : name;
+            if (hasOwnProperty(propName))
             {
-                return _item[name];
+                return _item[propName];
             }
-            return readAttribute(name);
+            return readAttribute(propName);
         }
 
         flash_proxy override function hasProperty( name : * ) : Boolean
@@ -700,7 +724,19 @@ package com.lionart.activeaircord
 
         flash_proxy override function setProperty( name : *, value : * ) : void
         {
-            _item[name] = value;
+            var propName : String = (name is QName) ? QName(name).localName : name;
+            if (hasOwnProperty(propName))
+            {
+                _item[name] = value;
+            }
+            if (DictionaryUtils.containsKey(attributes(), name))
+            {
+                assignAttribute(propName, value);
+            }
+
+            // TODO : complete
+
+            throw new UndefinedPropertyException(ClassUtils.getName(_clazz), propName);
         }
 
         private function insert( validation : Boolean = true ) : Boolean
@@ -742,15 +778,15 @@ package com.lionart.activeaircord
 
         private function setAttributesViaMassAssignment( attributes : Object, guardAttributes : Boolean ) : void
         {
-            var table : Table = ClassUtils.forInstance(this)["getTable"]();
+            var table : Table = _clazz["getTable"]();
             var exceptions : Array = [];
-            var useAttrAccessible : Boolean = this["attr_accessible"];
-            var useAttrProtected : Boolean = this["attr_protected"];
-            var conn : SQLiteConnection = this["connection"];
-            for each (var attribute : String in attributes)
+            var useAttrAccessible : Boolean = false; // FIXME : this["attr_accessible"];
+            var useAttrProtected : Boolean = false; // FIXME : this["attr_protected"];
+            var conn : SQLiteConnection = _clazz["getConnection"]();
+            for (var attribute : String in attributes)
             {
-                var value : String;
-                var name : String;
+                var name : String = attribute;
+                var value : * = attributes[attribute];
                 if (DictionaryUtils.containsKey(table.columns, attributes))
                 {
                     value = Column(table.columns[attribute]).cast(attributes[attribute], conn);
@@ -768,7 +804,7 @@ package com.lionart.activeaircord
                     }
                     try
                     {
-                        this["name"] = value;
+                        this[name] = value;
                     }
                     catch ( e : Error )
                     {
@@ -779,6 +815,10 @@ package com.lionart.activeaircord
                 {
                     assignAttribute(name, value);
                 }
+            }
+            if (!ArrayUtils.isEmpty(exceptions))
+            {
+                throw new UndefinedPropertyException(ClassUtils.getName(ClassUtils.forInstance(this)), exceptions)
             }
         }
 
@@ -818,7 +858,7 @@ package com.lionart.activeaircord
         {
             if (isReadonly())
             {
-                throw new ReadOnlyException(ClassUtils.getName(ClassUtils.forInstance(this)) + "\n" + methodName);
+                throw new ReadOnlyException(_clazz + "\n" + methodName);
             }
         }
     }

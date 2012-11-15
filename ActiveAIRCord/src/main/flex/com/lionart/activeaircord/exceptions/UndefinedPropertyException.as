@@ -19,9 +19,14 @@ package com.lionart.activeaircord.exceptions
 
     public class UndefinedPropertyException extends Error
     {
-        public function UndefinedPropertyException( message : * = "", id : * = 0 )
+        public function UndefinedPropertyException( className : String, property : * )
         {
-            super(message, id);
+            if (property is Array)
+            {
+                message = (property as Array).join("\r\n");
+                return;
+            }
+            message = "Undefined property: " + className + "." + property + ".";
         }
     }
 }
