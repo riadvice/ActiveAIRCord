@@ -20,7 +20,7 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.exceptions.ReadOnlyException;
     import com.lionart.activeaircord.exceptions.RecordNotFound;
     import com.lionart.activeaircord.exceptions.UndefinedPropertyException;
-    
+
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
     import flash.utils.Proxy;
@@ -28,9 +28,9 @@ package com.lionart.activeaircord
     import flash.utils.flash_proxy;
     import flash.utils.getDefinitionByName;
     import flash.utils.getQualifiedClassName;
-    
+
     import mx.collections.ArrayCollection;
-    
+
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
@@ -61,21 +61,8 @@ package com.lionart.activeaircord
 
         public static function getMethod( objectName : String, methodName : String ) : Function
         {
-            return function( ... args ) : Object {
-                // FIXME : this workaround is not the final solution to pass the correct arguments
-                // to the called method. Passing one or more arguments : the behavior changes, it
-                // must be understood correctly to be handled correctly
-                var argsToPass : *;
-                if (methodName == 'find' && args.length > 1)
-                {
-                    argsToPass = args;
-                }
-                else
-                {
-                    argsToPass = args[0];
-                }
-                //var argsToPass : Array = (args.length > 1 || (args.length == 1 && (args[0] is Array))) ? args : args[0];
-                return Model[methodName](getDefinitionByName(objectName), methodName, argsToPass);
+            return function( ... rest ) : Object {
+                return Model[methodName](getDefinitionByName(objectName), methodName, rest);
             };
         }
 
@@ -114,30 +101,30 @@ package com.lionart.activeaircord
             invokeCallback("after_consruct", false);
         }
 
-        public static function getTable( clazz : Class, methodName : String, ... args ) : Table
+        public static function getTable( clazz : Class, methodName : String, ... rest ) : Table
         {
             return Table.load(ClassUtils.getName(clazz));
         }
 
-        public static function all( clazz : Class, methodName : String, ... args ) : ArrayCollection
+        public static function all( clazz : Class, methodName : String, ... rest ) : ArrayCollection
         {
-            return clazz["find"](ArrayUtils.addAll(args, ["all"]));
+            return clazz["find"](ArrayUtils.addAll(rest[0], ["all"]));
         }
 
-        public static function count( clazz : Class, methodName : String, ... args ) : int
+        public static function count( clazz : Class, methodName : String, ... rest ) : int
         {
-            var options : Dictionary = clazz["extractAndValidateOptions"](args);
+            var options : Dictionary = clazz["extractAndValidateOptions"](rest);
             options["select"] = [SQL.COUNT + "(" + SQL.ASTERISK + ")"].join();
 
-            if (!ArrayUtils.isEmpty(args) && args[0] != null && !ArrayUtils.isEmpty(args[0]))
+            if (!ArrayUtils.isEmpty(rest) && rest[0] != null && !ArrayUtils.isEmpty(rest[0]))
             {
-                if (args[0] is Dictionary)
+                if (rest[0] is Dictionary)
                 {
-                    options["conditions"] = args[0];
+                    options["conditions"] = rest[0];
                 }
                 else
                 {
-                    options["condition"] = clazz["pkConditions"](args);
+                    options["condition"] = clazz["pkConditions"](rest);
                 }
             }
 
@@ -147,20 +134,21 @@ package com.lionart.activeaircord
             return SQLiteConnection(clazz["connection"]()).queryAndFetchOne(sql.toString(), values) as int;
         }
 
-        public static function create( clazz : Class, methodName : String, ... args ) : void
+        public static function create( clazz : Class, methodName : String, ... rest ) : void
         {
-            var attributes : Array = args[0];
-            var validate : Boolean = args[1] ? args[1] : true;
+            var attributes : Array = rest[0][0];
+            var validate : Boolean = rest[0][1] ? rest[0][1] : true;
         }
 
-        public static function exists( clazz : Class, methodName : String, ... args ) : Boolean
+        public static function exists( clazz : Class, methodName : String, ... rest ) : Boolean
         {
             return clazz["count"]() > 0 ? true : false;
         }
 
-        public static function extractAndValidateOptions( clazz : Class, methodName : String, ... args ) : Dictionary
+        // Takes only one array
+        public static function extractAndValidateOptions( clazz : Class, methodName : String, ... rest ) : Dictionary
         {
-            var array : Array = args[0];
+            var array : Array = rest[0][0];
             var options : Dictionary = new Dictionary();
 
             if (array)
@@ -186,10 +174,10 @@ package com.lionart.activeaircord
             return options;
         }
 
-        public static function find( clazz : Class, methodName : String, ... args ) : *
+        public static function find( clazz : Class, methodName : String, ... rest ) : *
         {
             // FIXME : this method must work whatever args are passed to it
-            var params : Array = args[0];
+            var params : Array = rest[0];
             if (!params || params.length == 0)
             {
                 throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " without an ID");
@@ -246,64 +234,64 @@ package com.lionart.activeaircord
             return single ? (list.length > 0 ? list[0] : null) : list;
         }
 
-        public static function findByPk( clazz : Class, methodName : String, ... args ) : Array
+        public static function findByPk( clazz : Class, methodName : String, ... rest ) : Array
         {
-            var values : * = args[0];
+            var params : * = rest[0];
             // FIXME : options is not passed via getMethod the second time
-            var options : Dictionary = args[1] || new Dictionary(true);
-            options["conditions"] = clazz["pkConditions"](values);
+            var options : Dictionary = params[1] || new Dictionary(true);
+            options["conditions"] = clazz["pkConditions"](params[0]);
             var list : Array = Table(clazz["getTable"]()).find(options);
             var results : int = list.length;
             // FIXME
-            var expected : int = (values is Array) ? values.length : 1
+            var expected : int = (params[0] is Array) ? params[0].length : 1
 
             if (results != expected)
             {
                 if (expected == 1)
                 {
                     var expectedValues : Array;
-                    if (!(values is Array))
+                    if (!(params[0] is Array))
                     {
-                        expectedValues = new Array(values);
+                        expectedValues = new Array(params[0]);
                     }
                     else
                     {
-                        expectedValues = values;
+                        expectedValues = params[0];
                     }
                     throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " with ID=" + expectedValues.join(","));
                 }
-                throw new RecordNotFound("Couldn't find all " + ClassUtils.getName(clazz) + " with IDs (" + values.join(",") + ") (found " + results + ", but was looking for " + expected + ")");
+                throw new RecordNotFound("Couldn't find all " + ClassUtils.getName(clazz) + " with IDs (" + params[0].join(",") + ") (found " + results + ", but was looking for " + expected + ")");
             }
 
             return expected == 1 ? list[0] : list;
         }
 
-        public static function findBySql( clazz : Class, methodName : String, ... args ) : Array
+        public static function findBySql( clazz : Class, methodName : String, ... rest ) : Array
         {
-            var sql : String = args[0];
-            var values : Array = args[1] ? args[1] : null;
+            var sql : String = rest[0];
+            var values : Array = rest[1] ? rest[1] : null;
             return Table(clazz["getTable"]()).findBySql(sql, values, true);
         }
 
-        public static function first( clazz : Class, methodName : String, ... args ) : ArrayCollection
+        public static function first( clazz : Class, methodName : String, ... rest ) : ArrayCollection
         {
-            return clazz["find"](ArrayUtils.addAll(args, ["first"]));
+            return clazz["find"](ArrayUtils.addAll(rest, ["first"]));
         }
 
-        public static function getConnection( clazz : Class, methodName : String, ... args ) : SQLiteConnection
+        public static function getConnection( clazz : Class, methodName : String, ... rest ) : SQLiteConnection
         {
             return Table(clazz["getTable"]()).conn;
         }
 
-        public static function getTableName( clazz : Class, methodName : String, ... args ) : String
+        public static function getTableName( clazz : Class, methodName : String, ... rest ) : String
         {
             return Table(clazz["getTable"]()).tableName;
         }
 
-        public static function isOptionsHash( clazz : Class, methodName : String, ... args ) : Boolean
+        public static function isOptionsHash( clazz : Class, methodName : String, ... rest ) : Boolean
         {
-            var array : * = args[0];
-            var throws : Boolean = args.length == 2 ? args[1] : true;
+            var array : * = rest[0][0];
+            var throws : Boolean = rest[0].length == 2 ? rest[0][1] : true;
             if (array && ClassUtils.forInstance(array) == Object)
             {
                 array = ObjectUtils.toDictionary(array);
@@ -328,31 +316,32 @@ package com.lionart.activeaircord
             return false;
         }
 
-        public static function last( clazz : Class, methodName : String, ... args ) : ArrayCollection
+        public static function last( clazz : Class, methodName : String, ... rest ) : ArrayCollection
         {
-            return clazz["find"](ArrayUtils.addAll(args, ["last"]));
+            return clazz["find"](ArrayUtils.addAll(rest, ["last"]));
         }
 
-        public static function pkConditions( clazz : Class, methodName : String, ... args ) : Dictionary
+        public static function pkConditions( clazz : Class, methodName : String, ... rest ) : Dictionary
         {
+            var params : * = rest[0];
             var table : Table = clazz["getTable"]();
             var result : Dictionary = new Dictionary();
-            result[table.pk[0]] = args[0];
+            result[table.pk[0]] = params[0];
             return result;
         }
 
-        public static function query( clazz : Class, methodName : String, ... args ) : void
+        public static function query( clazz : Class, methodName : String, ... rest ) : void
         {
-            var sql : String = args[0];
-            var values : Array = args[1] ? args[1] : null;
+            var sql : String = rest[0];
+            var values : Array = rest[1] ? rest[1] : null;
         }
 
-        public static function connection( clazz : Class, methodName : String, ... args ) : SQLiteConnection
+        public static function connection( clazz : Class, methodName : String, ... rest ) : SQLiteConnection
         {
             return Table(clazz["getTable"]()).conn;
         }
 
-        public static function reestablishConnection( clazz : Class, methodName : String, ... args ) : void
+        public static function reestablishConnection( clazz : Class, methodName : String, ... rest ) : void
         {
 
         }
@@ -362,9 +351,9 @@ package com.lionart.activeaircord
 
         }
 
-        public static function updateAll( clazz : Class, methodName : String, ... args ) : int
+        public static function updateAll( clazz : Class, methodName : String, ... rest ) : int
         {
-            var options : Dictionary = args ? args[0] : null;
+            var options : Dictionary = rest ? rest[0] : null;
             var table : Table = clazz["getTable"]();
             var conn : SQLiteConnection = _connection;
             var sql : SQLBuilder = new SQLBuilder(conn, table.getFullyQualifiedTableName());
@@ -435,9 +424,9 @@ package com.lionart.activeaircord
 
         }
 
-        public static function deleteAll( clazz : Class, methodName : String, ... args ) : int
+        public static function deleteAll( clazz : Class, methodName : String, ... rest ) : int
         {
-            var options : Dictionary = args ? args[0] : null;
+            var options : Dictionary = rest ? rest[0] : null;
             var table : Table = clazz["getTable"]();
             var conn : SQLiteConnection = _connection;
             var sql : SQLBuilder = new SQLBuilder(conn, table.getFullyQualifiedTableName());
