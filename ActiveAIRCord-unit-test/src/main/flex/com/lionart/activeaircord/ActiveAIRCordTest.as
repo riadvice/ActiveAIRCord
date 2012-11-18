@@ -29,6 +29,7 @@ package com.lionart.activeaircord
     import org.flexunit.asserts.assertFalse;
     import org.flexunit.asserts.assertTrue;
     import org.hamcrest.assertThat;
+    import org.hamcrest.collection.array;
     import org.hamcrest.core.allOf;
     import org.hamcrest.core.throws;
     import org.hamcrest.object.hasProperty;
@@ -96,7 +97,7 @@ package com.lionart.activeaircord
         {
             var arguments : Array = ["first", optionsDict];
             assertEquals(optionsDict, Author["extractAndValidateOptions"](arguments));
-            assertThat(["first"], arguments);
+            assertThat(arguments, array("first"));
             // TODO : test with simple object
         }
 
@@ -112,7 +113,7 @@ package com.lionart.activeaircord
         {
             var arguments : Array = ["first", optionsDict];
             Author["extractAndValidateOptions"](arguments);
-            assertThat(["first"], arguments);
+            assertThat(arguments, array("first"));
         }
 
         [Test]
@@ -120,7 +121,7 @@ package com.lionart.activeaircord
         {
             var arguments : Array = ["first"];
             assertThat(new Dictionary(), Author["extractAndValidateOptions"](arguments));
-            assertThat(["first"], arguments);
+            assertThat(arguments, array("first"));
         }
 
         [Test]
