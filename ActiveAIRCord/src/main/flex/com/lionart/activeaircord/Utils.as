@@ -166,5 +166,15 @@ package com.lionart.activeaircord
             return result;
         }
 
+        public static function getDictionaryValues( dict : Dictionary ) : Array
+        {
+            var result : Array = [];
+            for each (var value : * in dict)
+            {
+                result.push(value);
+            }
+            return result;
+        }
+
     }
 }

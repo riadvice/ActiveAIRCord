@@ -21,6 +21,8 @@ package com.lionart.activeaircord
     import flash.utils.Dictionary;
 
     import org.as3commons.lang.DictionaryUtils;
+    import org.as3commons.lang.ObjectUtils;
+    import org.as3commons.lang.StringUtils;
 
     public class Expressions
     {
@@ -28,19 +30,31 @@ package com.lionart.activeaircord
         public static const EQUALS : String = "=";
         public static const PARAM : String = "?";
 
-        private var _expressions : Array = [];
+        private var _expressions : String;
         private var _values : Array = [];
         private var _connection : SQLiteConnection;
 
-        public function Expressions( connection : SQLiteConnection, expressions : * = null )
+        public function Expressions( connection : SQLiteConnection, expressions : * = null, ... rest )
         {
-            var values : Array;
+            var params : Array;
             _connection = connection;
 
             if (expressions is Array)
             {
-                // TODO : to complete
-                // var glue : String = 
+                var glue : String = rest.length > 2 ? rest[0] : SQL.AND;
+                var builtSQL : Array = buildSqlFromHash(expressions, glue);
+                expressions = builtSQL[0];
+                params = builtSQL[1];
+            }
+
+            if (!StringUtils.isEmpty(expressions))
+            {
+                if (!params)
+                {
+                    params = rest;
+                }
+                _values = params;
+                _expressions = expressions;
             }
         }
 
@@ -83,7 +97,7 @@ package com.lionart.activeaircord
 
             for (var i : int = 0; i < length; i++)
             {
-                var ch : String = _expressions[i];
+                var ch : String = _expressions.charAt(i);
 
                 if (ch == Expressions.PARAM)
                 {
@@ -96,7 +110,7 @@ package com.lionart.activeaircord
                         ch = substituteParameters(values, substitute, i, j++);
                     }
                 }
-                else if (ch == "\'" && i > 0 && _expressions[i - 1] != "\\")
+                else if (ch == "\'" && i > 0 && _expressions.charAt(i - 1) != "\\")
                 {
                     ++quotes;
                 }
@@ -108,7 +122,30 @@ package com.lionart.activeaircord
 
         private function buildSqlFromHash( hash : Dictionary, glue : String ) : Array
         {
-            return null;
+            var sql : String = "";
+            var g : String = "";
+            for (var key : String in DictionaryUtils.getKeys(hash))
+            {
+                if (_connection)
+                {
+                    key = _connection.quoteName(key);
+                }
+                if (hash[key] is Array)
+                {
+                    sql += [g, key, " ", SQL.IN, "(", PARAM, ")"].join("");
+                }
+                else if (hash[key] == null)
+                {
+                    sql += [g, key, " ", SQL.IS, PARAM].join("");
+                }
+                else
+                {
+                    sql += [g, key, "=", PARAM].join("");
+                }
+                g = glue;
+            }
+
+            return [sql, Utils.getDictionaryValues(hash)];
         }
 
         private function substituteParameters( values : Array, substitute : Boolean, pos : int, parameterIndex : int ) : *
