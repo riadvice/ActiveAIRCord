@@ -179,7 +179,7 @@ package com.lionart.activeaircord
         public static function arrayFill( num : int, value : * ) : Array
         {
             var result : Array = [];
-            for (var i : int = 0; i < value; i++)
+            for (var i : int = 0; i < num; i++)
             {
                 result.push(value);
             }

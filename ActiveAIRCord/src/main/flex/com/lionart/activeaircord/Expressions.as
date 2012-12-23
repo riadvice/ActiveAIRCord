@@ -172,7 +172,7 @@ package com.lionart.activeaircord
                 return stringifyValue(value);
             }
 
-            return _expressions.charAt(5);
+            return _expressions.charAt(pos);
         }
 
         private function stringifyValue( value : * ) : String

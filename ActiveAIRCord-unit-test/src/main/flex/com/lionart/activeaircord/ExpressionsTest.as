@@ -58,6 +58,42 @@ package com.lionart.activeaircord
             assertThat(e.values, array("Tito"));
         }
 
+        [Test]
+        public function testArrayVariable() : void
+        {
+            var e : Expressions = new Expressions(null, "name IN(?) and id=?", ["Tito", "George"], 1);
+            assertThat(e.values, array(array("Tito", "George"), 1));
+        }
+
+        [Test]
+        public function testMultipleVariables() : void
+        {
+            var e : Expressions = new Expressions(null, "name=? and book=?", "Tito", "Sharks");
+            assertEquals(e.toString(), "name=? and book=?");
+            assertThat(e.values, array("Tito", "Sharks"));
+        }
+
+        [Test]
+        public function testToString() : void
+        {
+            var e : Expressions = new Expressions(null, "name=? and book=?", "Tito", "Sharks");
+            assertEquals(e.toString(), "name=? and book=?");
+        }
+
+        [Test]
+        public function testToStringWithArrayVariable() : void
+        {
+            var e : Expressions = new Expressions(null, "name IN(?) and id=?", ["Tito", "George"], 1);
+            assertEquals(e.toString(), "name IN(?,?) and id=?");
+        }
+
+        [Test]
+        public function testToStringWithNullOptions() : void
+        {
+            var e : Expressions = new Expressions(null, "name=? and book=?", "Tito", "Sharks");
+            var value : * = null;
+            assertEquals(e.toString(false, value), "name=? and book=?");
+        }
 
     }
 }
