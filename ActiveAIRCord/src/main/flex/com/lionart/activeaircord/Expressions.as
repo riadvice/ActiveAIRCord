@@ -21,7 +21,6 @@ package com.lionart.activeaircord
     import flash.utils.Dictionary;
 
     import org.as3commons.lang.DictionaryUtils;
-    import org.as3commons.lang.ObjectUtils;
     import org.as3commons.lang.StringUtils;
 
     public class Expressions
@@ -150,10 +149,33 @@ package com.lionart.activeaircord
 
         private function substituteParameters( values : Array, substitute : Boolean, pos : int, parameterIndex : int ) : *
         {
+            var value : * = values[parameterIndex];
 
+            if (value is Array)
+            {
+                if (substitute)
+                {
+                    var result : String = '';
+
+                    for (var i : int = 0; i < value.length; ++i)
+                    {
+                        result += (i > 0 ? ',' : '') + stringifyValue(value[i]);
+                    }
+
+                    return result;
+                }
+                return Utils.arrayFill(value.length, Expressions.PARAM).join(',');
+            }
+
+            if (substitute)
+            {
+                return stringifyValue(value);
+            }
+
+            return _expressions.charAt(5);
         }
 
-        private function stringifyValue( value : * ) : *
+        private function stringifyValue( value : * ) : String
         {
             if (!value)
             {

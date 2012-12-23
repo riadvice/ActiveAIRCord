@@ -176,5 +176,15 @@ package com.lionart.activeaircord
             return result;
         }
 
+        public static function arrayFill( num : int, value : * ) : Array
+        {
+            var result : Array = [];
+            for (var i : int = 0; i < value; i++)
+            {
+                result.push(value);
+            }
+            return result;
+        }
+
     }
 }
