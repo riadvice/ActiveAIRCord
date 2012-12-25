@@ -22,12 +22,10 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.relationship.HasMany;
     import com.lionart.activeaircord.relationship.HasOne;
     import com.lionart.activeaircord.relationship.IRelationship;
-
+    
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
-
-    import mx.collections.ArrayCollection;
-
+    
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
