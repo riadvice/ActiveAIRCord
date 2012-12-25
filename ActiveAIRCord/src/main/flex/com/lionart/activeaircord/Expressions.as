@@ -38,9 +38,9 @@ package com.lionart.activeaircord
             var params : Array;
             _connection = connection;
 
-            if (expressions is Array)
+            if (expressions is Dictionary)
             {
-                var glue : String = rest.length > 2 ? rest[0] : SQL.AND;
+                var glue : String = rest.length > 0 ? rest[0] : " " + SQL.AND + " ";
                 var builtSQL : Array = buildSqlFromHash(expressions, glue);
                 expressions = builtSQL[0];
                 params = builtSQL[1];
@@ -63,7 +63,7 @@ package com.lionart.activeaircord
             {
                 throw new ExpressionsException("Invalid parameter index: " + parameterNumber);
             }
-            value[parameterNumber - 1] = value;
+            values[parameterNumber - 1] = value;
         }
 
         public function bindValues( values : Array ) : void
@@ -79,6 +79,11 @@ package com.lionart.activeaircord
         public function get connection() : SQLiteConnection
         {
             return _connection;
+        }
+
+        public function set connection( value : SQLiteConnection ) : void
+        {
+            _connection = value;
         }
 
         public function toString( substitute : Boolean = false, options : Dictionary = null ) : String
@@ -123,7 +128,7 @@ package com.lionart.activeaircord
         {
             var sql : String = "";
             var g : String = "";
-            for (var key : String in DictionaryUtils.getKeys(hash))
+            for each (var key : String in DictionaryUtils.getKeys(hash))
             {
                 if (_connection)
                 {
@@ -179,7 +184,7 @@ package com.lionart.activeaircord
         {
             if (!value)
             {
-                return " " + SQL.NULL;
+                return SQL.NULL;
             }
 
             return (value is String) ? quoteString(value) : value;

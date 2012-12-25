@@ -19,7 +19,6 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.exceptions.DatabaseException;
 
     import org.flexunit.asserts.assertEquals;
-    import org.flexunit.asserts.assertTrue;
     import org.flexunit.asserts.fail;
     import org.hamcrest.assertThat;
     import org.hamcrest.core.isA;
