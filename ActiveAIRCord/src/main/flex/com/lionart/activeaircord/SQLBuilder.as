@@ -334,7 +334,7 @@ package com.lionart.activeaircord
 
             if (_where)
             {
-                sql = [sql, _where].join(" ");
+                sql = [sql, SQL.WHERE, _where].join(" ");
             }
 
             if (_group)
@@ -344,12 +344,12 @@ package com.lionart.activeaircord
 
             if (_having)
             {
-                sql = [sql, _having].join(" ");
+                sql = [sql, SQL.GROUP, SQL.BY, _having].join(" ");
             }
 
             if (_order)
             {
-                sql = [sql, _order].join(" ");
+                sql = [sql, SQL.ORDER, SQL.BY, _order].join(" ");
             }
 
             if (_limit || _offset)

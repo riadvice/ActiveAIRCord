@@ -17,11 +17,11 @@
             public function currentRunTestSuite() : Array
             {
                 var testsToRun : Array = new Array();
-                testsToRun.push(com.lionart.activeaircord.ActiveAIRCordTest);
                 testsToRun.push(com.lionart.activeaircord.ColumnTest);
+                testsToRun.push(com.lionart.activeaircord.SQLBuilderTest);
+                testsToRun.push(com.lionart.activeaircord.ActiveAIRCordTest);
                 testsToRun.push(com.lionart.activeaircord.InflectorTest);
                 testsToRun.push(com.lionart.activeaircord.SQLTypesTest);
-                testsToRun.push(com.lionart.activeaircord.SQLBuilderTest);
                 testsToRun.push(com.lionart.activeaircord.ExpressionsTest);
                 return testsToRun;
             }

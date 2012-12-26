@@ -18,6 +18,7 @@ package com.lionart.activeaircord
 {
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.helpers.DatabaseTest;
+    import com.lionart.activeaircord.matchers.assertSQLHas;
 
     import org.flexunit.assertThat;
     import org.flexunit.asserts.assertEquals;
@@ -73,11 +74,10 @@ package com.lionart.activeaircord
         [Test]
         public function testWhereWithArray() : void
         {
-            _sql.where("id=? AND name IN(?)", 1, ['Tito', 'Mexican']);
-            //assert_sql_has("SELECT ALL FROM authors WHERE id=? AND name IN(?,?)",_sql.toString());
+            _sql.where("id=? AND name IN(?)", 1, ["Tito", "Mexican"]);
+            assertSQLHas("SELECT * FROM authors WHERE id=? AND name IN(?,?)", _sql.toString());
             assertThat(_sql.whereValues, array(1, "Tito", "Mexican"));
         }
-
 
     }
 }
