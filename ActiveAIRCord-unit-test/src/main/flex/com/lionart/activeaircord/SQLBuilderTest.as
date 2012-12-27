@@ -79,5 +79,13 @@ package com.lionart.activeaircord
             assertThat(_sql.whereValues, array(1, "Tito", "Mexican"));
         }
 
+        [Test]
+        public function testWhereWithHash() : void
+        {
+            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"]));
+            assertSQLHas("SELECT * FROM authors WHERE id=? AND name=?", _sql.toString());
+            assertThat(_sql.whereValues, array(1, "Tito"));
+        }
+
     }
 }

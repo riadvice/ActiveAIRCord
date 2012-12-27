@@ -56,7 +56,7 @@ package com.lionart.activeaircord
 
         public function toString() : String
         {
-            var methodName : String = "build" + _operation.charAt(0) + _operation.substr(1).toLowerCase();
+            var methodName : String = "build" + StringUtils.capitalize(_operation.toLowerCase());
             return this[methodName]();
         }
 
@@ -212,7 +212,7 @@ package com.lionart.activeaircord
                 {
                     if (values[j])
                     {
-                        bind = (values[j] is Array) ? (" " + SQL.IN + Expressions.PARAM) : (Expressions.EQUALS + Expressions.PARAM);
+                        bind = (values[j] is Array) ? (" " + SQL.IN + SQL.PARAM) : (SQL.EQUALS + SQL.PARAM);
                         conditions.push(values[j]);
                     }
                     else

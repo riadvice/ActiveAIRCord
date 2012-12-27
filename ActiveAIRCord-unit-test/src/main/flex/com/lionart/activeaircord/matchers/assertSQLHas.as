@@ -21,8 +21,8 @@ package com.lionart.activeaircord.matchers
 
     public function assertSQLHas( value : String, compared : String ) : void
     {
-        value = value.replace("\"", "").replace("'", '');
-        compared = compared.replace("\"", "").replace("'", '');
+        value = StringUtils.replace(StringUtils.replace(value, "\"", ""), "`", '');
+        compared = StringUtils.replace(StringUtils.replace(compared, "\"", ""), "`", '');
         assertTrue(StringUtils.contains(value, compared) || StringUtils.equals(value, compared));
     }
 }

@@ -42,8 +42,6 @@ package com.lionart.activeaircord
 
         public var _connectionString : String;
 
-        public static const QUOTE_CHARACTER : String = "`";
-
         public function SQLiteConnection( info : Dictionary )
         {
             super();
@@ -209,8 +207,8 @@ package com.lionart.activeaircord
 
         public function quoteName( string : String ) : String
         {
-            return string.charAt(0) === QUOTE_CHARACTER || string.charAt(string.length - 1) === QUOTE_CHARACTER ?
-                string : QUOTE_CHARACTER + string + QUOTE_CHARACTER;
+            return string.charAt(0) === SQL.QUOTE_CHARACTER || string.charAt(string.length - 1) === SQL.QUOTE_CHARACTER ?
+                string : SQL.QUOTE_CHARACTER + string + SQL.QUOTE_CHARACTER;
         }
 
 

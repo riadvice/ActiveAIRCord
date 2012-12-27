@@ -26,9 +26,6 @@ package com.lionart.activeaircord
     public class Expressions
     {
 
-        public static const EQUALS : String = "=";
-        public static const PARAM : String = "?";
-
         private var _expressions : String;
         private var _values : Array = [];
         private var _connection : SQLiteConnection;
@@ -103,7 +100,7 @@ package com.lionart.activeaircord
             {
                 var ch : String = _expressions.charAt(i);
 
-                if (ch == Expressions.PARAM)
+                if (ch == SQL.PARAM)
                 {
                     if (quotes % 2 == 0)
                     {
@@ -134,17 +131,18 @@ package com.lionart.activeaircord
                 {
                     key = _connection.quoteName(key);
                 }
-                if (hash[key] is Array)
+                var cleanKey : String = StringUtils.replace(key, SQL.QUOTE_CHARACTER, "")
+                if (hash[cleanKey] is Array)
                 {
-                    sql += [g, key, " ", SQL.IN, "(", PARAM, ")"].join("");
+                    sql += [g, key, " ", SQL.IN, "(", SQL.PARAM, ")"].join("");
                 }
-                else if (hash[key] == null)
+                else if (hash[cleanKey] == null)
                 {
-                    sql += [g, key, " ", SQL.IS, PARAM].join("");
+                    sql += [g, key, " ", SQL.IS, SQL.PARAM].join("");
                 }
                 else
                 {
-                    sql += [g, key, "=", PARAM].join("");
+                    sql += [g, key, "=", SQL.PARAM].join("");
                 }
                 g = glue;
             }
@@ -169,7 +167,7 @@ package com.lionart.activeaircord
 
                     return result;
                 }
-                return Utils.arrayFill(value.length, Expressions.PARAM).join(',');
+                return Utils.arrayFill(value.length, SQL.PARAM).join(',');
             }
 
             if (substitute)
@@ -197,7 +195,7 @@ package com.lionart.activeaircord
                 return _connection.escape(value);
             }
 
-            return "'" + value.replace("'", "''") + "'";
+            return "'" + StringUtils.replace(value, "'", "''") + "'";
         }
 
     }
