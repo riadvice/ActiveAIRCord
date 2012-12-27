@@ -87,5 +87,56 @@ package com.lionart.activeaircord
             assertThat(_sql.whereValues, array(1, "Tito"));
         }
 
+        [Test]
+        public function testWhereWithHashAndArray() : void
+        {
+            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, ["Tito", "Mexican"]]));
+            assertSQLHas("SELECT * FROM authors WHERE id=? AND name IN(?,?)", _sql.toString());
+            assertThat(_sql.whereValues, array(1, "Tito", "Mexican"));
+        }
+
+        [Test]
+        public function testWhereWithHashAndNull() : void
+        {
+            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, null]));
+            assertSQLHas("SELECT * FROM authors WHERE id=? AND name IS ?", _sql.toString());
+            assertThat(_sql.whereValues, array(1, null));
+        }
+
+        [Test]
+        public function testWhereWithNull() : void
+        {
+            _sql.where(null);
+            assertEquals("SELECT * FROM authors", _sql.toString())
+        }
+
+        [Test]
+        public function testWhereWithNoArgs() : void
+        {
+            _sql.where();
+            assertEquals("SELECT * FROM authors", _sql.toString());
+        }
+
+        [Test]
+        public function testOrder() : void
+        {
+            _sql.order("name");
+            assertEquals("SELECT * FROM authors ORDER BY name", _sql.toString());
+        }
+
+        [Test]
+        public function testLimit() : void
+        {
+            _sql.limit(10).offset(1);
+            assertEquals(conn.limit("SELECT * FROM authors", 1, 10), _sql.toString());
+        }
+
+        [Test]
+        public function testSelect() : void
+        {
+            _sql.select("id,name");
+            assertEquals("SELECT id,name FROM authors", _sql.toString());
+        }
+
     }
 }

@@ -138,7 +138,7 @@ package com.lionart.activeaircord
                 }
                 else if (hash[cleanKey] == null)
                 {
-                    sql += [g, key, " ", SQL.IS, SQL.PARAM].join("");
+                    sql += [g, key, " ", SQL.IS, " ", SQL.PARAM].join("");
                 }
                 else
                 {

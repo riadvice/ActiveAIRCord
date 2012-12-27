@@ -30,8 +30,8 @@ package com.lionart.activeaircord
         private var _select : String = SQL.ASTERISK;
         private var _joins : Array;
         private var _order : String;
-        private var _limit : String;
-        private var _offset : String;
+        private var _limit : int;
+        private var _offset : int;
         private var _group : String;
         private var _having : String;
         private var _update : String;
@@ -95,13 +95,13 @@ package com.lionart.activeaircord
             return this;
         }
 
-        public function limit( limit : String ) : SQLBuilder
+        public function limit( limit : int ) : SQLBuilder
         {
             _limit = limit;
             return this;
         }
 
-        public function offset( offset : String ) : SQLBuilder
+        public function offset( offset : int ) : SQLBuilder
         {
             _offset = offset;
             return this;
