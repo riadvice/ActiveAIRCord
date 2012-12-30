@@ -337,11 +337,11 @@ package com.lionart.activeaircord
 
             if (_sequence)
             {
-                sql = [SQL.INSERT, SQL.INTO, [_table, "(", keys, _connection.quoteName(_sequence[0]), ")"].join(), [SQL.VALUES, "(?", _connection.nextSequenceValue(_sequence[1]), ")"].join()].joins(" ");
+                sql = [SQL.INSERT, SQL.INTO, [_table, "(", keys, _connection.quoteName(_sequence[0]), ")"].join(""), [SQL.VALUES, "(?", _connection.nextSequenceValue(_sequence[1]), ")"].join("")].joins(" ");
             }
             else
             {
-                sql = [SQL.INSERT, SQL.INTO, [_table, "(", keys, ")"].join(), [SQL.VALUES, "(", SQL.PARAM, ")"].join()].join(" ");
+                sql = [SQL.INSERT, SQL.INTO, [_table, "(", keys, ")"].join(""), [SQL.VALUES, "(", SQL.PARAM, ")"].join("")].join(" ");
             }
 
             var e : Expressions = new Expressions(_connection, sql, Utils.getDictionaryValues(_data));
@@ -394,9 +394,9 @@ package com.lionart.activeaircord
         private function quotedKeyNames() : Array
         {
             var keys : Array = [];
-            for each (var field : String in _data)
+            for (var key : String in _data)
             {
-                keys.push(_connection.quoteName(_data[field]));
+                keys.push(_connection.quoteName(key));
             }
             return keys;
         }
