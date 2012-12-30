@@ -19,6 +19,7 @@ package com.lionart.activeaircord
     import flash.utils.Dictionary;
 
     import org.as3commons.lang.ArrayUtils;
+    import org.as3commons.lang.ObjectUtils;
 
 
     public final class Utils
@@ -184,6 +185,14 @@ package com.lionart.activeaircord
                 result.push(value);
             }
             return result;
+        }
+
+        /**
+         * Returns true if the given value is simple Object or a Dictionary
+         */
+        public static function isHash( value : * ) : Boolean
+        {
+            return ObjectUtils.isExplicitInstanceOf(value, Object) || value is Dictionary;
         }
 
     }
