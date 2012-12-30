@@ -28,7 +28,7 @@ package com.lionart.activeaircord
         private var _operation : String = SQL.SELECT;
         private var _table : String;
         private var _select : String = SQL.ASTERISK;
-        private var _joins : Array;
+        private var _joins : String;
         private var _order : String;
         private var _limit : int;
         private var _offset : int;
@@ -67,8 +67,16 @@ package com.lionart.activeaircord
 
         public function bindValues() : Array
         {
-            // TODO : udpate me
-            return Utils.flattenArray(_data);
+            var result : Array;
+            if (_data)
+            {
+                Utils.getDictionaryValues(_data);
+            }
+            if (whereValues)
+            {
+                result = result.concat(whereValues);
+            }
+            return Utils.flattenArray(result);
         }
 
         public function where( ... args ) : SQLBuilder
@@ -114,14 +122,18 @@ package com.lionart.activeaircord
             return this;
         }
 
-        public function joins( joins : Array ) : SQLBuilder
+        public function joins( joins : String ) : SQLBuilder
         {
             _joins = joins;
             return this;
         }
 
-        public function insert( hash : Dictionary, pk : String = null, sequenceName : String = null ) : SQLBuilder
+        public function insert( hash : *, pk : String = null, sequenceName : String = null ) : SQLBuilder
         {
+            if (!Utils.isHash(hash))
+            {
+                throw new ActiveRecordException("Inserting requires a hash.");
+            }
             _operation = SQL.INSERT;
             _data = hash;
             if (pk && sequenceName)
@@ -295,7 +307,7 @@ package com.lionart.activeaircord
             }
         }
 
-        private function buildDestroy() : String
+        private function buildDelete() : String
         {
             var sql : String = [SQL.DELETE, SQL.FROM, _table].join(" ");
             if (_where)
@@ -318,9 +330,22 @@ package com.lionart.activeaircord
             return sql;
         }
 
-        private function buildInsert() : void
+        private function buildInsert() : String
         {
+            var keys : String = quotedKeyNames().join(",");
+            var sql : String;
 
+            if (_sequence)
+            {
+                sql = [SQL.INSERT, SQL.INTO, [_table, "(", keys, _connection.quoteName(_sequence[0]), ")"].join(), [SQL.VALUES, "(?", _connection.nextSequenceValue(_sequence[1]), ")"].join()].joins(" ");
+            }
+            else
+            {
+                sql = [SQL.INSERT, SQL.INTO, [_table, "(", keys, ")"].join(), [SQL.VALUES, "(", SQL.PARAM, ")"].join()].join(" ");
+            }
+
+            var e : Expressions = new Expressions(_connection, sql, Utils.getDictionaryValues(_data));
+            return e.toString();
         }
 
         private function buildSelect() : String
@@ -339,12 +364,12 @@ package com.lionart.activeaircord
 
             if (_group)
             {
-                sql = [sql, _group].join(" ");
+                sql = [sql, SQL.GROUP, SQL.BY, _group].join(" ");
             }
 
             if (_having)
             {
-                sql = [sql, SQL.GROUP, SQL.BY, _having].join(" ");
+                sql = [sql, SQL.HAVING, _having].join(" ");
             }
 
             if (_order)
