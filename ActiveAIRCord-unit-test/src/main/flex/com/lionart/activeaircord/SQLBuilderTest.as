@@ -20,8 +20,8 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.helpers.DatabaseTest;
     import com.lionart.activeaircord.matchers.assertSQLHas;
 
-    import org.flexunit.assertThat;
     import org.flexunit.asserts.assertEquals;
+    import org.hamcrest.assertThat;
     import org.hamcrest.collection.array;
     import org.hamcrest.core.allOf;
     import org.hamcrest.core.throws;
@@ -136,6 +136,119 @@ package com.lionart.activeaircord
         {
             _sql.select("id,name");
             assertEquals("SELECT id,name FROM authors", _sql.toString());
+        }
+
+        [Test]
+        public function testJoins() : void
+        {
+            var join : String = "inner join books on(authors.id=books.author_id)";
+            _sql.joins(join);
+            assertEquals("SELECT * FROM authors " + join, _sql.toString());
+        }
+
+        [Test]
+        public function testGroup() : void
+        {
+            _sql.group("name");
+            assertEquals("SELECT * FROM authors GROUP BY name", _sql.toString());
+        }
+
+        [Test]
+        public function testHaving() : void
+        {
+            _sql.having("created_at > '2009-01-01'");
+            assertEquals("SELECT * FROM authors HAVING created_at > '2009-01-01'", _sql.toString());
+        }
+
+        [Test]
+        public function testAllClausesAfterWhereShouldBeCorrectlyOrdered() : void
+        {
+            _sql.limit(10).offset(1);
+            _sql.having("created_at > '2009-01-01'");
+            _sql.order("name");
+            _sql.group("name");
+            _sql.where(new AdvancedDictionary(true, ["id"], [1]));
+            assertSQLHas(conn.limit("SELECT * FROM authors WHERE id=? GROUP BY name HAVING created_at > '2009-01-01' ORDER BY name", 1, 10), _sql.toString());
+        }
+
+        [Test]
+        public function testInsertRequiresHash() : void
+        {
+            assertThat(function() : void {_sql.insert([1])}, throws(allOf(instanceOf(ActiveRecordException))));
+        }
+
+        [Test]
+        public function testInsert() : void
+        {
+            _sql.insert(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"]));
+            assertSQLHas("INSERT INTO authors(id,name) VALUES(?,?)", _sql.toString());
+        }
+
+        [Test]
+        public function testInsertWithNull() : void
+        {
+            _sql.insert(new AdvancedDictionary(true, ["id", "name"], [1, null]));
+            assertSQLHas("INSERT INTO authors(id,name) VALUES(?,?)", _sql.toString());
+        }
+
+        [Test]
+        public function testUpdateWithHash() : void
+        {
+            _sql.update(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"])).where("id=1 AND name IN(?)", ["Tito", "Mexican"]);
+            assertSQLHas("UPDATE authors SET id=?, name=? WHERE id=1 AND name IN(?,?)", _sql.toString());
+            assertThat(_sql.bindValues(), array(1, "Tito", "Tito", "Mexican"));
+        }
+
+
+        [Test]
+        public function testUpdateWithLimitAndOrder() : void
+        {
+            _sql.update(new AdvancedDictionary(true, ["id"], [1])).order("name asc").limit(1);
+            assertSQLHas("UPDATE authors SET id=? ORDER BY name asc LIMIT 1", _sql.toString());
+        }
+
+        [Test]
+        public function testUpdateWithString() : void
+        {
+            _sql.update("name='Bob'");
+            assertSQLHas("UPDATE authors SET name='Bob'", _sql.toString());
+        }
+
+        [Test]
+        public function testUpdateWithNull() : void
+        {
+            _sql.update(new AdvancedDictionary(true, ["id", "name"], [1, null])).where("id=1");
+            assertSQLHas("UPDATE authors SET id=?, name=? WHERE id=1", _sql.toString());
+        }
+
+        [Test]
+        public function testDelete() : void
+        {
+            _sql.destroy();
+            assertSQLHas("DELETE FROM authors", _sql.toString());
+        }
+
+        [Test]
+        public function testDeleteWithWhere() : void
+        {
+            _sql.destroy("id=? or name in(?)", 1, ["Tito", "Mexican"]);
+            assertEquals("DELETE FROM authors WHERE id=? or name in(?,?)", _sql.toString());
+            assertThat(_sql.bindValues(), array(1, "Tito", "Mexican"));
+        }
+
+        [Test]
+        public function testDeleteWithHash() : void
+        {
+            _sql.destroy(new AdvancedDictionary(true, ["id", "name"], [1, ["Tito", "Mexican"]]));
+            assertSQLHas("DELETE FROM authors WHERE id=? AND name IN(?,?)", _sql.toString());
+            assertThat(_sql.whereValues, array(1, "Tito", "Mexican"));
+        }
+
+        [Test]
+        public function testDeleteWithLimitAndOrder() : void
+        {
+            _sql.destroy(new AdvancedDictionary(true, ["id"], [1])).order("name asc").limit(1);
+            assertSQLHas("DELETE FROM authors WHERE id=? ORDER BY name asc LIMIT 1", _sql.toString());
         }
 
     }
