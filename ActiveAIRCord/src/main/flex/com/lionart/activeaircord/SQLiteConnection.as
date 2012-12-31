@@ -214,7 +214,14 @@ package com.lionart.activeaircord
 
         public function limit( sql : String, offset : int, limit : int ) : String
         {
-            return [sql, SQL.LIMIT, !offset.toString() ? "" : parseInt(offset.toString()) + ",", parseInt(limit.toString())].join(" ");
+            if (offset != -1)
+            {
+                return [sql, SQL.LIMIT, offset.toString() + ",", limit.toString()].join(" ");
+            }
+            else
+            {
+                return [sql, SQL.LIMIT, limit.toString()].join(" ");
+            }
         }
 
 
