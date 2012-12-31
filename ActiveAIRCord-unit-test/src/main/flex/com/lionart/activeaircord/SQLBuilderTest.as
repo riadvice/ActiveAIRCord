@@ -19,8 +19,12 @@ package com.lionart.activeaircord
     import com.lionart.activeaircord.exceptions.ActiveRecordException;
     import com.lionart.activeaircord.helpers.DatabaseTest;
     import com.lionart.activeaircord.matchers.assertSQLHas;
+    import com.lionart.activeaircord.matchers.assertSameDictionaries;
+
+    import flash.utils.Dictionary;
 
     import org.flexunit.asserts.assertEquals;
+    import org.flexunit.asserts.assertNull;
     import org.hamcrest.assertThat;
     import org.hamcrest.collection.array;
     import org.hamcrest.core.allOf;
@@ -58,6 +62,31 @@ package com.lionart.activeaircord
         public static function tearDownAfterClass() : void
         {
         }
+
+        public function assertConditions( expectedSql : String, values : Array, underscoredString : String, map : Dictionary = null ) : void
+        {
+            var conditions : Array = SQLBuilder.createConditionsFromUnderscoredString(_table.conn, underscoredString, values, map);
+            assertSQLHas(expectedSql, conditions.shift());
+
+            if (values)
+            {
+                var filteredArray : Array = values.filter(function assertConditionsFilter( element : *, index : int, arr : Array ) : Boolean
+                {
+                    return element !== null;
+                });
+                assertThat(conditions, filteredArray);
+            }
+            else
+            {
+                assertThat(conditions, array());
+            }
+        }
+
+        protected function conditionsFromString( name : String, values : Array = null, map : Dictionary = null ) : Array
+        {
+            return SQLBuilder.createConditionsFromUnderscoredString(_table.conn, name, values, map);
+        }
+
 
         [Test]
         public function testNoConnection() : void
@@ -249,6 +278,97 @@ package com.lionart.activeaircord
         {
             _sql.destroy(new AdvancedDictionary(true, ["id"], [1])).order("name asc").limit(1);
             assertSQLHas("DELETE FROM authors WHERE id=? ORDER BY name asc LIMIT 1", _sql.toString());
+        }
+
+        [Test]
+        public function testReverseOrder() : void
+        {
+            assertEquals("id ASC, name DESC", SQLBuilder.reverseOrder("id DESC, name ASC"));
+            assertEquals("id ASC, name DESC , zzz ASC", SQLBuilder.reverseOrder("id DESC, name ASC , zzz DESC"));
+            assertEquals("id DESC, name DESC", SQLBuilder.reverseOrder("id, name"));
+            assertEquals("id DESC", SQLBuilder.reverseOrder("id"));
+            assertEquals("", SQLBuilder.reverseOrder(""));
+            assertEquals(" ", SQLBuilder.reverseOrder(" "));
+            assertEquals(null, SQLBuilder.reverseOrder(null));
+        }
+
+
+        [Test]
+        public function testCreateConditionsFromUnderscoredString() : void
+        {
+            assertConditions("id=? AND name=? OR z=?", [1, "Tito", "X"], "id_and_name_or_z");
+            assertConditions("id=?", [1], "id");
+            assertConditions("id IN(?)", [[1, 2]], "id");
+        }
+
+
+        [Test]
+        public function testCreateConditionsFromUnderscoredStringWithNulls() : void
+        {
+            assertConditions("id=? AND name IS NULL", [1, null], "id_and_name");
+        }
+
+
+        [Test]
+        public function testCreateConditionsFromUnderscoredStringWithMissingArgs() : void
+        {
+            assertConditions("id=? AND name IS NULL OR z IS NULL", [1, null], "id_and_name_or_z");
+            assertConditions("id IS NULL", null, "id");
+        }
+
+        [Test]
+        public function testCreateConditionsFromUnderscoredStringWithBlank() : void
+        {
+            assertConditions("id=? AND name IS NULL OR z=?", [1, null, ""], "id_and_name_or_z");
+        }
+
+
+        [Test]
+        public function testCreateConditionsFromUnderscoredStringInvalid() : void
+        {
+            assertNull(conditionsFromString(""));
+            assertNull(conditionsFromString(null));
+        }
+
+
+        [Test]
+        public function testCreateConditionsFromUnderscoredStringWithMappedColumns() : void
+        {
+            assertConditions("id=? AND name=?", [1, "Tito"], "id_and_my_name", new AdvancedDictionary(true, ["my_name"], ["name"]));
+        }
+
+        [Test]
+        public function testCreateHashFromUnderscoredString() : void
+        {
+            var values : Array = [1, "Tito"];
+            var hash : Dictionary = SQLBuilder.createHashFromUnderscoredString("id_and_my_name", values);
+            var expectedHash : Dictionary = new Dictionary(true);
+            expectedHash["id"] = 1;
+            expectedHash["my_name"] = "Tito";
+            assertSameDictionaries(hash, expectedHash);
+        }
+
+        [Test]
+        public function testCreateHashFromUnderscoredStringWithMappedColumns() : void
+        {
+            var values : Array = [1, "Tito"];
+            var map : Dictionary = new AdvancedDictionary(true, ["my_name"], ["name"]);
+            var hash : Dictionary = SQLBuilder.createHashFromUnderscoredString("id_and_my_name", values, map);
+            var expectedHash : Dictionary = new Dictionary(true);
+            expectedHash["id"] = 1;
+            expectedHash["name"] = "Tito";
+            assertSameDictionaries(hash, expectedHash);
+        }
+
+        // FIXME
+        [Test]
+        public function testWhereWithJoinsPrependsTableNameToFields() : void
+        {
+            var joins : String = "INNER JOIN books ON (books.id = authors.id)";
+            // joins needs to be called prior to where
+            _sql.joins(joins);
+            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"]));
+            assertSQLHas("SELECT * FROM authors " + joins + " WHERE authors.id=? AND authors.name=?", _sql.toString());
         }
 
     }
