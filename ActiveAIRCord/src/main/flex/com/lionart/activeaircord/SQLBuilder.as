@@ -70,7 +70,7 @@ package com.lionart.activeaircord
             var result : Array;
             if (_data)
             {
-                Utils.getDictionaryValues(_data);
+                result = Utils.getDictionaryValues(_data);
             }
             if (whereValues)
             {
@@ -324,7 +324,7 @@ package com.lionart.activeaircord
 
                 if (_limit)
                 {
-                    sql = _connection.limit(sql, null, _limit);
+                    sql = _connection.limit(sql, -1, _limit);
                 }
             }
             return sql;
@@ -385,10 +385,39 @@ package com.lionart.activeaircord
             return sql;
         }
 
-        private function buildUpdate() : void
+        private function buildUpdate() : String
         {
-            var keys : String = quotedKeyNames().join();
-            var sql : String = "INSERT INTO " + _table + "(" + keys + ") VALUES(?)";
+            var sql : String;
+            var sets : String;
+            if (_update && _update.length > 0)
+            {
+                sets = _update;
+            }
+            else
+            {
+                sets = [quotedKeyNames().join("=?, "), "=?"].join("");
+            }
+
+            sql = [SQL.UPDATE, _table, SQL.SET, sets].join(" ");
+
+            if (_where)
+            {
+                sql = [sql, SQL.WHERE, _where].join(" ");
+            }
+
+            if (_connection.acceptsLimitAndOrderForUpdateAndDelete())
+            {
+                if (_order)
+                {
+                    sql = [sql, SQL.ORDER, SQL.BY, _order].join(" ");
+                }
+                if (_limit)
+                {
+                    sql = _connection.limit(sql, -1, _limit);
+                }
+            }
+
+            return sql;
         }
 
         private function quotedKeyNames() : Array
