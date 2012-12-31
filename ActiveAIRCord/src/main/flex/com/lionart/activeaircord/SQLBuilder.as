@@ -209,8 +209,8 @@ package com.lionart.activeaircord
             }
 
             var parts : Array = name.split(/(_and_|_or_)/i);
-            var numValues : int = values.length;
-            var conditions : Array = [];
+            var numValues : int = values ? values.length : 0;
+            var conditions : Array = [''];
 
             var bind : String;
             var j : int = 0;
@@ -218,23 +218,23 @@ package com.lionart.activeaircord
             {
                 if (i >= 2)
                 {
-                    conditions[0] = String(conditions[0]) + String(parts[i - 1]).replace(/_and_/i, SQL.AND).replace(/_or_/i, SQL.OR);
+                    conditions[0] = String(conditions[0]) + String(parts[i - 1]).replace(/_and_/i, " " + SQL.AND + " ").replace(/_or_/i, " " + SQL.OR + " ");
                 }
                 if (j < numValues)
                 {
-                    if (values[j])
+                    if (values[j] != null)
                     {
                         bind = (values[j] is Array) ? (" " + SQL.IN + SQL.PARAM) : (SQL.EQUALS + SQL.PARAM);
                         conditions.push(values[j]);
                     }
                     else
                     {
-                        bind = [" ", SQL.IS, SQL.NULL].join(" ");
+                        bind = " " + [SQL.IS, SQL.NULL].join(" ");
                     }
                 }
                 else
                 {
-                    bind = [" ", SQL.IS, SQL.NULL].join(" ");
+                    bind = " " + [SQL.IS, SQL.NULL].join(" ");
                 }
 
                 // map to correct name if map was supplied
@@ -251,6 +251,10 @@ package com.lionart.activeaircord
         public static function createHashFromUnderscoredString( name : String, values : Array = null, map : Dictionary = null ) : Dictionary
         {
             var parts : Array = name.split(/(_and_|_or_)/i);
+            parts = parts.filter(function removeSplitters( element : *, index : int, arr : Array ) : Boolean
+            {
+                return element !== "_and_" && element !== "_or_";
+            });
             var dict : Dictionary = new Dictionary(true);
 
             for (var i : int = 0; i < parts.length; ++i)
@@ -267,7 +271,7 @@ package com.lionart.activeaircord
             var result : Dictionary = new Dictionary(true);
             var table : String = _connection.quoteName(_table);
 
-            for each (var key : String in hash)
+            for (var key : String in hash)
             {
                 var keyname : String = _connection.quoteName(key);
                 result[[table, keyname].join(".")] = hash[key];
