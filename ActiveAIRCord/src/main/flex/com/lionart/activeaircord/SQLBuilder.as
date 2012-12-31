@@ -67,7 +67,7 @@ package com.lionart.activeaircord
 
         public function bindValues() : Array
         {
-            var result : Array;
+            var result : Array = [];
             if (_data)
             {
                 result = Utils.getDictionaryValues(_data);
@@ -81,7 +81,7 @@ package com.lionart.activeaircord
 
         public function where( ... args ) : SQLBuilder
         {
-            applyWhereConditions.apply(this, args)
+            applyWhereConditions.apply(this, args);
             return this;
         }
 
@@ -165,7 +165,7 @@ package com.lionart.activeaircord
         public function destroy( ... args ) : SQLBuilder
         {
             _operation = SQL.DELETE;
-            applyWhereConditions(args);
+            applyWhereConditions.apply(this, args);
             return this;
         }
 
