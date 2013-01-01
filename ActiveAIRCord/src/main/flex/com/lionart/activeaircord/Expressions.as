@@ -127,13 +127,11 @@ package com.lionart.activeaircord
             var g : String = "";
             for each (var key : String in DictionaryUtils.getKeys(hash))
             {
-                var cleanKey : String;
+                var cleanKey : String = key;
                 if (_connection)
                 {
                     key = _connection.quoteName(key);
-                    cleanKey = key;
                 }
-                cleanKey = StringUtils.replace(key, SQL.QUOTE_CHARACTER, "");
                 if (hash[cleanKey] is Array)
                 {
                     sql += [g, key, " ", SQL.IN, "(", SQL.PARAM, ")"].join("");
