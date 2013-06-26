@@ -32,7 +32,7 @@ package com.lionart.activeaircord.models
 
         private var _password : String
 
-        staticInitializer(Author.prototype.constructor);
+        staticInitializer(prototype.constructor);
 
         public function Author( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {
