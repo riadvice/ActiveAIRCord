@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
+    <classEntry path="com.lionart.activeaircord.AdvancedDictionary"/>
+    <classEntry path="com.lionart.activeaircord.Cache"/>
+    <classEntry path="com.lionart.activeaircord.Callback"/>
+    <classEntry path="com.lionart.activeaircord.Column"/>
     <classEntry path="com.lionart.activeaircord.Configuration"/>
     <classEntry path="com.lionart.activeaircord.ConnectionManager"/>
-    <classEntry path="com.lionart.activeaircord.SQLiteConnection"/>
-    <classEntry path="com.lionart.activeaircord.Column"/>
-    <classEntry path="com.lionart.activeaircord.Utils"/>
-    <classEntry path="com.lionart.activeaircord.SQLBuilder"/>
-    <classEntry path="com.lionart.activeaircord.Table"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.ActiveRecordException"/>
-    <classEntry path="com.lionart.activeaircord.Model"/>
     <classEntry path="com.lionart.activeaircord.Expressions"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.ExpressionsException"/>
-    <classEntry path="com.lionart.activeaircord.Validations"/>
-    <classEntry path="com.lionart.activeaircord.validation.ValidationErrors"/>
+    <classEntry path="com.lionart.activeaircord.Inflector"/>
+    <classEntry path="com.lionart.activeaircord.Model"/>
     <classEntry path="com.lionart.activeaircord.Reflections"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.ModelException"/>
+    <classEntry path="com.lionart.activeaircord.SQL"/>
+    <classEntry path="com.lionart.activeaircord.SQLBuilder"/>
+    <classEntry path="com.lionart.activeaircord.SQLTypes"/>
+    <classEntry path="com.lionart.activeaircord.SQLiteConnection"/>
+    <classEntry path="com.lionart.activeaircord.SingletonManager"/>
+    <classEntry path="com.lionart.activeaircord.Table"/>
+    <classEntry path="com.lionart.activeaircord.Utils"/>
+    <classEntry path="com.lionart.activeaircord.Validations"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.ActiveRecordException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.AdvancedDictionaryException"/>
     <classEntry path="com.lionart.activeaircord.exceptions.ConfigurationException"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.UndefinedPropertyException"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.ReadOnlyException"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.ValidationArgumentsException"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.RelationshipException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.DatabaseException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.ExpressionsException"/>
     <classEntry path="com.lionart.activeaircord.exceptions.HasManuThroughAssociationException"/>
-    <classEntry path="com.lionart.activeaircord.relationship.IRelationship"/>
-    <classEntry path="com.lionart.activeaircord.relationship.Relationship"/>
-    <classEntry path="com.lionart.activeaircord.Callback"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.ModelException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.ReadOnlyException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.RecordNotFound"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.RelationshipException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.UndefinedPropertyException"/>
+    <classEntry path="com.lionart.activeaircord.exceptions.ValidationArgumentsException"/>
+    <classEntry path="com.lionart.activeaircord.relationship.BelongsTo"/>
+    <classEntry path="com.lionart.activeaircord.relationship.HasAndBelongsToMany"/>
     <classEntry path="com.lionart.activeaircord.relationship.HasMany"/>
     <classEntry path="com.lionart.activeaircord.relationship.HasOne"/>
-    <classEntry path="com.lionart.activeaircord.relationship.HasAndBelongsToMany"/>
-    <classEntry path="com.lionart.activeaircord.relationship.BelongsTo"/>
-    <classEntry path="com.lionart.activeaircord.Cache"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.DatabaseException"/>
-    <classEntry path="com.lionart.activeaircord.exceptions.RecordNotFound"/>
+    <classEntry path="com.lionart.activeaircord.relationship.IRelationship"/>
+    <classEntry path="com.lionart.activeaircord.relationship.Relationship"/>
+    <classEntry path="com.lionart.activeaircord.validation.ValidationErrors"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
