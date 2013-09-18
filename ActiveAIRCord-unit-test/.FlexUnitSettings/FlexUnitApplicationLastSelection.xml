@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testrun name="" >
 <testsuite  name="Default Test Suite" project="ActiveAIRCord-unit-test">
-<testsuite name="com.lionart.activeaircord:ActiveAIRCordTest" type="testcaseclass"/>
-<testsuite name="com.lionart.activeaircord:ColumnTest" type="testcaseclass"/>
-<testsuite name="com.lionart.activeaircord:ExpressionsTest" type="testcaseclass"/>
-<testsuite name="com.lionart.activeaircord:InflectorTest" type="testcaseclass"/>
-<testsuite name="com.lionart.activeaircord:SQLBuilderTest" type="testcaseclass"/>
-<testsuite name="com.lionart.activeaircord:SQLTypesTest" type="testcaseclass"/>
+<testsuite name="com.riadvice.activeaircord:ActiveAIRCordTest" type="testcaseclass"/>
+<testsuite name="com.riadvice.activeaircord:ColumnTest" type="testcaseclass"/>
+<testsuite name="com.riadvice.activeaircord:ExpressionsTest" type="testcaseclass"/>
+<testsuite name="com.riadvice.activeaircord:InflectorTest" type="testcaseclass"/>
+<testsuite name="com.riadvice.activeaircord:SQLBuilderTest" type="testcaseclass"/>
+<testsuite name="com.riadvice.activeaircord:SQLTypesTest" type="testcaseclass"/>
 </testsuite>
 <portNumber value="8765" />
 </testrun>

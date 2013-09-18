@@ -8,12 +8,12 @@ Please click on the "Refresh" icon in "FlexUnit Results" view to regenerate this
                        xmlns:mx="library://ns.adobe.com/flex/mx">
     <fx:Script>
         <![CDATA[
-            import com.lionart.activeaircord.ExpressionsTest;
-            import com.lionart.activeaircord.ActiveAIRCordTest;
+            import com.riadvice.activeaircord.ExpressionsTest;
+            import com.riadvice.activeaircord.ActiveAIRCordTest;
             
-            private var com_lionart_activeaircord_ActiveAIRCordTest_obj:com.lionart.activeaircord.ActiveAIRCordTest;
+            private var com_riadvice_activeaircord_ActiveAIRCordTest_obj:com.riadvice.activeaircord.ActiveAIRCordTest;
             
-            private var com_lionart_activeaircord_ExpressionsTest_obj:com.lionart.activeaircord.ExpressionsTest;
+            private var com_riadvice_activeaircord_ExpressionsTest_obj:com.riadvice.activeaircord.ExpressionsTest;
         ]]>
     </fx:Script>
     <fx:Declarations>

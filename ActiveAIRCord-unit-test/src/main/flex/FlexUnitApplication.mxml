@@ -7,22 +7,22 @@
                        creationComplete="onCreationComplete()" showStatusBar="false">
     <fx:Script>
         <![CDATA[
-            import com.lionart.activeaircord.ActiveAIRCordTest;
-            import com.lionart.activeaircord.ColumnTest;
-            import com.lionart.activeaircord.ExpressionsTest;
-            import com.lionart.activeaircord.InflectorTest;
-            import com.lionart.activeaircord.SQLBuilderTest;
-            import com.lionart.activeaircord.SQLTypesTest;
+            import com.riadvice.activeaircord.ActiveAIRCordTest;
+            import com.riadvice.activeaircord.ColumnTest;
+            import com.riadvice.activeaircord.ExpressionsTest;
+            import com.riadvice.activeaircord.InflectorTest;
+            import com.riadvice.activeaircord.SQLBuilderTest;
+            import com.riadvice.activeaircord.SQLTypesTest;
 
             public function currentRunTestSuite() : Array
             {
                 var testsToRun : Array = new Array();
-                testsToRun.push(com.lionart.activeaircord.ColumnTest);
-                testsToRun.push(com.lionart.activeaircord.SQLBuilderTest);
-                testsToRun.push(com.lionart.activeaircord.ActiveAIRCordTest);
-                testsToRun.push(com.lionart.activeaircord.InflectorTest);
-                testsToRun.push(com.lionart.activeaircord.SQLTypesTest);
-                testsToRun.push(com.lionart.activeaircord.ExpressionsTest);
+                testsToRun.push(com.riadvice.activeaircord.ColumnTest);
+                testsToRun.push(com.riadvice.activeaircord.SQLBuilderTest);
+                testsToRun.push(com.riadvice.activeaircord.ActiveAIRCordTest);
+                testsToRun.push(com.riadvice.activeaircord.InflectorTest);
+                testsToRun.push(com.riadvice.activeaircord.SQLTypesTest);
+                testsToRun.push(com.riadvice.activeaircord.ExpressionsTest);
                 return testsToRun;
             }
 
