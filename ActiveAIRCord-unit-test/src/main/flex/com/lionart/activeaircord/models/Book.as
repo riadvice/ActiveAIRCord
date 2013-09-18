@@ -24,7 +24,7 @@ package com.lionart.activeaircord.models
         public static const hasOne : Array = [];
         public static const useCustomGetNameGetter : Boolean = false;
 
-        staticInitializer(Book.prototype.constructor);
+        staticInitializer(prototype.constructor);
 
         public function Book( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {

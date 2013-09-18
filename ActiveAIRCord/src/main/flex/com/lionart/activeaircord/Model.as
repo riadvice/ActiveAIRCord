@@ -29,6 +29,8 @@ package com.lionart.activeaircord
     import flash.utils.getDefinitionByName;
     import flash.utils.getQualifiedClassName;
 
+    import mx.collections.ArrayCollection;
+
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
@@ -60,7 +62,7 @@ package com.lionart.activeaircord
         public static function getMethod( objectName : String, methodName : String ) : Function
         {
             return function( ... rest ) : Object {
-                return Model[methodName].apply(Model, [getDefinitionByName(objectName), methodName, rest]);
+                return Model[methodName](getDefinitionByName(objectName), methodName, rest);
             };
         }
 
@@ -104,7 +106,7 @@ package com.lionart.activeaircord
             return Table.load(ClassUtils.getName(clazz));
         }
 
-        public static function all( clazz : Class, methodName : String, ... rest ) : Array
+        public static function all( clazz : Class, methodName : String, ... rest ) : ArrayCollection
         {
             return clazz["find"](ArrayUtils.addAll(rest[0], ["all"]));
         }
@@ -271,7 +273,7 @@ package com.lionart.activeaircord
             return Table(clazz["getTable"]()).findBySql(sql, values, true);
         }
 
-        public static function first( clazz : Class, methodName : String, ... rest ) : Array
+        public static function first( clazz : Class, methodName : String, ... rest ) : ArrayCollection
         {
             return clazz["find"](ArrayUtils.addAll(rest, ["first"]));
         }
@@ -314,7 +316,7 @@ package com.lionart.activeaircord
             return false;
         }
 
-        public static function last( clazz : Class, methodName : String, ... rest ) : Array
+        public static function last( clazz : Class, methodName : String, ... rest ) : ArrayCollection
         {
             return clazz["find"](ArrayUtils.addAll(rest, ["last"]));
         }
@@ -467,7 +469,7 @@ package com.lionart.activeaircord
                 return false;
             }
 
-            Model.prototype.constructor["getTable"]().destroy(pk);
+            prototype.constructor["getTable"]().destroy(pk);
             invokeCallback("after_destroy", false)
 
             return true;
@@ -504,7 +506,7 @@ package com.lionart.activeaircord
 
         public function getPrimaryKey( first : Boolean = false ) : *
         {
-            var pk : Array = Model.prototype.constructor["getTable"]().pk;
+            var pk : Array = prototype.constructor["getTable"]().pk;
             return first ? pk[0] : pk;
         }
 
@@ -671,7 +673,7 @@ package com.lionart.activeaircord
 
         public function valuesForPk() : Dictionary
         {
-            return valuesFor(Model.prototype.constructor["getTable"]().pk);
+            return valuesFor(prototype.constructor["getTable"]().pk);
         }
 
         flash_proxy override function callProperty( methodName : *, ... parameters ) : *
@@ -754,7 +756,7 @@ package com.lionart.activeaircord
             {
                 return false;
             }
-            var table : Table = Model.prototype.constructor["getTable"]();
+            var table : Table = prototype.constructor["getTable"]();
             var attributes : Dictionary;
             if (!(attributes = dirtyAttributes()))
             {

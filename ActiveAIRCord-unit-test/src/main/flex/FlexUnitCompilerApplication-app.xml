@@ -15,14 +15,14 @@
 
 	<!-- A universally unique application identifier. Must be unique across all AIR applications.
 	Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-	<id>FlexUnitApplication</id>
+	<id>FlexUnitCompilerApplication</id>
 
 	<!-- Used as the filename for the application. Required. -->
-	<filename>FlexUnitApplication</filename>
+	<filename>FlexUnitCompilerApplication</filename>
 
 	<!-- The name that is displayed in the AIR application installer. 
 	May have multiple values for each language. See samples or xsd schema file. Optional. -->
-	<name>FlexUnitApplication</name>
+	<name>FlexUnitCompilerApplication</name>
 	
 	<!-- A string value of the format <0-999>.<0-999>.<0-999> that represents application version which can be used to check for application upgrade. 
 	Values can also be 1-part or 2-part. It is not necessary to have a 3-part value.
@@ -241,8 +241,6 @@
         </manifestAdditions> -->
 	    <!-- Color depth for the app (either "32bit" or "16bit"). Optional. Default 16bit before namespace 3.0, 32bit after -->
         <!-- <colorDepth></colorDepth> -->
-        <!-- Indicates if the app contains video or not. Necessary for ordering of video planes with graphics plane, especially in Jellybean - if you app does video this must be set to true - valid values are true or false -->
-        <!-- <containsVideo></containsVideo> -->
     <!-- </android> -->
 	<!-- End of the schema for adding the android specific tags in AndroidManifest.xml file -->
 
