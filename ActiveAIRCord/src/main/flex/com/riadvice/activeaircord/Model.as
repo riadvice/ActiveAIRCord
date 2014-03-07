@@ -19,6 +19,7 @@ package com.riadvice.activeaircord
     import com.riadvice.activeaircord.exceptions.ActiveRecordException;
     import com.riadvice.activeaircord.exceptions.ReadOnlyException;
     import com.riadvice.activeaircord.exceptions.RecordNotFound;
+    import com.riadvice.activeaircord.exceptions.RelationshipException;
     import com.riadvice.activeaircord.exceptions.UndefinedPropertyException;
     import com.riadvice.activeaircord.relationship.IRelationship;
 
@@ -47,7 +48,7 @@ package com.riadvice.activeaircord
         public static var primaryKey : String;
         public static var sequence : String;
 
-        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "getConnection", "reestablishConnection", "getTable", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "pkConditions", "extractAndValidateOptions"];
+        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "getConnection", "reestablishConnection", "getTable", "transaction", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "pkConditions", "extractAndValidateOptions"];
 
         /* Special methods to call static methods from inheritance classes */
 
@@ -344,12 +345,35 @@ package com.riadvice.activeaircord
 
         public static function reestablishConnection( clazz : Class, methodName : String, ... rest ) : void
         {
-
+            Table(clazz["getTable"]()).reestablishConnection();
         }
 
-        public static function transaction( closure : Function ) : void
+        public static function transaction( clazz : Class, methodName : String, ... rest ) : Boolean
         {
+            var connection : SQLiteConnection = SQLiteConnection(clazz["connection"]());
+            var params : * = rest[0];
+            var closure : Function = params[0];
 
+            try
+            {
+                connection.transaction();
+
+                if (closure.apply() === false)
+                {
+                    connection.rollback();
+                    return false;
+                }
+                else
+                {
+                    connection.commit();
+                }
+            }
+            catch ( e : Error )
+            {
+                connection.rollback();
+                throw e;
+            }
+            return true;
         }
 
         public static function updateAll( clazz : Class, methodName : String, ... rest ) : int
@@ -616,7 +640,7 @@ package com.riadvice.activeaircord
 
         public function readonly( readonly : Boolean = true ) : void
         {
-
+            _readOnly = readonly;
         }
 
         public function reload() : void
@@ -626,7 +650,7 @@ package com.riadvice.activeaircord
 
         public function resetDirty() : void
         {
-
+            _dirty = null;
         }
 
         public function save( validate : Boolean = true ) : Boolean
@@ -637,12 +661,35 @@ package com.riadvice.activeaircord
 
         public function setAttributes( attributes : Dictionary ) : void
         {
-
+            setAttributesViaMassAssignment(attributes, true);
         }
 
-        public function setRelationshipFromEagerLoad( name : String, model : Model = null ) : void
+        public function setRelationshipFromEagerLoad( name : String, model : Model = null ) : Boolean
         {
+            var table : Table = prototype.constructor["getTable"]();
+            var rel : IRelationship = table.getRelationship(name);
 
+            if (rel != null)
+            {
+                if (rel.isPoly)
+                {
+                    // if the related model is null and it is a poly then we should have an empty array
+                    if (model == null)
+                    {
+                        return _relationShips[name] = new Dictionary();
+                    }
+                    else
+                    {
+                        return _relationShips[name] = new Array(model);
+                    }
+                }
+                else
+                {
+                    return _relationShips[name] = model;
+                }
+            }
+
+            throw new RelationshipException("Relationship named $name has not been declared for class: {$table->class->getName()}");
         }
 
         public function setTimestamps() : void

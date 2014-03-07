@@ -26,6 +26,7 @@ package com.riadvice.activeaircord.relationship
         function constructInnerJoinSql( table : Table, usingThrough : Boolean = false, alias : String = null ) : String;
         function load( model : Model ) : void;
         function get attributeName() : String;
+        function get isPoly() : Boolean;
         function get className() : String;
     }
 }

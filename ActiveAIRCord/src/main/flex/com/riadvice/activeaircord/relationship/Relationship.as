@@ -103,7 +103,7 @@ package com.riadvice.activeaircord.relationship
             Table.load(className);
         }
 
-        public function isPoly() : Boolean
+        public function get isPoly() : Boolean
         {
             return _polyRelationship;
         }
