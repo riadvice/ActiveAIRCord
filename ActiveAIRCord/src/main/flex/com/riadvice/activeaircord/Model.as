@@ -20,6 +20,7 @@ package com.riadvice.activeaircord
     import com.riadvice.activeaircord.exceptions.ReadOnlyException;
     import com.riadvice.activeaircord.exceptions.RecordNotFound;
     import com.riadvice.activeaircord.exceptions.UndefinedPropertyException;
+    import com.riadvice.activeaircord.relationship.IRelationship;
 
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
@@ -481,8 +482,9 @@ package com.riadvice.activeaircord
             {
                 return null;
             }
-            // TODO
-            return null;
+
+            var dirty : Dictionary = Utils.getIntersectByKey(attributes(), _dirty);
+            return (DictionaryUtils.getKeys(dirty).length == 0) ? dirty : null;
         }
 
         public function get errors() : Array
@@ -571,13 +573,41 @@ package com.riadvice.activeaircord
 
         public function readAttribute( name : String ) : *
         {
+            // check for aliased attribute
             if (hasOwnProperty(name))
             {
                 return _item[name];
             }
+
+            // check for attribute
             if (DictionaryUtils.containsKey(attributes(), name))
             {
                 return attributes()[name];
+            }
+
+            // check relationships if no attribute
+            if (DictionaryUtils.containsKey(_relationShips, name))
+            {
+                return _relationShips[name];
+            }
+
+            var table : Table = prototype.constructor["getTable"]();
+
+            // this may be first access to the relationship so check Table
+            var relationship : IRelationship = table.getRelationship(name);
+            if (relationship != null)
+            {
+                _relationShips[name] = relationship.load(this);
+                return _relationShips[name];
+            }
+
+            if (name == "id")
+            {
+                var pk : * = getPrimaryKey(true);
+                if (attributes()[pk] != undefined)
+                {
+                    return attributes()[pk];
+                }
             }
 
             // TODO : complete
@@ -765,8 +795,8 @@ package com.riadvice.activeaircord
             var pk : Array = getPrimaryKey(true);
             table.insert(attributes);
 
-            invokeCallback("after_create", false);
             _newRecord = false;
+            invokeCallback("after_create", false);
 
             return true;
         }

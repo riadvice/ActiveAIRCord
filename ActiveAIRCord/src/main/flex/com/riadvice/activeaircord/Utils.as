@@ -19,6 +19,7 @@ package com.riadvice.activeaircord
     import flash.utils.Dictionary;
 
     import org.as3commons.lang.ArrayUtils;
+    import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
 
 
@@ -183,6 +184,20 @@ package com.riadvice.activeaircord
             for (var i : int = 0; i < num; i++)
             {
                 result.push(value);
+            }
+            return result;
+        }
+
+        public static function getIntersectByKey( hash1 : Dictionary, hash2 : Dictionary ) : Dictionary
+        {
+            var result : Dictionary = new Dictionary(true);
+            var keys : Array = DictionaryUtils.getKeys(hash1);
+            for (var i : int = 0; i < keys.length; i++)
+            {
+                if (DictionaryUtils.containsKey(hash2, keys[i]))
+                {
+                    result[keys[i]] = hash1[keys[i]];
+                }
             }
             return result;
         }

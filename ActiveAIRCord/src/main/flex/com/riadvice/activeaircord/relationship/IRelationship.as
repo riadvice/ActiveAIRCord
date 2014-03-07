@@ -24,6 +24,7 @@ package com.riadvice.activeaircord.relationship
         function buildAssociation( model : Model, attributes : Array = null ) : void;
         function createAssociation( model : Model, attributes : Array = null ) : void;
         function constructInnerJoinSql( table : Table, usingThrough : Boolean = false, alias : String = null ) : String;
+        function load( model : Model ) : void;
         function get attributeName() : String;
         function get className() : String;
     }
