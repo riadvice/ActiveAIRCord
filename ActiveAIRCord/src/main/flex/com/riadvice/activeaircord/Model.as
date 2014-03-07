@@ -726,14 +726,16 @@ package com.riadvice.activeaircord
 
         }
 
-        public function updateAttribute( name : String, value : * ) : void
+        public function updateAttribute( name : String, value : * ) : Boolean
         {
-
+            this[name] = value;
+            return update(false);
         }
 
-        public function updateAttributes( attributes : Dictionary ) : void
+        public function updateAttributes( attributes : Dictionary ) : Boolean
         {
-
+            setAttributes(attributes);
+            return save();
         }
 
         public function valuesFor( attributeNames : Array ) : Dictionary
