@@ -21,13 +21,7 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="personal/ActiveAIRCord/ActiveAIRCord-unit-test/src/test/as3/FlexUnitApplication.as">
-      <airExcludes/>
-    </application>
     <application path="FlexUnitApplication.mxml">
-      <airExcludes/>
-    </application>
-    <application path="D:/personal/ActiveAIRCord/ActiveAIRCord-unit-test/src/test/as3/FlexUnitApplication.as">
       <airExcludes/>
     </application>
   </applications>
