@@ -16,8 +16,15 @@
  */
 package com.riadvice.activeaircord.relationship
 {
+    import com.riadvice.activeaircord.Inflector;
     import com.riadvice.activeaircord.Model;
     import com.riadvice.activeaircord.Table;
+    import com.riadvice.activeaircord.Utils;
+
+    import flash.utils.Dictionary;
+
+    import org.as3commons.lang.ClassUtils;
+    import org.as3commons.lang.DictionaryUtils;
 
     public class HasMany extends Relationship
     {
@@ -33,7 +40,25 @@ package com.riadvice.activeaircord.relationship
 
         override protected function setKeys( modelClassName : String, override : Boolean = false ) : void
         {
+            if (this._options['through'] != undefined)
+            {
+                this.through = this._options['through'];
 
+                if (this._options['source'] != undefined)
+                {
+                    setClassName(this._options['source']);
+                }
+            }
+
+            if (!this.primaryKey && this._options['primary_key'] != undefined)
+            {
+                this.primaryKey = this._options['primary_key'] is Array ? this._options['primary_key'] : [this._options['primary_key']];
+            }
+
+            if (!this.className)
+            {
+                setInferredClassName();
+            }
         }
 
         override public function load( model : Model ) : void
@@ -41,9 +66,20 @@ package com.riadvice.activeaircord.relationship
 
         }
 
+        private function getForeignkeyForNewAssociation( model : Model ) : Dictionary
+        {
+            this.setKeys(ClassUtils.getName(ClassUtils.forInstance(model)));
+            var primaryKey : String = Inflector.variablize(this.foreignKey[0]);
+
+            var result : Dictionary = new Dictionary(true);
+
+            result[primaryKey] = model["id"];
+            return result;
+        }
+
+
         private function injectForeignKeyForNewAssociation( model : Model, attributes : Array ) : void
         {
-
         }
 
         public function build_association( model : Model, attributes : Array = null ) : void
