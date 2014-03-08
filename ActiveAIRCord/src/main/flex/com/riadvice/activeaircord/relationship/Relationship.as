@@ -16,19 +16,22 @@
  */
 package com.riadvice.activeaircord.relationship
 {
-    import avmplus.getQualifiedClassName;
-
     import com.riadvice.activeaircord.Inflector;
     import com.riadvice.activeaircord.Model;
     import com.riadvice.activeaircord.Table;
 
     import flash.utils.Dictionary;
 
+    import avmplus.getQualifiedClassName;
+
+    import org.as3commons.lang.ClassUtils;
+
     public class Relationship implements IRelationship
     {
         private var _attributeName : String;
         private var _className : String;
         private var _foreignKey : Array = [];
+        private var _primaryKey : Array = [];
         protected var _options : Array = [];
         protected var _polyRelationship : Boolean = false;
         protected static const _validAssociationOptions : Array = ["class_name", "class", "foreign_key", "conditions", "select", "readonly", "namespace"];
@@ -98,15 +101,40 @@ package com.riadvice.activeaircord.relationship
             _foreignKey = value;
         }
 
-        protected function getTable() : void
+        public function get primaryKey() : Array
         {
-            Table.load(className);
+            return _primaryKey;
+        }
+
+        public function set primaryKey( value : Array ) : void
+        {
+            _primaryKey = value;
+        }
+
+        protected function getTable() : Table
+        {
+            return Table.load(className);
         }
 
         public function get isPoly() : Boolean
         {
             return _polyRelationship;
         }
+
+        protected function setKeys( modelClassName : String, override : Boolean = false ) : void
+        {
+            //infer from class_name
+            if (!this.foreignKey || override)
+            {
+                this.foreignKey = [Inflector.keyify(modelClassName)];
+            }
+
+            if (!this.primaryKey || override)
+            {
+                this.primaryKey = Table.load(modelClassName).pk;
+            }
+        }
+
 
         protected function queryAndAttachRelatedModelsEagerly( table : Table, models : Array, attributes : Array, includes : Array = null, queryKeys : Array = null, modelValuesKeys : Array = null ) : void
         {
@@ -152,14 +180,67 @@ package com.riadvice.activeaircord.relationship
 
         }
 
-        public function constructInnerJoinSql( table : Table, usingThrough : Boolean = false, alias : String = null ) : String
+        public function constructInnerJoinSql( fromTable : Table, usingThrough : Boolean = false, alias : String = null ) : String
         {
-            return null;
+            var joinTable : Table;
+            var joinTableName : String;
+            var fromTableName : String;
+
+            var foreignKey : String;
+            var joinPrimaryKey : String;
+
+            if (usingThrough)
+            {
+                joinTable = fromTable;
+                joinTableName = fromTable.getFullyQualifiedTableName();
+                fromTableName = Table.load(this.className).getFullyQualifiedTableName();
+            }
+            else
+            {
+                joinTable = Table.load(this.className);
+                joinTableName = joinTable.getFullyQualifiedTableName();
+                fromTableName = fromTable.getFullyQualifiedTableName();
+            }
+
+            // need to flip the logic when the key is on the other table
+            if (this is HasMany || this is HasOne)
+            {
+                setKeys(ClassUtils.getName(fromTable.clazz));
+
+                if (usingThrough)
+                {
+                    foreignKey = this.primaryKey[0];
+                    joinPrimaryKey = this.foreignKey[0];
+                }
+                else
+                {
+                    joinPrimaryKey = this.foreignKey[0];
+                    foreignKey = this.primaryKey[0];
+                }
+            }
+            else
+            {
+                foreignKey = this.foreignKey[0];
+                joinPrimaryKey = this.primaryKey[0];
+            }
+
+            var aliasedJoinTableName : String;
+            if (alias != null)
+            {
+                aliasedJoinTableName = alias = this.getTable().conn.quoteName(alias);
+                alias += ' ';
+            }
+            else
+            {
+                aliasedJoinTableName = joinTableName;
+            }
+
+            return "INNER JOIN $join_table_name " + alias + "ON(" + fromTableName + "." + foreignKey + " = " + aliasedJoinTableName + "." + joinPrimaryKey + ")";
         }
 
         public function load( model : Model ) : void
         {
-
+            // Override me
         }
 
 

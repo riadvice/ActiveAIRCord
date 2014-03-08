@@ -23,8 +23,6 @@ package com.riadvice.activeaircord.relationship
     {
         protected static var validAssociationOptions : Array = ["primary_key", "order", "group", "having", "limit", "offset", "through", "source"];
 
-        protected var primaryKey : String;
-
         private var hasOne : Boolean = false;
         private var through : String;
 
@@ -33,7 +31,7 @@ package com.riadvice.activeaircord.relationship
             super(options);
         }
 
-        protected function setKeys( modelClassName : String, override : Boolean = false ) : void
+        override protected function setKeys( modelClassName : String, override : Boolean = false ) : void
         {
 
         }
