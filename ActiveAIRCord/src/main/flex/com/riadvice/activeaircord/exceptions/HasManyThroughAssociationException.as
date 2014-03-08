@@ -17,9 +17,9 @@
 package com.riadvice.activeaircord.exceptions
 {
 
-    public class HasManuThroughAssociationException extends Error
+    public class HasManyThroughAssociationException extends Error
     {
-        public function HasManuThroughAssociationException( message : * = "", id : * = 0 )
+        public function HasManyThroughAssociationException( message : * = "", id : * = 0 )
         {
             super(message, id);
         }
