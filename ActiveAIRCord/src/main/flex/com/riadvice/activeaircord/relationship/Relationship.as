@@ -21,12 +21,13 @@ package com.riadvice.activeaircord.relationship
     import com.riadvice.activeaircord.SQLBuilder;
     import com.riadvice.activeaircord.Table;
     import com.riadvice.activeaircord.Utils;
-    
+
     import flash.utils.Dictionary;
-    
+
     import avmplus.getQualifiedClassName;
-    
+
     import org.as3commons.lang.ClassUtils;
+    import org.as3commons.lang.DictionaryUtils;
 
     public class Relationship implements IRelationship
     {
@@ -143,17 +144,30 @@ package com.riadvice.activeaircord.relationship
 
         }
 
-        public function buildAssociation( model : Model, attributes : Array = null ) : void
+        public function buildAssociation( model : Model, attributes : Array = null, guardAttributes : Boolean = true ) : *
         {
+            var clazz : Class = ClassUtils.forName(this.className);
+            return ClassUtils.newInstance(clazz, [attributes, guardAttributes]);
         }
 
         public function createAssociation( model : Model, attributes : Array = null ) : void
         {
         }
 
-        protected function appendRecordToAssociate( associate : Model, record : Model ) : void
+        protected function appendRecordToAssociate( associate : Model, record : Model ) : Model
         {
+            var association : * = associate[this.attributeName];
 
+            if (this._polyRelationship)
+            {
+                association = [record];
+            }
+            else
+            {
+                association = record;
+            }
+
+            return record;
         }
 
         protected function mergeAssociationOptions( options : Array ) : Array
@@ -162,15 +176,22 @@ package com.riadvice.activeaircord.relationship
             //var availableOptions : Array = ArrayUtils.
         }
 
-        protected function unsetNonFinderOptions( options : Dictionary ) : void
+        protected function unsetNonFinderOptions( options : Dictionary ) : Dictionary
         {
-
+            for each (var key : String in DictionaryUtils.getKeys(options))
+            {
+                if (Model.VALID_OPTIONS.indexOf(key) > 0)
+                {
+                    delete options[key];
+                }
+            }
+            return options;
         }
 
         protected function setInferredClassName() : void
         {
-			var singularize : Boolean = this is HasMany ? true : false;
-			setClassName(Utils.classify(this.attributeName, singularize));
+            var singularize : Boolean = this is HasMany ? true : false;
+            setClassName(Utils.classify(this.attributeName, singularize));
         }
 
         protected function setClassName( className : String ) : void

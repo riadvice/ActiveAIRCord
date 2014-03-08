@@ -26,11 +26,11 @@ package com.riadvice.activeaircord
 
     public final class Utils
     {
-        public static function classify( className : String, singularize = false ) : String
+        public static function classify( className : String, singularize : Boolean = false ) : String
         {
             if (singularize)
             {
-                className = singularize(className);
+                className = Inflector.singularize(className);
             }
 
             className = Inflector.camelize(className);
