@@ -21,13 +21,20 @@ package com.riadvice.activeaircord
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
+    import org.as3commons.lang.StringUtils;
 
 
     public final class Utils
     {
-        public static function classify( className : String ) : String
+        public static function classify( className : String, singularize = false ) : String
         {
-            return null;
+            if (singularize)
+            {
+                className = singularize(className);
+            }
+
+            className = Inflector.camelize(className);
+            return StringUtils.capitalize(className);
         }
 
         public static function flattenArray( array : Array ) : Array
@@ -104,9 +111,9 @@ package com.riadvice.activeaircord
 
         }
 
-        public static function addCondition( condition : String, conditions : Array = null, conjuction : String = SQL.AND ) : void
+        public static function addCondition( condition : *, conditions : * = null, conjuction : String = SQL.AND ) : Dictionary
         {
-
+            return null;
         }
 
         public static function humanAttribute( attr : String ) : void

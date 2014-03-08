@@ -676,16 +676,16 @@ package com.riadvice.activeaircord
                     // if the related model is null and it is a poly then we should have an empty array
                     if (model == null)
                     {
-                        return _relationShips[name] = new Dictionary();
+                        return Boolean(_relationShips[name] = new Dictionary());
                     }
                     else
                     {
-                        return _relationShips[name] = new Array(model);
+                        return Boolean(_relationShips[name] = [model]);
                     }
                 }
                 else
                 {
-                    return _relationShips[name] = model;
+                    return Boolean(_relationShips[name] = model);
                 }
             }
 

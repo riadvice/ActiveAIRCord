@@ -18,12 +18,14 @@ package com.riadvice.activeaircord.relationship
 {
     import com.riadvice.activeaircord.Inflector;
     import com.riadvice.activeaircord.Model;
+    import com.riadvice.activeaircord.SQLBuilder;
     import com.riadvice.activeaircord.Table;
-
+    import com.riadvice.activeaircord.Utils;
+    
     import flash.utils.Dictionary;
-
+    
     import avmplus.getQualifiedClassName;
-
+    
     import org.as3commons.lang.ClassUtils;
 
     public class Relationship implements IRelationship
@@ -167,7 +169,8 @@ package com.riadvice.activeaircord.relationship
 
         protected function setInferredClassName() : void
         {
-
+			var singularize : Boolean = this is HasMany ? true : false;
+			setClassName(Utils.classify(this.attributeName, singularize));
         }
 
         protected function setClassName( className : String ) : void
@@ -175,9 +178,31 @@ package com.riadvice.activeaircord.relationship
 
         }
 
-        protected function createConditionsFromKeys( model : Model, conditionKeys : Array = null, valueKeys : Array = null ) : void
+        protected function createConditionsFromKeys( model : Model, conditionKeys : Array = null, valueKeys : Dictionary = null ) : Dictionary
         {
+            var conditionString : String = conditionKeys.join('_and_');
+            var conditionValues : Array = Utils.getDictionaryValues(model.getValuesFor(valueKeys));
 
+            // return null if all the foreign key values are null so that we don't try to do a query like "id is null"
+            if (Utils.all(null, conditionValues))
+            {
+                return null;
+            }
+
+            var conditions : Array = SQLBuilder.createConditionsFromUnderscoredString(Table.load(ClassUtils.getName(ClassUtils.forInstance(model))).conn, conditionString, conditionValues);
+
+            // DO NOT CHANGE THE NEXT TWO LINES. add_condition operates on a reference and will screw options array up
+            var optionsConditions : Array;
+            if (_options['conditions'] != undefined)
+            {
+                optionsConditions = _options['conditions'];
+            }
+            else
+            {
+                optionsConditions = new Array();
+            }
+
+            return Utils.addCondition(optionsConditions, conditions);
         }
 
         public function constructInnerJoinSql( fromTable : Table, usingThrough : Boolean = false, alias : String = null ) : String
@@ -235,7 +260,7 @@ package com.riadvice.activeaircord.relationship
                 aliasedJoinTableName = joinTableName;
             }
 
-            return "INNER JOIN $join_table_name " + alias + "ON(" + fromTableName + "." + foreignKey + " = " + aliasedJoinTableName + "." + joinPrimaryKey + ")";
+            return "INNER JOIN " + joinTableName + " " + alias + "ON(" + fromTableName + "." + foreignKey + " = " + aliasedJoinTableName + "." + joinPrimaryKey + ")";
         }
 
         public function load( model : Model ) : void
