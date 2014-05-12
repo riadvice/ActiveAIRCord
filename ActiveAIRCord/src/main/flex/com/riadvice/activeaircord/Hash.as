@@ -20,9 +20,9 @@ package com.riadvice.activeaircord
 
     import flash.utils.Dictionary;
 
-    public dynamic class AdvancedDictionary extends Dictionary
+    public dynamic class Hash extends Dictionary
     {
-        public function AdvancedDictionary( weakKeys : Boolean = false, keys : Array = null, values : Array = null )
+        public function Hash( weakKeys : Boolean = false, keys : Array = null, values : Array = null )
         {
             super(weakKeys);
             if (keys && values && keys.length != values.length)
