@@ -108,9 +108,11 @@ package com.riadvice.activeaircord
             return Table.load(ClassUtils.getName(clazz));
         }
 
-        public static function all( clazz : Class, methodName : String, ... rest ) : ArrayCollection
+        public static function all( clazz : Class, methodName : String, ... rest ) : *
         {
-            return clazz["find"](ArrayUtils.addAll(rest[0], ["all"]));
+            var params : Array = rest[0];
+            ArrayUtils.addAll(params, ["all"])
+            return clazz["find"](params);
         }
 
         public static function count( clazz : Class, methodName : String, ... rest ) : int
@@ -179,7 +181,7 @@ package com.riadvice.activeaircord
         public static function find( clazz : Class, methodName : String, ... rest ) : *
         {
             // FIXME : this method must work whatever args are passed to it
-            var params : Array = rest[0];
+            var params : Array = rest[0][0];
             if (!params || params.length == 0)
             {
                 throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " without an ID");
@@ -221,10 +223,10 @@ package com.riadvice.activeaircord
             }
             else if (params.length == numArgs == 1)
             {
-                oneArgs = params[0];
+                oneArgs = params[0] === undefined ? null : params[0];
             }
 
-            // anything left in $args is a find by pk
+            // anything left in args is a find by pk
             if (numArgs > 0 && !options["conditions"])
             {
                 return clazz["findByPk"](oneArgs ? oneArgs : params, options);

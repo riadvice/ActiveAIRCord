@@ -18,6 +18,7 @@ package com.riadvice.activeaircord.relationship
 {
     import com.riadvice.activeaircord.Inflector;
     import com.riadvice.activeaircord.Model;
+    import com.riadvice.activeaircord.SQL;
     import com.riadvice.activeaircord.SQLBuilder;
     import com.riadvice.activeaircord.Table;
     import com.riadvice.activeaircord.Utils;
@@ -26,6 +27,7 @@ package com.riadvice.activeaircord.relationship
 
     import avmplus.getQualifiedClassName;
 
+    import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
 
@@ -35,11 +37,11 @@ package com.riadvice.activeaircord.relationship
         private var _className : String;
         private var _foreignKey : Array = [];
         private var _primaryKey : Array = [];
-        protected var _options : Array = [];
+        protected var _options : Dictionary = new Dictionary(true);
         protected var _polyRelationship : Boolean = false;
         protected static const _validAssociationOptions : Array = ["class_name", "class", "foreign_key", "conditions", "select", "readonly", "namespace"];
 
-        public function Relationship( options : Array = null )
+        public function Relationship( options : Dictionary = null )
         {
             attributeName = options[0];
             _options = mergeAssociationOptions(options);
@@ -141,7 +143,99 @@ package com.riadvice.activeaircord.relationship
 
         protected function queryAndAttachRelatedModelsEagerly( table : Table, models : Array, attributes : Array, includes : Array = null, queryKeys : Array = null, modelValuesKeys : Array = null ) : void
         {
+            var values : Array = new Array();
+            var options : Dictionary = this._options;
+            var queryKey : String = queryKeys[0];
+            var modelValuesKey = modelValuesKeys[0];
 
+            for each (var value in attributes)
+            {
+                values.push(value[Inflector.variablize(modelValuesKey)]);
+            }
+
+            values = [values];
+            var conditions : Array = SQLBuilder.createConditionsFromUnderscoredString(table.conn, queryKey, values);
+
+            if ((options["conditions"] != undefined) && (options["conditions"][0].length > 1))
+            {
+                Utils.addCondition(options["conditions"], conditions);
+            }
+            else
+            {
+                options["conditions"] = conditions;
+            }
+
+            if (!ArrayUtils.isEmpty(includes))
+            {
+                options["include"] = includes;
+            }
+
+            if (options["through"] != undefined)
+            {
+                // save old keys as we will be reseting them below for inner join convenience
+                var pk : Array = this.primaryKey;
+                var fk : Array = this.foreignKey;
+
+                this.setKeys(ClassUtils.getName(getTable().clazz), true)
+
+                if (options["class_name"] != undefined)
+                {
+                    var clazz = Utils.classify(options["through"], true);
+
+                    var throughTable : Table = clazz["table"]();
+                }
+                else
+                {
+                    clazz = options["class_name"];
+                    var relation : IRelationship = Table(clazz["table"]()).getRelationship(options["through"]);
+                    var throughTable : Table = Relationship(relation).getTable();
+                }
+                options["joins"] = this.constructInnerJoinSql(throughTable, true);
+
+                var queryKey : String = this._primaryKey[0];
+
+                // reset keys
+                this._primaryKey = pk;
+                this._foreignKey = fk;
+            }
+
+            options = unsetNonFinderOptions(options);
+
+            var clazz : String = this.className;
+
+            var relateModels = ClassUtils.forName(clazz)["find"]("all", options);
+            var usedModels = new Array();
+            modelValuesKey = Inflector.variablize(modelValuesKey);
+            queryKey = Inflector.variablize(queryKey);
+
+            for each (var model : Model in models)
+            {
+                var matches : int = 0;
+                var keyToMatch : String = model[modelValuesKey];
+
+                for each (var related : Model in relateModels)
+                {
+                    if (related[queryKey] == keyToMatch)
+                    {
+                        /*
+                           $hash = spl_object_hash($related);
+
+                           if (in_array($hash, $used_models))
+                           $model->set_relationship_from_eager_load(clone($related), $this->attribute_name);
+                           else
+                           $model->set_relationship_from_eager_load($related, $this->attribute_name);
+
+                           $used_models[] = $hash;
+                         */
+                        matches++;
+                    }
+                }
+
+                if (0 === matches)
+                {
+                    model.setRelationshipFromEagerLoad(this._attributeName);
+                }
+            }
         }
 
         public function buildAssociation( model : Model, attributes : Array = null, guardAttributes : Boolean = true ) : *
@@ -150,8 +244,11 @@ package com.riadvice.activeaircord.relationship
             return ClassUtils.newInstance(clazz, [attributes, guardAttributes]);
         }
 
-        public function createAssociation( model : Model, attributes : Array = null ) : void
+        public function createAssociation( model : Model, attributes : Array = null, guardAttributes : Boolean = true ) : Model
         {
+            var clazz : Class = ClassUtils.forName(this.className);
+            var newRecord : Model = clazz["create"](attributes, true, guardAttributes);
+            return this.appendRecordToAssociate(model, newRecord);
         }
 
         protected function appendRecordToAssociate( associate : Model, record : Model ) : Model
@@ -170,10 +267,9 @@ package com.riadvice.activeaircord.relationship
             return record;
         }
 
-        protected function mergeAssociationOptions( options : Array ) : Array
+        protected function mergeAssociationOptions( options : Dictionary ) : Dictionary
         {
             return null;
-            //var availableOptions : Array = ArrayUtils.
         }
 
         protected function unsetNonFinderOptions( options : Dictionary ) : Dictionary
@@ -281,7 +377,7 @@ package com.riadvice.activeaircord.relationship
                 aliasedJoinTableName = joinTableName;
             }
 
-            return "INNER JOIN " + joinTableName + " " + alias + "ON(" + fromTableName + "." + foreignKey + " = " + aliasedJoinTableName + "." + joinPrimaryKey + ")";
+            return [SQL.INNER, SQL.JOIN, joinTableName, alias, SQL.ON, "(", fromTableName, ".", foreignKey, SQL.EQUALS, aliasedJoinTableName, ".", joinPrimaryKey, ")"].join(" ");
         }
 
         public function load( model : Model ) : void

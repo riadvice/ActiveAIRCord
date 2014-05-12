@@ -17,10 +17,12 @@
 package com.riadvice.activeaircord.relationship
 {
     import com.riadvice.activeaircord.Model;
+    
+    import flash.utils.Dictionary;
 
     public class HasAndBelongsToMany extends Relationship
     {
-        public function HasAndBelongsToMany( options : Array )
+        public function HasAndBelongsToMany( options : Dictionary )
         {
             super(options);
         }

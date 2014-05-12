@@ -22,7 +22,7 @@ package com.riadvice.activeaircord.relationship
     public interface IRelationship
     {
         function buildAssociation( model : Model, attributes : Array = null, guardAttributes : Boolean = true ) : *
-        function createAssociation( model : Model, attributes : Array = null ) : void;
+        function createAssociation( model : Model, attributes : Array = null, guardAttributes : Boolean = true ) : Model;
         function constructInnerJoinSql( table : Table, usingThrough : Boolean = false, alias : String = null ) : String;
         function load( model : Model ) : void;
         function get attributeName() : String;

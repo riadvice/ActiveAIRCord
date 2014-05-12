@@ -22,10 +22,10 @@ package com.riadvice.activeaircord
     import com.riadvice.activeaircord.relationship.HasMany;
     import com.riadvice.activeaircord.relationship.HasOne;
     import com.riadvice.activeaircord.relationship.IRelationship;
-    
+
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
-    
+
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
@@ -79,8 +79,8 @@ package com.riadvice.activeaircord
             setDelegates();
 
             callback = new Callback(className);
-            callback.register("before_save", function( model : Model ) : void {model.setTimestamps();}, new AdvancedDictionary(true, ["prepend"], [true]));
-            callback.register("after_save", function( model : Model ) : void {model.resetDirty();}, new AdvancedDictionary(true, ["prepend"], [true]));
+            callback.register("before_save", function( model : Model ) : void {model.setTimestamps();}, new Hash(true, ["prepend"], [true]));
+            callback.register("after_save", function( model : Model ) : void {model.resetDirty();}, new Hash(true, ["prepend"], [true]));
         }
 
         public function reestablishConnection( close : Boolean = true ) : *
@@ -391,7 +391,7 @@ package com.riadvice.activeaircord
                     continue;
                 }
                 var relationship : IRelationship;
-                var definition : Array = [];
+                var definition : Dictionary = new Dictionary();
                 switch (propertyName)
                 {
                     case "has_many":

@@ -14,17 +14,11 @@
    You should have received a copy of the GNU General Public License
    along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.riadvice.activeaircord.matchers
+package com.riadvice.activeaircord.models
 {
-    import org.as3commons.lang.StringUtils;
-    import org.flexunit.asserts.assertTrue;
+    import com.riadvice.activeaircord.Model;
 
-    public function assertSQLHas( value : String, compared : String ) : void
+    public class Venue extends Model
     {
-        value = StringUtils.replace(StringUtils.replace(value, "\"", ""), "`", '');
-        compared = StringUtils.replace(StringUtils.replace(compared, "\"", ""), "`", '');
-		trace("expected   SQL => "+ value);
-		trace("got result SQL => "+ compared);
-        assertTrue(StringUtils.contains(value, compared) || StringUtils.equals(value, compared));
     }
 }

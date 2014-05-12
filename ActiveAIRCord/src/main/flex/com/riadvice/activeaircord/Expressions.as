@@ -34,6 +34,7 @@ package com.riadvice.activeaircord
         {
             var params : Array;
             _connection = connection;
+			_expressions = "";
 
             if (expressions is Dictionary)
             {

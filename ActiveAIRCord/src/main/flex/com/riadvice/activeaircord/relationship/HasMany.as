@@ -33,7 +33,7 @@ package com.riadvice.activeaircord.relationship
         private var hasOne : Boolean = false;
         private var through : String;
 
-        public function HasMany( options : Array )
+        public function HasMany( options : Dictionary )
         {
             super(options);
         }

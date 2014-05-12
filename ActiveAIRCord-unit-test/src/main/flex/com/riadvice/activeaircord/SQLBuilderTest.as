@@ -111,7 +111,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testWhereWithHash() : void
         {
-            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"]));
+            _sql.where(new Hash(true, ["id", "name"], [1, "Tito"]));
             assertSQLHas("SELECT * FROM authors WHERE id=? AND name=?", _sql.toString());
             assertThat(_sql.whereValues, array(1, "Tito"));
         }
@@ -119,7 +119,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testWhereWithHashAndArray() : void
         {
-            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, ["Tito", "Mexican"]]));
+            _sql.where(new Hash(true, ["id", "name"], [1, ["Tito", "Mexican"]]));
             assertSQLHas("SELECT * FROM authors WHERE id=? AND name IN(?,?)", _sql.toString());
             assertThat(_sql.whereValues, array(1, "Tito", "Mexican"));
         }
@@ -127,7 +127,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testWhereWithHashAndNull() : void
         {
-            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, null]));
+            _sql.where(new Hash(true, ["id", "name"], [1, null]));
             assertSQLHas("SELECT * FROM authors WHERE id=? AND name IS ?", _sql.toString());
             assertThat(_sql.whereValues, array(1, null));
         }
@@ -196,7 +196,7 @@ package com.riadvice.activeaircord
             _sql.having("created_at > '2009-01-01'");
             _sql.order("name");
             _sql.group("name");
-            _sql.where(new AdvancedDictionary(true, ["id"], [1]));
+            _sql.where(new Hash(true, ["id"], [1]));
             assertSQLHas(conn.limit("SELECT * FROM authors WHERE id=? GROUP BY name HAVING created_at > '2009-01-01' ORDER BY name", 1, 10), _sql.toString());
         }
 
@@ -209,21 +209,21 @@ package com.riadvice.activeaircord
         [Test]
         public function testInsert() : void
         {
-            _sql.insert(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"]));
+            _sql.insert(new Hash(true, ["id", "name"], [1, "Tito"]));
             assertSQLHas("INSERT INTO authors(id,name) VALUES(?,?)", _sql.toString());
         }
 
         [Test]
         public function testInsertWithNull() : void
         {
-            _sql.insert(new AdvancedDictionary(true, ["id", "name"], [1, null]));
+            _sql.insert(new Hash(true, ["id", "name"], [1, null]));
             assertSQLHas("INSERT INTO authors(id,name) VALUES(?,?)", _sql.toString());
         }
 
         [Test]
         public function testUpdateWithHash() : void
         {
-            _sql.update(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"])).where("id=1 AND name IN(?)", ["Tito", "Mexican"]);
+            _sql.update(new Hash(true, ["id", "name"], [1, "Tito"])).where("id=1 AND name IN(?)", ["Tito", "Mexican"]);
             assertSQLHas("UPDATE authors SET id=?, name=? WHERE id=1 AND name IN(?,?)", _sql.toString());
             assertThat(_sql.bindValues(), array(1, "Tito", "Tito", "Mexican"));
         }
@@ -232,7 +232,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testUpdateWithLimitAndOrder() : void
         {
-            _sql.update(new AdvancedDictionary(true, ["id"], [1])).order("name asc").limit(1);
+            _sql.update(new Hash(true, ["id"], [1])).order("name asc").limit(1);
             assertSQLHas("UPDATE authors SET id=? ORDER BY name asc LIMIT 1", _sql.toString());
         }
 
@@ -246,7 +246,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testUpdateWithNull() : void
         {
-            _sql.update(new AdvancedDictionary(true, ["id", "name"], [1, null])).where("id=1");
+            _sql.update(new Hash(true, ["id", "name"], [1, null])).where("id=1");
             assertSQLHas("UPDATE authors SET id=?, name=? WHERE id=1", _sql.toString());
         }
 
@@ -268,7 +268,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testDeleteWithHash() : void
         {
-            _sql.destroy(new AdvancedDictionary(true, ["id", "name"], [1, ["Tito", "Mexican"]]));
+            _sql.destroy(new Hash(true, ["id", "name"], [1, ["Tito", "Mexican"]]));
             assertSQLHas("DELETE FROM authors WHERE id=? AND name IN(?,?)", _sql.toString());
             assertThat(_sql.whereValues, array(1, "Tito", "Mexican"));
         }
@@ -276,7 +276,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testDeleteWithLimitAndOrder() : void
         {
-            _sql.destroy(new AdvancedDictionary(true, ["id"], [1])).order("name asc").limit(1);
+            _sql.destroy(new Hash(true, ["id"], [1])).order("name asc").limit(1);
             assertSQLHas("DELETE FROM authors WHERE id=? ORDER BY name asc LIMIT 1", _sql.toString());
         }
 
@@ -334,7 +334,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testCreateConditionsFromUnderscoredStringWithMappedColumns() : void
         {
-            assertConditions("id=? AND name=?", [1, "Tito"], "id_and_my_name", new AdvancedDictionary(true, ["my_name"], ["name"]));
+            assertConditions("id=? AND name=?", [1, "Tito"], "id_and_my_name", new Hash(true, ["my_name"], ["name"]));
         }
 
         [Test]
@@ -352,7 +352,7 @@ package com.riadvice.activeaircord
         public function testCreateHashFromUnderscoredStringWithMappedColumns() : void
         {
             var values : Array = [1, "Tito"];
-            var map : Dictionary = new AdvancedDictionary(true, ["my_name"], ["name"]);
+            var map : Dictionary = new Hash(true, ["my_name"], ["name"]);
             var hash : Dictionary = SQLBuilder.createHashFromUnderscoredString("id_and_my_name", values, map);
             var expectedHash : Dictionary = new Dictionary(true);
             expectedHash["id"] = 1;
@@ -367,7 +367,7 @@ package com.riadvice.activeaircord
             var joins : String = "INNER JOIN books ON (books.id = authors.id)";
             // joins needs to be called prior to where
             _sql.joins(joins);
-            _sql.where(new AdvancedDictionary(true, ["id", "name"], [1, "Tito"]));
+            _sql.where(new Hash(true, ["id", "name"], [1, "Tito"]));
             assertSQLHas("SELECT * FROM authors " + joins + " WHERE authors.id=? AND authors.name=?", _sql.toString());
         }
 

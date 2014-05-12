@@ -40,15 +40,15 @@ package com.riadvice.activeaircord
             "validates_numericality_of",
             "validates_uniqueness_of"];
 
-        private static const DEFAULT_VALIDATION_OPTIONS : AdvancedDictionary = new AdvancedDictionary(true,
+        private static const DEFAULT_VALIDATION_OPTIONS : Hash = new Hash(true,
             ["on", "allow_null", "allow_blank", "message"],
             ["save", false, false, null]);
 
-        private static const ALL_RANGE_OPTIONS : AdvancedDictionary = new AdvancedDictionary(true,
+        private static const ALL_RANGE_OPTIONS : Hash = new Hash(true,
             ["is", "within", "in", "minimum", "maximum"],
             [null, null, null, null, null]);
 
-        private static const ALL_NUMERICALITY_CHECKS : AdvancedDictionary = new AdvancedDictionary(true,
+        private static const ALL_NUMERICALITY_CHECKS : Hash = new Hash(true,
             ["greater_than", "greater_than_or_equal_to", "equal_to", "less_than", "less_than_or_equal_to", "odd", "even"],
             [null, null, null, null, null, null, null]);
 

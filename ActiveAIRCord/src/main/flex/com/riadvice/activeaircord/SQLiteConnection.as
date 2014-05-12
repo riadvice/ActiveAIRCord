@@ -20,6 +20,7 @@ package com.riadvice.activeaircord
 
     import flash.data.SQLColumnSchema;
     import flash.data.SQLConnection;
+    import flash.data.SQLMode;
     import flash.data.SQLResult;
     import flash.data.SQLStatement;
     import flash.data.SQLTableSchema;
@@ -51,7 +52,7 @@ package com.riadvice.activeaircord
                {
                throw new ActiveRecordException("Could not find sqlite db: " + info["host"]);
                }*/
-            this.open(dbFile);
+            this.open(dbFile, info["mode"] ? info["mode"] : SQLMode.CREATE);
         }
 
         public static function instance( connectionStringOrConnectionName : * = null ) : void
@@ -70,7 +71,7 @@ package com.riadvice.activeaircord
             var info : Dictionary = new Dictionary(true);
             info["protocol"] = url.protocol;
             info["host"] = url.host;
-            info["db"] = url.path.length > 0 ? url.path.substr(1) : null;
+            info["db"] = url.path.length > 0 ? url.path : null;
             info["user"] = url.userInfo.length > 0 ? url.userInfo : null;
             info["pass"] = url.userInfo.length > 0 ? url.userInfo : null;
 
@@ -110,6 +111,10 @@ package com.riadvice.activeaircord
                     if (keyAndValue[0] == 'charset')
                     {
                         info["charset"] = keyAndValue[1];
+                    }
+                    else if (keyAndValue[0] == 'mode')
+                    {
+                        info["mode"] = keyAndValue[1];
                     }
                 }
             }

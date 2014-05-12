@@ -189,5 +189,12 @@ package com.riadvice.activeaircord
             assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
         }
 
+        [Test]
+        public function testAliasAttributeGetter() : void
+        {
+            var author : Author = new Author();
+            assertEquals('default_name', author["name"]);
+        }
+
     }
 }
