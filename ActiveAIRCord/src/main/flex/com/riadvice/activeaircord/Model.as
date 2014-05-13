@@ -181,7 +181,8 @@ package com.riadvice.activeaircord
         public static function find( clazz : Class, methodName : String, ... rest ) : *
         {
             // FIXME : this method must work whatever args are passed to it
-            var params : Array = rest[0][0];
+            // The workaround below is because some methods are called with a longer stack
+            var params : Array = rest[0][0] is Array ? rest[0][0] : rest[0];
             if (!params || params.length == 0)
             {
                 throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " without an ID");
@@ -720,7 +721,7 @@ package com.riadvice.activeaircord
 
         public function toJson( options : Array = null ) : void
         {
-
+            JSON.stringify(_attributes);
         }
 
         public function toXml( options : Array = null ) : void

@@ -282,6 +282,7 @@ package com.riadvice.activeaircord
 
         private function applyWhereConditions( ... args ) : void
         {
+            args = args[0] is Array ? args[0] : args;
             var numArgs : int = args.length;
 
             if (numArgs == 1 && args[0] is Dictionary)

@@ -169,8 +169,8 @@ package com.riadvice.activeaircord
                     {
                         options["conditions"] = [options["conditions"]];
                     }
-
-                        // TODO missing condition handling
+					
+                    sql.where(options["conditions"]);
                 }
                 else
                 {

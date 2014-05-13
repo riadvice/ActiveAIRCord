@@ -131,6 +131,7 @@ package com.riadvice.activeaircord
             assertEquals(DictionaryUtils.getKeys(Author["extractAndValidateOptions"](args)).length, 0);
         }
 
+		// FIXME
         [Test]
         public function testInvalidAttribute() : void
         {
@@ -162,6 +163,7 @@ package com.riadvice.activeaircord
             assertEquals(1, String(exceptions[0]).match(new RegExp("another_invalid_attribute", "g")).length);
         }
 
+		// FIXME
         [Test]
         public function testGetterUndefinedPropertyExceptionIncludesModelName() : void
         {
@@ -189,6 +191,7 @@ package com.riadvice.activeaircord
             assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
         }
 
+		// FIXME
         [Test]
         public function testAliasAttributeGetter() : void
         {
