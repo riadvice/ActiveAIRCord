@@ -85,7 +85,7 @@ package com.riadvice.activeaircord
 
         public function reestablishConnection( close : Boolean = true ) : *
         {
-            var connection : String = ClassUtils.getProperties(clazz, true)['connection'];
+            var connection : String = clazz['connection'];
             if (close)
             {
                 ConnectionManager.dropConnection(connection);
@@ -169,7 +169,7 @@ package com.riadvice.activeaircord
                     {
                         options["conditions"] = [options["conditions"]];
                     }
-					
+
                     sql.where(options["conditions"]);
                 }
                 else
