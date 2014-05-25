@@ -16,8 +16,9 @@
  */
 package com.riadvice.activeaircord
 {
+    import flash.utils.ByteArray;
     import flash.utils.Dictionary;
-
+    
     import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.logging.api.ILogger;
 
@@ -30,11 +31,14 @@ package com.riadvice.activeaircord
 
         private static var _connections : Dictionary = new Dictionary(true);
 
+        private static var _encryptionKeys : Dictionary = new Dictionary(true);
+
         private static var _logging : Boolean = false;
 
         private static var _persistencePackage : String;
 
         private static var _logger : ILogger;
+
 
         public static function set connections( connections : Dictionary ) : void
         {
@@ -49,6 +53,19 @@ package com.riadvice.activeaircord
             return _connections;
         }
 
+        public static function setEncryptionKeyFor( name : String, value : ByteArray ) : void
+        {
+            _encryptionKeys[name] = value;
+        }
+
+        /**
+         * Encryption keys used for databases.
+         */
+        public static function getEncryptionKeyFor(name : String) : ByteArray
+        {
+            return _encryptionKeys[name];
+        }
+
         /**
          * Returns an SQLConnection if found otherwise null.
          */
@@ -56,6 +73,23 @@ package com.riadvice.activeaircord
         {
             return _connections[name] ? _connections[name] : null;
         }
+		
+		
+		/**
+		 * Returns the connection name from its connection string
+		 */
+		public static function getConnectionNameFromConnectionString( connectionString : String ) : String
+		{
+			// TODO : to be improved if name is passed instead of connection string
+			for each (var name : String in DictionaryUtils.getKeys(_connections))
+			{
+				if (_connections[name] == connectionString)
+				{
+					return name;
+				}
+			}
+			return null;
+		}
 
         public static function get defaulConnectionString() : String
         {

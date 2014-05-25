@@ -17,7 +17,7 @@
 package com.riadvice.activeaircord
 {
     import com.riadvice.activeaircord.exceptions.ActiveRecordException;
-
+    
     import flash.data.SQLColumnSchema;
     import flash.data.SQLConnection;
     import flash.data.SQLMode;
@@ -26,8 +26,9 @@ package com.riadvice.activeaircord
     import flash.data.SQLTableSchema;
     import flash.filesystem.File;
     import flash.net.Responder;
+    import flash.utils.ByteArray;
     import flash.utils.Dictionary;
-
+    
     import org.as3commons.logging.api.ILogger;
     import org.osmf.utils.URL;
 
@@ -42,17 +43,25 @@ package com.riadvice.activeaircord
         public var _protocol : String;
 
         public var _connectionString : String;
+		
+		public var _name : String;
 
-        public function SQLiteConnection( info : Dictionary )
+        public function SQLiteConnection( info : Dictionary, name : String = null )
         {
             super();
+			_name = name;
+			var _key : ByteArray = Configuration.getEncryptionKeyFor(name) as ByteArray;
             var dbFile : File = new File(File.applicationDirectory.nativePath + File.separator + info["host"]);
             // FIXME : if open mode is not create
             /*if (!dbFile.exists)
                {
                throw new ActiveRecordException("Could not find sqlite db: " + info["host"]);
                }*/
-            this.open(dbFile, info["mode"] ? info["mode"] : SQLMode.CREATE);
+            this.open(dbFile,
+                info["mode"] ? info["mode"] : SQLMode.CREATE,
+                info["autoCompact"] ? info["autoCompact"] : false,
+                info["pageSize"] ? info["pageSize"] : 1024,
+				_key);
         }
 
         public static function instance( connectionStringOrConnectionName : * = null ) : void

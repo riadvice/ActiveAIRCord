@@ -17,7 +17,7 @@
 package com.riadvice.activeaircord
 {
     import com.riadvice.activeaircord.exceptions.ActiveRecordException;
-
+    
     import flash.utils.Dictionary;
 
     public class ConnectionManager
@@ -67,7 +67,8 @@ package com.riadvice.activeaircord
 
             try
             {
-                var connection : SQLiteConnection = new SQLiteConnection(info);
+				var name : String = Configuration.getConnectionNameFromConnectionString(nameOrValue);
+                var connection : SQLiteConnection = new SQLiteConnection(info, name);
                 // TODO : add logging
                 if (info["charset"])
                 {

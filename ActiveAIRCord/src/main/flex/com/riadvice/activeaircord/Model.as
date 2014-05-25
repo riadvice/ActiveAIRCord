@@ -41,14 +41,19 @@ package com.riadvice.activeaircord
     public dynamic class Model extends Proxy
     {
 
-        public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select", "joins", "include", "readonly", "group", "from", "having"];
+        public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select",
+													 "joins", "include", "readonly", "group", "from", "having"];
         public static var aliasAttribute : Dictionary = new Dictionary(true);
         public static var _connection : SQLiteConnection;
         public static var db : String;
         public static var primaryKey : String;
         public static var sequence : String;
 
-        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "getConnection", "reestablishConnection", "getTable", "transaction", "create", "deleteAll", "updateAll", "all", "count", "exists", "first", "last", "find", "findByPk", "findBySql", "query", "isOptionsHash", "pkConditions", "extractAndValidateOptions"];
+        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "getConnection", "reestablishConnection",
+																 "getTable", "transaction", "create", "deleteAll", "updateAll",
+																 "all", "count", "exists", "first", "last", "find", "findByPk",
+																 "findBySql", "query", "isOptionsHash", "pkConditions",
+																 "extractAndValidateOptions"];
 
         /* Special methods to call static methods from inheritance classes */
 
