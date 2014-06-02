@@ -101,7 +101,7 @@ package com.riadvice.activeaircord
         private var _dirty : Dictionary;
         private var _errors : Array;
 
-        private var _item : Dictionary;
+        private var _item : Object;
         private var _newRecord : Boolean = true;
         private var _readOnly : Boolean = false;
         private var _relationShips : Dictionary = new Dictionary(true);
@@ -113,7 +113,7 @@ package com.riadvice.activeaircord
             super();
 
             // Proxy item init
-            _item = new Dictionary();
+            _item = new Object();
 
             _clazz = ClassUtils.forInstance(this);
             _newRecord = newRecord;
@@ -633,7 +633,7 @@ package com.riadvice.activeaircord
         public function readAttribute( name : String ) : *
         {
             // check for aliased attribute
-            if (DictionaryUtils.containsKey(_item, name))
+            if (DictionaryUtils.containsKey(aliasAttribute, name))
             {
                 return _item[name];
             }
@@ -794,34 +794,23 @@ package com.riadvice.activeaircord
         {
             try
             {
-                var clazz : Class = getDefinitionByName(getQualifiedClassName(this)) as Class;
-                return clazz.prototype[methodName].apply(methodName, parameters);
+                if (super.flash_proxy::hasProperty(methodName))
+                {
+                    parameters.unshift(methodName);
+                    return super.flash_proxy::callProperty(methodName);
+                }
+                else
+                {
+                    return this._values[methodName].apply(this._values, parameters);
+                }
+
+                /*  var clazz : Class = getDefinitionByName(getQualifiedClassName(this)) as Class;
+                   return clazz.prototype[methodName].apply(methodName, parameters); */
             }
             catch ( e : Error )
             {
                 return methodMissing(methodName, parameters);
             }
-        /*var res : *;
-           switch (methodName.toString())
-           {
-           /*case "clear":
-           _item = new Array();
-           break;
-           case "sum":
-           var sum:Number = 0;
-           for each (var i:* in _item) {
-           // ignore non-numeric values
-           if (!isNaN(i)) {
-           sum += i;
-           }
-           }
-           res = sum;
-           break;*/
-        /*default:
-           res = _item[methodName].apply(_item, parameters);
-           break;
-           }
-           return res;*/
         }
 
         protected function methodMissing( method : *, args : Array ) : Object
@@ -834,24 +823,29 @@ package com.riadvice.activeaircord
         {
             // TODO : must look in attributes dictionary
             var propName : String = (name is QName) ? QName(name).localName : name;
-            if (DictionaryUtils.containsKey(_item, propName))
+            if (super.flash_proxy::hasProperty(name))
+            {
+                return super.flash_proxy::getProperty(name);
+            }
+            else if (_item.hasOwnProperty(propName))
             {
                 return _item[propName];
+
             }
             return readAttribute(propName);
         }
 
         flash_proxy override function hasProperty( name : * ) : Boolean
         {
-            return DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);
+            return super.flash_proxy::hasProperty(name) || DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);
         }
 
         flash_proxy override function setProperty( name : *, value : * ) : void
         {
             var propName : String = (name is QName) ? QName(name).localName : name;
-            if (hasOwnProperty(propName))
+            if (this._values[name] !== value)
             {
-                _item[name] = value;
+                this._item[name] = value;
             }
             if (DictionaryUtils.containsKey(attributes(), name))
             {
