@@ -17,7 +17,7 @@
 package com.riadvice.activeaircord
 {
     import com.riadvice.activeaircord.exceptions.ActiveRecordException;
-    
+
     import flash.data.SQLColumnSchema;
     import flash.data.SQLConnection;
     import flash.data.SQLMode;
@@ -28,7 +28,7 @@ package com.riadvice.activeaircord
     import flash.net.Responder;
     import flash.utils.ByteArray;
     import flash.utils.Dictionary;
-    
+
     import org.as3commons.logging.api.ILogger;
     import org.osmf.utils.URL;
 
@@ -43,14 +43,14 @@ package com.riadvice.activeaircord
         public var _protocol : String;
 
         public var _connectionString : String;
-		
-		public var _name : String;
+
+        public var _name : String;
 
         public function SQLiteConnection( info : Dictionary, name : String = null )
         {
             super();
-			_name = name;
-			var _key : ByteArray = Configuration.getEncryptionKeyFor(name) as ByteArray;
+            _name = name;
+            var _key : ByteArray = Configuration.getEncryptionKeyFor(name) as ByteArray;
             var dbFile : File = new File(File.applicationDirectory.nativePath + File.separator + info["host"]);
             // FIXME : if open mode is not create
             /*if (!dbFile.exists)
@@ -61,7 +61,7 @@ package com.riadvice.activeaircord
                 info["mode"] ? info["mode"] : SQLMode.CREATE,
                 info["autoCompact"] ? info["autoCompact"] : false,
                 info["pageSize"] ? info["pageSize"] : 1024,
-				_key);
+                _key);
         }
 
         public static function instance( connectionStringOrConnectionName : * = null ) : void

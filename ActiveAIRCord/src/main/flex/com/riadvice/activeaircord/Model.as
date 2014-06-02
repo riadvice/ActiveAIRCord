@@ -42,18 +42,42 @@ package com.riadvice.activeaircord
     {
 
         public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select",
-													 "joins", "include", "readonly", "group", "from", "having"];
+            "joins", "include", "readonly", "group", "from", "having"];
+
         public static var aliasAttribute : Dictionary = new Dictionary(true);
         public static var _connection : SQLiteConnection;
         public static var db : String;
         public static var primaryKey : String;
         public static var sequence : String;
 
-        private static var INHERITED_STATIC_FUNCTIONS : Array = ["getTableName", "getConnection", "reestablishConnection",
-																 "getTable", "transaction", "create", "deleteAll", "updateAll",
-																 "all", "count", "exists", "first", "last", "find", "findByPk",
-																 "findBySql", "query", "isOptionsHash", "pkConditions",
-																 "extractAndValidateOptions"];
+        // Static methods that can be called by user
+        public static const GET_TABLE_NAME : String = "getTableName";
+        public static const GET_CONNECTION : String = "getConnection";
+        public static const REESTABLISH_CONNECTION : String = "reestablishConnection";
+        public static const GET_TABLE : String = "getTable";
+        public static const TRANSACTION : String = "transaction";
+        public static const CREATE : String = "create";
+        public static const DELETE_ALL : String = "deleteAll";
+        public static const UPDATE_ALL : String = "updateAll";
+        public static const ALL : String = "all";
+        public static const COUNT : String = "count";
+        public static const EXISTS : String = "exists";
+        public static const FIRST : String = "first";
+        public static const LAST : String = "last";
+        public static const FIND : String = "find";
+        public static const FIND_BY_PK : String = "findByPk";
+        public static const FIND_BY_SQL : String = "findBySql";
+        public static const QUERY : String = "query";
+        public static const IS_OPTION_HASH : String = "isOptionsHash";
+        public static const PK_CONDITIONS : String = "pkConditions";
+        public static const EXTRACT_AND_VALIDATE_OPTIONS : String = "extractAndValidateOptions";
+
+        /**
+         * Inherited static methods injected in classes at runtime.
+         */
+        private static const INHERITED_STATIC_FUNCTIONS : Array = [GET_TABLE_NAME, GET_CONNECTION, REESTABLISH_CONNECTION,
+            GET_TABLE, TRANSACTION, CREATE, DELETE_ALL, UPDATE_ALL, ALL, COUNT, EXISTS, FIRST, LAST, FIND, FIND_BY_PK,
+            FIND_BY_SQL, QUERY, IS_OPTION_HASH, PK_CONDITIONS, EXTRACT_AND_VALIDATE_OPTIONS];
 
         /* Special methods to call static methods from inheritance classes */
 
@@ -77,7 +101,7 @@ package com.riadvice.activeaircord
         private var _dirty : Dictionary;
         private var _errors : Array;
 
-        private var _item : Array;
+        private var _item : Dictionary;
         private var _newRecord : Boolean = true;
         private var _readOnly : Boolean = false;
         private var _relationShips : Dictionary = new Dictionary(true);
@@ -87,6 +111,9 @@ package com.riadvice.activeaircord
         public function Model( attributes : Object = null, guardAttributes : Boolean = true, instantiatingViaFind : Boolean = false, newRecord : Boolean = true )
         {
             super();
+
+            // Proxy item init
+            _item = new Dictionary();
 
             _clazz = ClassUtils.forInstance(this);
             _newRecord = newRecord;
@@ -606,7 +633,7 @@ package com.riadvice.activeaircord
         public function readAttribute( name : String ) : *
         {
             // check for aliased attribute
-            if (hasOwnProperty(name))
+            if (DictionaryUtils.containsKey(_item, name))
             {
                 return _item[name];
             }
@@ -807,7 +834,7 @@ package com.riadvice.activeaircord
         {
             // TODO : must look in attributes dictionary
             var propName : String = (name is QName) ? QName(name).localName : name;
-            if (hasOwnProperty(propName))
+            if (DictionaryUtils.containsKey(_item, propName))
             {
                 return _item[propName];
             }
