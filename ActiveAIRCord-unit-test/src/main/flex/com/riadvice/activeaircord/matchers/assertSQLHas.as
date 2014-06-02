@@ -23,8 +23,13 @@ package com.riadvice.activeaircord.matchers
     {
         value = StringUtils.replace(StringUtils.replace(value, "\"", ""), "`", '');
         compared = StringUtils.replace(StringUtils.replace(compared, "\"", ""), "`", '');
-		trace("expected   SQL => "+ value);
-		trace("got result SQL => "+ compared);
-        assertTrue(StringUtils.contains(value, compared) || StringUtils.equals(value, compared));
+
+        var comparisonSuccess : Boolean = StringUtils.contains(value, compared) || StringUtils.equals(value, compared);
+        if (!comparisonSuccess)
+        {
+            trace("expected   SQL => " + value);
+            trace("got result SQL => " + compared);
+        }
+        assertTrue(comparisonSuccess);
     }
 }
