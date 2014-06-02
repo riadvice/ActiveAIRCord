@@ -4,7 +4,6 @@
     <classEntry path="com.riadvice.activeaircord.Callback"/>
     <classEntry path="com.riadvice.activeaircord.Column"/>
     <classEntry path="com.riadvice.activeaircord.Utils"/>
-    <classEntry path="com.riadvice.activeaircord.exceptions.AdvancedDictionaryException"/>
     <classEntry path="com.riadvice.activeaircord.exceptions.HasManyThroughAssociationException"/>
     <classEntry path="com.riadvice.activeaircord.exceptions.ModelException"/>
     <classEntry path="com.riadvice.activeaircord.exceptions.ReadOnlyException"/>

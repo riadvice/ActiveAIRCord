@@ -74,9 +74,9 @@ package com.riadvice.activeaircord
 
         }
 
-        public function register( name : String, functionOrMethodName : * = null, options : Dictionary = null ) : void
+        public function register( name : String, functionOrMethodName : * = null, options : Object = null ) : void
         {
-            options ||= new Dictionary();
+            options ||= new Object();
             options["prepend"] = false;
             if (!functionOrMethodName)
             {

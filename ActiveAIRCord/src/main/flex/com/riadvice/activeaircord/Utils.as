@@ -175,10 +175,10 @@ package com.riadvice.activeaircord
             return result;
         }
 
-        public static function getDictionaryValues( dict : Dictionary ) : Array
+        public static function getObjectValues( obj : Object ) : Array
         {
             var result : Array = [];
-            for each (var value : * in dict)
+            for each (var value : * in obj)
             {
                 result.push(value);
             }

@@ -14,14 +14,22 @@
    You should have received a copy of the GNU General Public License
    along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.riadvice.activeaircord.exceptions
+package com.riadvice.activeaircord.matchers
 {
+    import org.as3commons.lang.ObjectUtils;
+    import org.flexunit.assertThat;
+    import org.flexunit.asserts.assertTrue;
+    import org.hamcrest.object.hasPropertyWithValue;
 
-    public class AdvancedDictionaryException extends Error
+    public function assertSameObjects( value : Object, compared : Object ) : void
     {
-        public function AdvancedDictionaryException( message : * = "", id : * = 0 )
+        var valueKeys : Array = ObjectUtils.getKeys(value);
+        var comparedKeys : Array = ObjectUtils.getKeys(compared);
+        assertTrue(value is Object, compared is Object);
+        assertTrue(valueKeys.length == comparedKeys.length);
+        for (var i : int = 0; i < valueKeys.length; i++)
         {
-            super(message, id);
+            assertThat(compared, hasPropertyWithValue(valueKeys[i], value[valueKeys[i]]));
         }
     }
 }

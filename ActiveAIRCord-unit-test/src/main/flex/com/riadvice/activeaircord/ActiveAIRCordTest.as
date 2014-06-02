@@ -138,6 +138,7 @@ package com.riadvice.activeaircord
             var options : Dictionary = new Dictionary();
             options["conditions"] = "author_id=1";
             var author : Author = Author["find"]("first", options);
+			// FIXME
             assertThat(function() : void {author.invalidField}, throws(allOf(instanceOf(UndefinedPropertyException))));
         }
 
@@ -181,6 +182,7 @@ package com.riadvice.activeaircord
         public function testSetterUndefinedPropertyExceptionIncludesModelName() : void
         {
             var author : Author = new Author();
+			// FIXME
             assertThat(function() : void {author.this_better_not_exist = "hi"}, throws(allOf(instanceOf(UndefinedPropertyException), hasProperty("message", containsString("Author.this_better_not_exist")))));
         }
 

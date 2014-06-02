@@ -16,11 +16,10 @@
  */
 package com.riadvice.activeaircord.relationship
 {
-	import flash.utils.Dictionary;
 
     public class HasOne extends HasMany
     {
-        public function HasOne( options : Dictionary )
+        public function HasOne( options : Object )
         {
             super(options);
         }

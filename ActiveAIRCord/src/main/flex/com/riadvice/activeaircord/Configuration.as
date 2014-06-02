@@ -17,9 +17,7 @@
 package com.riadvice.activeaircord
 {
     import flash.utils.ByteArray;
-    import flash.utils.Dictionary;
-    
-    import org.as3commons.lang.DictionaryUtils;
+
     import org.as3commons.logging.api.ILogger;
 
     /**
@@ -29,9 +27,9 @@ package com.riadvice.activeaircord
     {
         private static var _defaultConnection : String = "development";
 
-        private static var _connections : Dictionary = new Dictionary(true);
+        private static var _connections : Object = new Object();
 
-        private static var _encryptionKeys : Dictionary = new Dictionary(true);
+        private static var _encryptionKeys : Object = new Object();
 
         private static var _logging : Boolean = false;
 
@@ -40,7 +38,7 @@ package com.riadvice.activeaircord
         private static var _logger : ILogger;
 
 
-        public static function set connections( connections : Dictionary ) : void
+        public static function set connections( connections : Object ) : void
         {
             _connections = connections;
         }
@@ -48,7 +46,7 @@ package com.riadvice.activeaircord
         /**
          * Returns the connection Dictionary.
          */
-        public static function get connections() : Dictionary
+        public static function get connections() : Object
         {
             return _connections;
         }
@@ -61,7 +59,7 @@ package com.riadvice.activeaircord
         /**
          * Encryption keys used for databases.
          */
-        public static function getEncryptionKeyFor(name : String) : ByteArray
+        public static function getEncryptionKeyFor( name : String ) : ByteArray
         {
             return _encryptionKeys[name];
         }
@@ -73,27 +71,27 @@ package com.riadvice.activeaircord
         {
             return _connections[name] ? _connections[name] : null;
         }
-		
-		
-		/**
-		 * Returns the connection name from its connection string
-		 */
-		public static function getConnectionNameFromConnectionString( connectionString : String ) : String
-		{
-			// TODO : to be improved if name is passed instead of connection string
-			for each (var name : String in DictionaryUtils.getKeys(_connections))
-			{
-				if (_connections[name] == connectionString)
-				{
-					return name;
-				}
-			}
-			return null;
-		}
+
+
+        /**
+         * Returns the connection name from its connection string
+         */
+        public static function getConnectionNameFromConnectionString( connectionString : String ) : String
+        {
+            // TODO : to be improved if name is passed instead of connection string
+            for (var key : String in _connections)
+            {
+                if (_connections[key] == connectionString)
+                {
+                    return key;
+                }
+            }
+            return null;
+        }
 
         public static function get defaulConnectionString() : String
         {
-            return DictionaryUtils.containsKey(_connections, _defaultConnection) ? _connections[_defaultConnection] : null;
+            return _connections.hasOwnProperty(_defaultConnection) ? _connections[_defaultConnection] : null;
         }
 
         public static function get defaultConnection() : String

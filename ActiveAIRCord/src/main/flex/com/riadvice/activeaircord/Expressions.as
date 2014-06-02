@@ -18,9 +18,7 @@ package com.riadvice.activeaircord
 {
     import com.riadvice.activeaircord.exceptions.ExpressionsException;
 
-    import flash.utils.Dictionary;
-
-    import org.as3commons.lang.DictionaryUtils;
+    import org.as3commons.lang.ObjectUtils;
     import org.as3commons.lang.StringUtils;
 
     public class Expressions
@@ -34,9 +32,9 @@ package com.riadvice.activeaircord
         {
             var params : Array;
             _connection = connection;
-			_expressions = "";
+            _expressions = "";
 
-            if (expressions is Dictionary)
+            if (ObjectUtils.isExplicitInstanceOf(expressions, Object))
             {
                 var glue : String = rest.length > 0 ? rest[0] : " " + SQL.AND + " ";
                 var builtSQL : Array = buildSqlFromHash(expressions, glue);
@@ -84,11 +82,11 @@ package com.riadvice.activeaircord
             _connection = value;
         }
 
-        public function toString( substitute : Boolean = false, options : Dictionary = null ) : String
+        public function toString( substitute : Boolean = false, options : Object = null ) : String
         {
-            options ||= new Dictionary();
+            options ||= new Object();
 
-            var values : Array = DictionaryUtils.containsKey(options, "values") ? options["values"] : this.values;
+            var values : Array = options.hasOwnProperty("values") ? options["values"] : this.values;
 
             var result : String = "";
             var replace : Array = [];
@@ -96,8 +94,9 @@ package com.riadvice.activeaircord
             var length : int = _expressions.length;
             var quotes : int = 0;
             var j : int = 0;
+            var i : int = 0;
 
-            for (var i : int = 0; i < length; i++)
+            for (i = 0, length = _expressions.length, j = 0; i < length; i++)
             {
                 var ch : String = _expressions.charAt(i);
 
@@ -122,11 +121,11 @@ package com.riadvice.activeaircord
             return result;
         }
 
-        private function buildSqlFromHash( hash : Dictionary, glue : String ) : Array
+        private function buildSqlFromHash( hash : Object, glue : String ) : Array
         {
             var sql : String = "";
             var g : String = "";
-            for each (var key : String in DictionaryUtils.getKeys(hash))
+            for (var key : String in hash)
             {
                 var cleanKey : String = key;
                 if (_connection)
@@ -148,7 +147,7 @@ package com.riadvice.activeaircord
                 g = glue;
             }
 
-            return [sql, Utils.getDictionaryValues(hash)];
+            return [sql, Utils.getObjectValues(hash)];
         }
 
         private function substituteParameters( values : Array, substitute : Boolean, pos : int, parameterIndex : int ) : *

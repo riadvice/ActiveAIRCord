@@ -17,14 +17,13 @@
 package com.riadvice.activeaircord.helpers
 {
     import com.riadvice.activeaircord.Configuration;
-    import com.riadvice.activeaircord.Hash;
 
     public class Config
     {
         public static function initConfig() : void
         {
             Configuration.presistencePackage = "com.riadvice.activeaircord.models";
-            Configuration.connections = new Hash(true, ["sqlite"], ["sqlite://test.db"]);
+            Configuration.connections = {sqlite: "sqlite://test.db"};
             Configuration.defaultConnection = "sqlite";
         }
     }

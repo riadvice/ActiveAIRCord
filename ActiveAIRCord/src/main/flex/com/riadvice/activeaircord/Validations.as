@@ -40,17 +40,12 @@ package com.riadvice.activeaircord
             "validates_numericality_of",
             "validates_uniqueness_of"];
 
-        private static const DEFAULT_VALIDATION_OPTIONS : Hash = new Hash(true,
-            ["on", "allow_null", "allow_blank", "message"],
-            ["save", false, false, null]);
+        private static const DEFAULT_VALIDATION_OPTIONS : Object = {on: "save", allow_null: false, allow_blank: false, message: null};
 
-        private static const ALL_RANGE_OPTIONS : Hash = new Hash(true,
-            ["is", "within", "in", "minimum", "maximum"],
-            [null, null, null, null, null]);
+        private static const ALL_RANGE_OPTIONS : Object = {"is": null, within: null, "in": null, minimum: null, maximum: null};
 
-        private static const ALL_NUMERICALITY_CHECKS : Hash = new Hash(true,
-            ["greater_than", "greater_than_or_equal_to", "equal_to", "less_than", "less_than_or_equal_to", "odd", "even"],
-            [null, null, null, null, null, null, null]);
+        private static const ALL_NUMERICALITY_CHECKS : Object = {greater_than: null, greater_than_or_equal_to: null,
+                equal_to: null, less_than: null, less_than_or_equal_to: null, odd: null, even: null};
 
         public function Validations( model : Model )
         {

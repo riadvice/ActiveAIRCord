@@ -29,7 +29,6 @@ package com.riadvice.activeaircord
     import flash.utils.describeType;
     import flash.utils.flash_proxy;
     import flash.utils.getDefinitionByName;
-    import flash.utils.getQualifiedClassName;
 
     import mx.collections.ArrayCollection;
 
@@ -182,10 +181,10 @@ package com.riadvice.activeaircord
         }
 
         // Takes only one array
-        public static function extractAndValidateOptions( clazz : Class, methodName : String, ... rest ) : Dictionary
+        public static function extractAndValidateOptions( clazz : Class, methodName : String, ... rest ) : Object
         {
             var array : Array = rest[0][0];
-            var options : Dictionary = new Dictionary();
+            var options : Object = new Object();
 
             if (array)
             {
@@ -220,7 +219,7 @@ package com.riadvice.activeaircord
                 throw new RecordNotFound("Couldn't find " + ClassUtils.getName(clazz) + " without an ID");
             }
 
-            var options : Dictionary = clazz["extractAndValidateOptions"](params);
+            var options : Object = clazz["extractAndValidateOptions"](params);
             var numArgs : int = params.length;
             var single : Boolean = true;
             // Only one argument is passed
@@ -235,7 +234,7 @@ package com.riadvice.activeaircord
                         break;
 
                     case "last":
-                        if (!DictionaryUtils.containsKey(options, "order"))
+                        if (options.hasOwnProperty("order"))
                         {
                             options["order"] = [SQL.DESC, Table(clazz["getTable"]()).pk, SQL.DESC].join(" ");
                         }
@@ -823,11 +822,14 @@ package com.riadvice.activeaircord
         {
             // TODO : must look in attributes dictionary
             var propName : String = (name is QName) ? QName(name).localName : name;
-            if (super.flash_proxy::hasProperty(name))
-            {
-                return super.flash_proxy::getProperty(name);
-            }
-            else if (_item.hasOwnProperty(propName))
+            /*var hasProperty  : Boolean = flash_proxy::hasProperty(propName);
+               if (hasProperty)
+               {
+               return super.flash_proxy::getProperty(name);
+               }
+               else
+             */
+            if (_item.hasOwnProperty(propName))
             {
                 return _item[propName];
 
@@ -837,7 +839,7 @@ package com.riadvice.activeaircord
 
         flash_proxy override function hasProperty( name : * ) : Boolean
         {
-            return super.flash_proxy::hasProperty(name) || DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);
+            return DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);
         }
 
         flash_proxy override function setProperty( name : *, value : * ) : void

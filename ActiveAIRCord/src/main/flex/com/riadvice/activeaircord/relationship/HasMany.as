@@ -19,12 +19,8 @@ package com.riadvice.activeaircord.relationship
     import com.riadvice.activeaircord.Inflector;
     import com.riadvice.activeaircord.Model;
     import com.riadvice.activeaircord.Table;
-    import com.riadvice.activeaircord.Utils;
-
-    import flash.utils.Dictionary;
 
     import org.as3commons.lang.ClassUtils;
-    import org.as3commons.lang.DictionaryUtils;
 
     public class HasMany extends Relationship
     {
@@ -33,7 +29,7 @@ package com.riadvice.activeaircord.relationship
         private var hasOne : Boolean = false;
         private var through : String;
 
-        public function HasMany( options : Dictionary )
+        public function HasMany( options : Object )
         {
             super(options);
         }
@@ -66,12 +62,12 @@ package com.riadvice.activeaircord.relationship
 
         }
 
-        private function getForeignkeyForNewAssociation( model : Model ) : Dictionary
+        private function getForeignkeyForNewAssociation( model : Model ) : Object
         {
             this.setKeys(ClassUtils.getName(ClassUtils.forInstance(model)));
             var primaryKey : String = Inflector.variablize(this.foreignKey[0]);
 
-            var result : Dictionary = new Dictionary(true);
+            var result : Object = new Object();
 
             result[primaryKey] = model["id"];
             return result;

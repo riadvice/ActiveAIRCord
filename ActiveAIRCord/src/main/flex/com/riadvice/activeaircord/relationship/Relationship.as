@@ -22,14 +22,14 @@ package com.riadvice.activeaircord.relationship
     import com.riadvice.activeaircord.SQLBuilder;
     import com.riadvice.activeaircord.Table;
     import com.riadvice.activeaircord.Utils;
-
+    
     import flash.utils.Dictionary;
-
+    
     import avmplus.getQualifiedClassName;
-
+    
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
-    import org.as3commons.lang.DictionaryUtils;
+    import org.as3commons.lang.ObjectUtils;
 
     public class Relationship implements IRelationship
     {
@@ -37,11 +37,11 @@ package com.riadvice.activeaircord.relationship
         private var _className : String;
         private var _foreignKey : Array = [];
         private var _primaryKey : Array = [];
-        protected var _options : Dictionary = new Dictionary(true);
+        protected var _options : Object = {};
         protected var _polyRelationship : Boolean = false;
         protected static const _validAssociationOptions : Array = ["class_name", "class", "foreign_key", "conditions", "select", "readonly", "namespace"];
 
-        public function Relationship( options : Dictionary = null )
+        public function Relationship( options : Object = null )
         {
             attributeName = options[0];
             _options = mergeAssociationOptions(options);
@@ -144,7 +144,7 @@ package com.riadvice.activeaircord.relationship
         protected function queryAndAttachRelatedModelsEagerly( table : Table, models : Array, attributes : Array, includes : Array = null, queryKeys : Array = null, modelValuesKeys : Array = null ) : void
         {
             var values : Array = new Array();
-            var options : Dictionary = this._options;
+            var options : Object = this._options;
             var queryKey : String = queryKeys[0];
             var modelValuesKey = modelValuesKeys[0];
 
@@ -267,14 +267,14 @@ package com.riadvice.activeaircord.relationship
             return record;
         }
 
-        protected function mergeAssociationOptions( options : Dictionary ) : Dictionary
+        protected function mergeAssociationOptions( options : Object ) : Object
         {
             return null;
         }
 
-        protected function unsetNonFinderOptions( options : Dictionary ) : Dictionary
+        protected function unsetNonFinderOptions( options : Object ) : Object
         {
-            for each (var key : String in DictionaryUtils.getKeys(options))
+            for each (var key : String in ObjectUtils.getKeys(options))
             {
                 if (Model.VALID_OPTIONS.indexOf(key) > 0)
                 {
@@ -298,7 +298,7 @@ package com.riadvice.activeaircord.relationship
         protected function createConditionsFromKeys( model : Model, conditionKeys : Array = null, valueKeys : Dictionary = null ) : Dictionary
         {
             var conditionString : String = conditionKeys.join('_and_');
-            var conditionValues : Array = Utils.getDictionaryValues(model.getValuesFor(valueKeys));
+            var conditionValues : Array = Utils.getObjectValues(model.getValuesFor(valueKeys));
 
             // return null if all the foreign key values are null so that we don't try to do a query like "id is null"
             if (Utils.all(null, conditionValues))

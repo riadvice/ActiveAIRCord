@@ -79,8 +79,8 @@ package com.riadvice.activeaircord
             setDelegates();
 
             callback = new Callback(className);
-            callback.register("before_save", function( model : Model ) : void {model.setTimestamps();}, new Hash(true, ["prepend"], [true]));
-            callback.register("after_save", function( model : Model ) : void {model.resetDirty();}, new Hash(true, ["prepend"], [true]));
+            callback.register("before_save", function( model : Model ) : void {model.setTimestamps();}, {prepend: true});
+            callback.register("after_save", function( model : Model ) : void {model.resetDirty();}, {prepend: true});
         }
 
         public function reestablishConnection( close : Boolean = true ) : *
@@ -140,28 +140,28 @@ package com.riadvice.activeaircord
             return ret;
         }
 
-        public function optionsToSql( options : Dictionary ) : SQLBuilder
+        public function optionsToSql( options : Object ) : SQLBuilder
         {
-            var table : String = DictionaryUtils.containsKey(options, "from") ? options["from"] : getFullyQualifiedTableName();
+            var table : String = options.hasOwnProperty("from") ? options["from"] : getFullyQualifiedTableName();
             var sql : SQLBuilder = new SQLBuilder(conn, table);
 
-            if (DictionaryUtils.containsKey(options, "joins"))
+            if (options.hasOwnProperty("joins"))
             {
                 sql.joins(createJoins(options["join"]));
 
                 // by default, an inner join will not fetch the fields from the joined table
-                if (!DictionaryUtils.containsKey(options, "select"))
+                if (!options.hasOwnProperty("select"))
                 {
                     options["select"] = getFullyQualifiedTableName() + ".*";
                 }
             }
 
-            if (DictionaryUtils.containsKey(options, "select"))
+            if (options.hasOwnProperty("select"))
             {
                 sql.select(options["select"]);
             }
 
-            if (DictionaryUtils.containsKey(options, "conditions"))
+            if (options.hasOwnProperty("conditions"))
             {
                 if (!(options["conditions"] is Dictionary))
                 {
@@ -185,7 +185,7 @@ package com.riadvice.activeaircord
 
             for each (var sqlOption : String in["order", "limit", "offset", "group", "having"])
             {
-                if (DictionaryUtils.containsKey(options, sqlOption))
+                if (options.hasOwnProperty(sqlOption))
                 {
                     sql[sqlOption](options[sqlOption]);
                 }
@@ -194,11 +194,11 @@ package com.riadvice.activeaircord
             return sql;
         }
 
-        public function find( options : Dictionary ) : Array
+        public function find( options : Object ) : Array
         {
             var sql : SQLBuilder = optionsToSql(options);
-            var readOnly : Boolean = DictionaryUtils.containsKey(options, "readonly") && options["readonly"];
-            var eagerLoad : Array = DictionaryUtils.containsKey(options, "include") ? options["include"] : null;
+            var readOnly : Boolean = options.hasOwnProperty("readonly") && options["readonly"];
+            var eagerLoad : Array = options.hasOwnProperty("include") ? options["include"] : null;
             return findBySql(sql.toString(), sql.whereValues, readOnly, eagerLoad);
         }
 

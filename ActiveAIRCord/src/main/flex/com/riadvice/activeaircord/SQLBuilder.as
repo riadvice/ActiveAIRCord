@@ -18,8 +18,7 @@ package com.riadvice.activeaircord
 {
     import com.riadvice.activeaircord.exceptions.ActiveRecordException;
 
-    import flash.utils.Dictionary;
-
+    import org.as3commons.lang.ObjectUtils;
     import org.as3commons.lang.StringUtils;
 
     public class SQLBuilder
@@ -70,7 +69,7 @@ package com.riadvice.activeaircord
             var result : Array = [];
             if (_data)
             {
-                result = Utils.getDictionaryValues(_data);
+                result = Utils.getObjectValues(_data);
             }
             if (whereValues)
             {
@@ -146,7 +145,7 @@ package com.riadvice.activeaircord
         public function update( hash : * ) : SQLBuilder
         {
             _operation = SQL.UPDATE;
-            if (hash is Dictionary)
+            if (ObjectUtils.isExplicitInstanceOf(hash, Object))
             {
                 _data = hash;
             }
@@ -201,7 +200,7 @@ package com.riadvice.activeaircord
             return parts.join(",");
         }
 
-        public static function createConditionsFromUnderscoredString( connection : SQLiteConnection, name : String, values : Array, map : Dictionary = null ) : Array
+        public static function createConditionsFromUnderscoredString( connection : SQLiteConnection, name : String, values : Array, map : Object = null ) : Array
         {
             if (!name)
             {
@@ -248,27 +247,27 @@ package com.riadvice.activeaircord
             return conditions;
         }
 
-        public static function createHashFromUnderscoredString( name : String, values : Array = null, map : Dictionary = null ) : Dictionary
+        public static function createObjectFromUnderscoredString( name : String, values : Array = null, map : Object = null ) : Object
         {
             var parts : Array = name.split(/(_and_|_or_)/i);
             parts = parts.filter(function removeSplitters( element : *, index : int, arr : Array ) : Boolean
             {
                 return element !== "_and_" && element !== "_or_";
             });
-            var dict : Dictionary = new Dictionary(true);
+            var obj : Object = new Object();
 
             for (var i : int = 0; i < parts.length; ++i)
             {
                 name = map && map[parts[i]] ? map[parts[i]] : parts[i];
-                dict[name] = values[i];
+                obj[name] = values[i];
             }
 
-            return dict;
+            return obj;
         }
 
-        private function prependTableNameToFields( hash : Dictionary ) : Dictionary
+        private function prependTableNameToFields( hash : Object ) : Object
         {
-            var result : Dictionary = new Dictionary(true);
+            var result : Object = new Object();
             var table : String = _connection.quoteName(_table);
 
             for (var key : String in hash)
@@ -285,10 +284,10 @@ package com.riadvice.activeaircord
             args = args[0] is Array ? args[0] : args;
             var numArgs : int = args.length;
 
-            if (numArgs == 1 && args[0] is Dictionary)
+            if (numArgs == 1 && args[0] && ObjectUtils.isExplicitInstanceOf(args[0], Object))
             {
-                var dict : Dictionary = !_joins ? args[0] : prependTableNameToFields(args[0]);
-                var exp : Expressions = new Expressions(_connection, dict);
+                var hash : Object = !_joins ? args[0] : prependTableNameToFields(args[0]);
+                var exp : Expressions = new Expressions(_connection, hash);
                 _where = exp.toString();
                 _whereValues = Utils.flattenArray(exp.values);
             }
@@ -349,7 +348,7 @@ package com.riadvice.activeaircord
                 sql = [SQL.INSERT, SQL.INTO, [_table, "(", keys, ")"].join(""), [SQL.VALUES, "(", SQL.PARAM, ")"].join("")].join(" ");
             }
 
-            var e : Expressions = new Expressions(_connection, sql, Utils.getDictionaryValues(_data));
+            var e : Expressions = new Expressions(_connection, sql, Utils.getObjectValues(_data));
             return e.toString();
         }
 

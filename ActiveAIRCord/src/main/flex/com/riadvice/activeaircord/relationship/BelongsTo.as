@@ -19,11 +19,9 @@ package com.riadvice.activeaircord.relationship
     import com.riadvice.activeaircord.Model;
     import com.riadvice.activeaircord.Table;
 
-    import flash.utils.Dictionary;
-
     public class BelongsTo extends Relationship
     {
-        public function BelongsTo( options : Dictionary )
+        public function BelongsTo( options : Object )
         {
             super(options);
         }

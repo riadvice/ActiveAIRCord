@@ -252,6 +252,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testHashWithDefaultGlue() : void
         {
+			// FIXME
             var params : Dictionary = new Dictionary(true);
             params["id"] = 1;
             params["name"] = "Tito";
@@ -272,6 +273,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testHashWithArray() : void
         {
+			// FIXME
             var params : Dictionary = new Dictionary(true);
             params["id"] = 1;
             params["name"] = new Dictionary(true);
