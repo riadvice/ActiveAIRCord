@@ -145,6 +145,11 @@ package com.riadvice.activeaircord
             var table : String = options.hasOwnProperty("from") ? options["from"] : getFullyQualifiedTableName();
             var sql : SQLBuilder = new SQLBuilder(conn, table);
 
+            if (options.hasOwnProperty("rowIdAlias") && options["rowIdAlias"] != null)
+            {
+                sql.select("oid as " + options["rowIdAlias"] + "," + SQL.ASTERISK);
+            }
+
             if (options.hasOwnProperty("joins"))
             {
                 sql.joins(createJoins(options["join"]));
@@ -326,8 +331,20 @@ package com.riadvice.activeaircord
             columns = conn.columns(tableName);
         }
 
-        private function mapNames( hash : Dictionary, map : Array ) : void
+        private function mapNames( hash : Dictionary, map : Object ) : Dictionary
         {
+            var ret : Dictionary = new Dictionary();
+
+            for (var key : String in hash)
+            {
+                if (map.hasOwnProperty(key))
+                {
+                    key = map[key];
+                }
+                ret[key] = hash[key];
+            }
+
+            return ret;
         }
 
         private function processData( hash : * ) : *

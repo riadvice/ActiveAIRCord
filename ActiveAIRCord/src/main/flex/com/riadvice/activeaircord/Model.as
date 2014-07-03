@@ -43,7 +43,7 @@ package com.riadvice.activeaircord
         public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select",
             "joins", "include", "readonly", "group", "from", "having"];
 
-        public static var aliasAttribute : Dictionary = new Dictionary(true);
+        public static var aliasAttribute : Object = new Object();
         public static var _connection : SQLiteConnection;
         public static var db : String;
         public static var primaryKey : String;
@@ -265,6 +265,7 @@ package com.riadvice.activeaircord
             }
 
             options["mappedNames"] = clazz["aliasAttribute"] || new Array();
+            options["rowIdAlias"] = clazz["rowIdAlias"] || null;
             var list : Array = Table(clazz["getTable"]()).find(options);
 
             return single ? (list.length > 0 ? list[0] : null) : list;
@@ -632,7 +633,7 @@ package com.riadvice.activeaircord
         public function readAttribute( name : String ) : *
         {
             // check for aliased attribute
-            if (DictionaryUtils.containsKey(aliasAttribute, name))
+            if (aliasAttribute.hasOwnProperty(name))
             {
                 return _item[name];
             }
@@ -839,7 +840,7 @@ package com.riadvice.activeaircord
 
         flash_proxy override function hasProperty( name : * ) : Boolean
         {
-            return DictionaryUtils.containsKey(_attributes, name) || DictionaryUtils.containsKey(aliasAttribute, name);
+            return DictionaryUtils.containsKey(_attributes, name) || aliasAttribute.hasOwnProperty(name);
         }
 
         flash_proxy override function setProperty( name : *, value : * ) : void
