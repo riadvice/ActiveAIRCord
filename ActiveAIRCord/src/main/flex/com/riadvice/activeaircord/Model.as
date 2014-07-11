@@ -30,8 +30,6 @@ package com.riadvice.activeaircord
     import flash.utils.flash_proxy;
     import flash.utils.getDefinitionByName;
 
-    import mx.collections.ArrayCollection;
-
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
@@ -310,7 +308,7 @@ package com.riadvice.activeaircord
             return Table(clazz["getTable"]()).findBySql(sql, values, true);
         }
 
-        public static function first( clazz : Class, methodName : String, ... rest ) : ArrayCollection
+        public static function first( clazz : Class, methodName : String, ... rest ) : Array
         {
             return clazz["find"](ArrayUtils.addAll(rest, ["first"]));
         }
@@ -353,7 +351,7 @@ package com.riadvice.activeaircord
             return false;
         }
 
-        public static function last( clazz : Class, methodName : String, ... rest ) : ArrayCollection
+        public static function last( clazz : Class, methodName : String, ... rest ) : Array
         {
             return clazz["find"](ArrayUtils.addAll(rest, ["last"]));
         }
@@ -858,6 +856,21 @@ package com.riadvice.activeaircord
             // TODO : complete
 
             throw new UndefinedPropertyException(ClassUtils.getName(_clazz), propName);
+        }
+
+        flash_proxy override function nextNameIndex( index : int ) : int
+        {
+            return index < DictionaryUtils.getKeys(attributes()).length ? index + 1 : 0;
+        }
+
+        flash_proxy override function nextName( index : int ) : String
+        {
+            return DictionaryUtils.getKeys(attributes())[index - 1].toString();
+        }
+
+        flash_proxy override function nextValue( index : int ) : *
+        {
+            return DictionaryUtils.getValues(attributes())[index - 1];
         }
 
         private function insert( validation : Boolean = true ) : Boolean
