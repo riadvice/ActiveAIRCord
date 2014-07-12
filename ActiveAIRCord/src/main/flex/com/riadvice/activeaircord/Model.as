@@ -16,9 +16,7 @@
  */
 package com.riadvice.activeaircord
 {
-import avmplus.getQualifiedClassName;
-
-import com.riadvice.activeaircord.exceptions.ActiveRecordException;
+    import com.riadvice.activeaircord.exceptions.ActiveRecordException;
     import com.riadvice.activeaircord.exceptions.ReadOnlyException;
     import com.riadvice.activeaircord.exceptions.RecordNotFound;
     import com.riadvice.activeaircord.exceptions.RelationshipException;
@@ -27,13 +25,15 @@ import com.riadvice.activeaircord.exceptions.ActiveRecordException;
 
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
-import flash.utils.IDataInput;
-import flash.utils.IDataOutput;
-import flash.utils.IExternalizable;
-import flash.utils.Proxy;
+    import flash.utils.IDataInput;
+    import flash.utils.IDataOutput;
+    import flash.utils.IExternalizable;
+    import flash.utils.Proxy;
     import flash.utils.describeType;
     import flash.utils.flash_proxy;
     import flash.utils.getDefinitionByName;
+
+    import avmplus.getQualifiedClassName;
 
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
@@ -1001,7 +1001,8 @@ import flash.utils.Proxy;
             }
         }
 
-        public function writeExternal(output:IDataOutput):void {
+        public function writeExternal( output : IDataOutput ) : void
+        {
             output.writeObject(_attributes);
             output.writeUTF(getQualifiedClassName(new _clazz()));
             output.writeObject(_dirty)
@@ -1012,7 +1013,8 @@ import flash.utils.Proxy;
             output.writeObject(errors);
         }
 
-        public function readExternal(input:IDataInput):void {
+        public function readExternal( input : IDataInput ) : void
+        {
             _attributes = input.readObject();
             _clazz = getDefinitionByName(input.readUTF()) as Class;
             _dirty = input.readObject();

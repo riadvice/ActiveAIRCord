@@ -109,6 +109,7 @@ package com.riadvice.activeaircord
             _persistencePackage = packageName;
         }
 
+        // FIXME : warn user if not set
         public static function get presistencePackage() : String
         {
             return _persistencePackage;
