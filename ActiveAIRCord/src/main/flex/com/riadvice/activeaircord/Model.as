@@ -16,7 +16,9 @@
  */
 package com.riadvice.activeaircord
 {
-    import com.riadvice.activeaircord.exceptions.ActiveRecordException;
+import avmplus.getQualifiedClassName;
+
+import com.riadvice.activeaircord.exceptions.ActiveRecordException;
     import com.riadvice.activeaircord.exceptions.ReadOnlyException;
     import com.riadvice.activeaircord.exceptions.RecordNotFound;
     import com.riadvice.activeaircord.exceptions.RelationshipException;
@@ -1001,6 +1003,7 @@ import flash.utils.Proxy;
 
         public function writeExternal(output:IDataOutput):void {
             output.writeObject(_attributes);
+            output.writeUTF(getQualifiedClassName(new _clazz()));
             output.writeObject(_dirty)
             output.writeObject(_item);
             output.writeBoolean(_newRecord);
@@ -1011,6 +1014,7 @@ import flash.utils.Proxy;
 
         public function readExternal(input:IDataInput):void {
             _attributes = input.readObject();
+            _clazz = getDefinitionByName(input.readUTF()) as Class;
             _dirty = input.readObject();
             _item = input.readObject();
             _newRecord = input.readBoolean();
