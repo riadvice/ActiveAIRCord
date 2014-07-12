@@ -111,7 +111,7 @@ package com.riadvice.activeaircord
 
         }
 
-        public static function addCondition( condition : *, conditions : * = null, conjuction : String = SQL.AND ) : Dictionary
+        public static function addCondition( condition : *, conditions : * = null, conjuction : String = "AND" ) : Dictionary
         {
             return null;
         }
