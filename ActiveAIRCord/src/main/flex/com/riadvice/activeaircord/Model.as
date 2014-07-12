@@ -16,7 +16,9 @@
  */
 package com.riadvice.activeaircord
 {
-    import com.riadvice.activeaircord.exceptions.ActiveRecordException;
+import avmplus.getQualifiedClassName;
+
+import com.riadvice.activeaircord.exceptions.ActiveRecordException;
     import com.riadvice.activeaircord.exceptions.ReadOnlyException;
     import com.riadvice.activeaircord.exceptions.RecordNotFound;
     import com.riadvice.activeaircord.exceptions.RelationshipException;
@@ -25,7 +27,10 @@ package com.riadvice.activeaircord
 
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
-    import flash.utils.Proxy;
+import flash.utils.IDataInput;
+import flash.utils.IDataOutput;
+import flash.utils.IExternalizable;
+import flash.utils.Proxy;
     import flash.utils.describeType;
     import flash.utils.flash_proxy;
     import flash.utils.getDefinitionByName;
@@ -35,7 +40,7 @@ package com.riadvice.activeaircord
     import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
 
-    public dynamic class Model extends Proxy
+    public dynamic class Model extends Proxy implements IExternalizable
     {
 
         public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select",
@@ -994,6 +999,28 @@ package com.riadvice.activeaircord
             {
                 throw new ReadOnlyException(_clazz + "\n" + methodName);
             }
+        }
+
+        public function writeExternal(output:IDataOutput):void {
+            output.writeObject(_attributes);
+            output.writeUTF(getQualifiedClassName(new _clazz()));
+            output.writeObject(_dirty)
+            output.writeObject(_item);
+            output.writeBoolean(_newRecord);
+            output.writeBoolean(_readOnly);
+            output.writeObject(_relationShips);
+            output.writeObject(errors);
+        }
+
+        public function readExternal(input:IDataInput):void {
+            _attributes = input.readObject();
+            _clazz = getDefinitionByName(input.readUTF()) as Class;
+            _dirty = input.readObject();
+            _item = input.readObject();
+            _newRecord = input.readBoolean();
+            _readOnly = input.readBoolean();
+            _relationShips = input.readObject();
+            errors = input.readObject();
         }
     }
 }
