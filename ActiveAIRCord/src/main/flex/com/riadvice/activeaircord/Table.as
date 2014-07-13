@@ -22,10 +22,10 @@ package com.riadvice.activeaircord
     import com.riadvice.activeaircord.relationship.HasMany;
     import com.riadvice.activeaircord.relationship.HasOne;
     import com.riadvice.activeaircord.relationship.IRelationship;
-
+    
     import flash.data.SQLResult;
     import flash.utils.Dictionary;
-
+    
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
@@ -204,10 +204,11 @@ package com.riadvice.activeaircord
             var sql : SQLBuilder = optionsToSql(options);
             var readOnly : Boolean = options.hasOwnProperty("readonly") && options["readonly"];
             var eagerLoad : Array = options.hasOwnProperty("include") ? options["include"] : null;
-            return findBySql(sql.toString(), sql.whereValues, readOnly, eagerLoad);
+			var raw : Boolean = options.hasOwnProperty("raw") ? options["raw"] : false;
+            return findBySql(sql.toString(), sql.whereValues, readOnly, eagerLoad, raw);
         }
 
-        public function findBySql( sql : String, values : Array = null, readonly : Boolean = false, includes : Array = null ) : Array
+        public function findBySql( sql : String, values : Array = null, readonly : Boolean = false, includes : Array = null, raw : Boolean = false ) : Array
         {
             lastSql = sql;
             var collectAttrsForIncludes : Boolean = (includes == null) ? false : true;
@@ -215,24 +216,30 @@ package com.riadvice.activeaircord
             var attrs : Array = [];
 
             var result : SQLResult = conn.query(sql, processData(values));
-            for each (var row : Object in result.data)
-            {
-                var model : Model = ClassUtils.newInstance(clazz, [row, false, true, false]);
-                if (readonly)
-                {
-                    model.readonly();
-                }
-                if (collectAttrsForIncludes)
-                {
-                    attrs.push(model.attributes());
-                }
-                list.push(model);
-            }
-
-            if (collectAttrsForIncludes && !ArrayUtils.isEmpty(list))
-            {
-                executeEagerLoad(list, attrs, includes);
-            }
+			if (!raw)
+			{
+				for each (var row : Object in result.data)
+				{
+					var model : Model = ClassUtils.newInstance(clazz, [row, false, true, false]);
+					if (readonly)
+					{
+						model.readonly();
+					}
+					if (collectAttrsForIncludes)
+					{
+						attrs.push(model.attributes());
+					}
+					list.push(model);
+				}
+				
+				if (collectAttrsForIncludes && !ArrayUtils.isEmpty(list))
+				{
+					executeEagerLoad(list, attrs, includes);
+				}
+			}
+			else {
+				list = result.data;
+			}
 
             return list;
         }

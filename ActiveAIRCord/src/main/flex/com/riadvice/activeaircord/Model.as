@@ -44,7 +44,7 @@ package com.riadvice.activeaircord
     public dynamic class Model extends Proxy implements IExternalizable
     {
 
-        public static const VALID_OPTIONS : Array = ["conditions", "limit", "offset", "order", "select",
+        public static const VALID_OPTIONS : Array = ["raw", "conditions", "limit", "offset", "order", "select",
             "joins", "include", "readonly", "group", "from", "having"];
 
         public static var aliasAttribute : Object = new Object();
