@@ -104,13 +104,13 @@ package com.riadvice.activeaircord
             _defaultConnection = name;
         }
 
-        public static function set presistencePackage( packageName : String ) : void
+        public static function set persistencePackage( packageName : String ) : void
         {
             _persistencePackage = packageName;
         }
 
         // FIXME : warn user if not set
-        public static function get presistencePackage() : String
+        public static function get persistencePackage() : String
         {
             return _persistencePackage;
         }

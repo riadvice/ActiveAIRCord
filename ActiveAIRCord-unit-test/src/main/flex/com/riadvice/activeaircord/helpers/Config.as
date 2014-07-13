@@ -22,7 +22,7 @@ package com.riadvice.activeaircord.helpers
     {
         public static function initConfig() : void
         {
-            Configuration.presistencePackage = "com.riadvice.activeaircord.models";
+            Configuration.persistencePackage = "com.riadvice.activeaircord.models";
             Configuration.connections = {sqlite: "sqlite://test.db"};
             Configuration.defaultConnection = "sqlite";
         }

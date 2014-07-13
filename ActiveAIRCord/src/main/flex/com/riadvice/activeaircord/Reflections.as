@@ -53,7 +53,7 @@ package com.riadvice.activeaircord
         {
             if (!_reflections[className])
             {
-                _reflections[className] = ClassUtils.forName(Configuration.presistencePackage + "." + className);
+                _reflections[className] = ClassUtils.forName(Configuration.persistencePackage + "." + className);
             }
             return _instance;
         }
