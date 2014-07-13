@@ -263,6 +263,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testHashWithGlue() : void
         {
+			// FIXME : update set_property
             var params : Dictionary = new Dictionary(true);
             params["id"] = 1;
             params["name"] = "Tito";

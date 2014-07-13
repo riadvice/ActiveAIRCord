@@ -39,6 +39,7 @@ package com.riadvice.activeaircord
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
+    import org.as3commons.lang.StringUtils;
 
     public dynamic class Model extends Proxy implements IExternalizable
     {
@@ -849,15 +850,38 @@ package com.riadvice.activeaircord
         flash_proxy override function setProperty( name : *, value : * ) : void
         {
             var propName : String = (name is QName) ? QName(name).localName : name;
-            if (this._values[name] !== value)
+            if (aliasAttribute.hasOwnProperty(propName))
             {
-                this._item[name] = value;
+                propName = aliasAttribute[name];
+            }
+            else if (propName in this)
+            {
+                this[propName] = value;
+                return;
+            }
+            else if (("set" + StringUtils.capitalize(propName)) in this)
+            {
+                this["set" + StringUtils.capitalize(propName)](value);
+                return;
+            }
+            if (propName == "id")
+            {
+                assignAttribute(getPrimaryKey(true), value);
+                return
             }
             if (DictionaryUtils.containsKey(attributes(), name))
             {
                 assignAttribute(propName, value);
+                return;
             }
-
+            /* FIXME : Yes Model class is dynamic but we do not allow more dynamic attribute setters
+               We also need to add delegate setter
+               else if (this._item[name] !== value)
+               {
+               this._item[name] = value;
+               return;
+               }
+             */
             // TODO : complete
 
             throw new UndefinedPropertyException(ClassUtils.getName(_clazz), propName);
