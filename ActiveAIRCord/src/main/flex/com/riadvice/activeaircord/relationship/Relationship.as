@@ -22,11 +22,11 @@ package com.riadvice.activeaircord.relationship
     import com.riadvice.activeaircord.SQLBuilder;
     import com.riadvice.activeaircord.Table;
     import com.riadvice.activeaircord.Utils;
-    
+
     import flash.utils.Dictionary;
-    
+
     import avmplus.getQualifiedClassName;
-    
+
     import org.as3commons.lang.ArrayUtils;
     import org.as3commons.lang.ClassUtils;
     import org.as3commons.lang.ObjectUtils;
@@ -146,9 +146,9 @@ package com.riadvice.activeaircord.relationship
             var values : Array = new Array();
             var options : Object = this._options;
             var queryKey : String = queryKeys[0];
-            var modelValuesKey = modelValuesKeys[0];
+            var modelValuesKey : * = modelValuesKeys[0];
 
-            for each (var value in attributes)
+            for each (var value : * in attributes)
             {
                 values.push(value[Inflector.variablize(modelValuesKey)]);
             }
@@ -178,21 +178,22 @@ package com.riadvice.activeaircord.relationship
 
                 this.setKeys(ClassUtils.getName(getTable().clazz), true)
 
+                var throughTable : Table;
                 if (options["class_name"] != undefined)
                 {
-                    var clazz = Utils.classify(options["through"], true);
+                    clazz = Utils.classify(options["through"], true);
 
-                    var throughTable : Table = clazz["table"]();
+                    throughTable = clazz["table"]();
                 }
                 else
                 {
                     clazz = options["class_name"];
                     var relation : IRelationship = Table(clazz["table"]()).getRelationship(options["through"]);
-                    var throughTable : Table = Relationship(relation).getTable();
+                    throughTable = Relationship(relation).getTable();
                 }
                 options["joins"] = this.constructInnerJoinSql(throughTable, true);
 
-                var queryKey : String = this._primaryKey[0];
+                queryKey = this._primaryKey[0];
 
                 // reset keys
                 this._primaryKey = pk;
@@ -203,8 +204,8 @@ package com.riadvice.activeaircord.relationship
 
             var clazz : String = this.className;
 
-            var relateModels = ClassUtils.forName(clazz)["find"]("all", options);
-            var usedModels = new Array();
+            var relateModels : * = ClassUtils.forName(clazz)["find"]("all", options);
+            var usedModels : Array = new Array();
             modelValuesKey = Inflector.variablize(modelValuesKey);
             queryKey = Inflector.variablize(queryKey);
 
