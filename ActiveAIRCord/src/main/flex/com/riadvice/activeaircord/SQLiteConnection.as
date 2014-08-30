@@ -51,7 +51,7 @@ package com.riadvice.activeaircord
             super();
             _name = name;
             var _key : ByteArray = Configuration.getEncryptionKeyFor(name) as ByteArray;
-            var dbFile : File = new File(File.applicationDirectory.nativePath + File.separator + info["host"]);
+            var dbFile : File = File.applicationDirectory.resolvePath(info["host"]);
             // FIXME : if open mode is not create
             /*if (!dbFile.exists)
                {
