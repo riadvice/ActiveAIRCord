@@ -194,8 +194,7 @@ package com.riadvice.activeaircord
             _sql.having("created_at > '2009-01-01'");
             _sql.order("name");
             _sql.group("name");
-			// FIXME
-            _sql.where({id: [1]});
+            _sql.where({id: 1});
             assertSQLHas(conn.limit("SELECT * FROM authors WHERE id=? GROUP BY name HAVING created_at > '2009-01-01' ORDER BY name", 1, 10), _sql.toString());
         }
 
