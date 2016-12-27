@@ -185,10 +185,10 @@ package com.riadvice.activeaircord
         }
 
         // Takes only one array
-        public static function extractAndValidateOptions( clazz : Class, methodName : String, ... rest ) : Object
+        public static function extractAndValidateOptions( clazz : Class, methodName : String, ... rest ) : Dictionary
         {
             var array : Array = rest[0][0];
-            var options : Object = new Object();
+            var options : Dictionary = new Dictionary(true);
 
             if (array)
             {

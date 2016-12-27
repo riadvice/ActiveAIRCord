@@ -49,7 +49,7 @@ package com.riadvice.activeaircord
             assertEquals(SQLTypes.getASType(SQLTypes.NUMBER), Number);
             assertEquals(SQLTypes.getASType(SQLTypes.DATE), Date);
             assertEquals(SQLTypes.getASType(SQLTypes.BOOLEAN), Boolean);
-            assertEquals(SQLTypes.getASType(SQLTypes.Xml), XML);
+            assertEquals(SQLTypes.getASType(SQLTypes["XML"]), XML);
             assertEquals(SQLTypes.getASType(SQLTypes.XMLLIST), XMLList);
             assertEquals(SQLTypes.getASType(SQLTypes.OBJECT), Object);
         }
@@ -63,7 +63,7 @@ package com.riadvice.activeaircord
             assertEquals(SQLTypes.getSQLType("Number"), SQLTypes.NUMBER);
             assertEquals(SQLTypes.getSQLType("Date"), SQLTypes.DATE);
             assertEquals(SQLTypes.getSQLType("Boolean"), SQLTypes.BOOLEAN);
-            assertEquals(SQLTypes.getSQLType("XML"), SQLTypes.Xml);
+            assertEquals(SQLTypes.getSQLType("XML"), SQLTypes.XML);
             assertEquals(SQLTypes.getSQLType("XMLList"), SQLTypes.XMLLIST);
             assertEquals(SQLTypes.getSQLType("Array"), SQLTypes.OBJECT);
         }
@@ -77,7 +77,7 @@ package com.riadvice.activeaircord
             assertEquals(SQLTypes.NUMBER, "REAL");
             assertEquals(SQLTypes.OBJECT, "OBJECT");
             assertEquals(SQLTypes.STRING, "TEXT");
-            assertEquals(SQLTypes.Xml, "XML");
+            assertEquals(SQLTypes.XML, "XML");
             assertEquals(SQLTypes.XMLLIST, "XMLLIST");
         }
     }

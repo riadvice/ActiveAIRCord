@@ -131,14 +131,14 @@ package com.riadvice.activeaircord
             assertEquals(DictionaryUtils.getKeys(Author["extractAndValidateOptions"](args)).length, 0);
         }
 
-		// FIXME
+        // FIXME
         [Test]
         public function testInvalidAttribute() : void
         {
             var options : Dictionary = new Dictionary();
             options["conditions"] = "author_id=1";
             var author : Author = Author["find"]("first", options);
-			// FIXME
+            // FIXME
             assertThat(function() : void {author.invalidField}, throws(allOf(instanceOf(UndefinedPropertyException))));
         }
 
@@ -164,7 +164,7 @@ package com.riadvice.activeaircord
             assertEquals(1, String(exceptions[0]).match(new RegExp("another_invalid_attribute", "g")).length);
         }
 
-		// FIXME
+        // FIXME
         [Test]
         public function testGetterUndefinedPropertyExceptionIncludesModelName() : void
         {
@@ -182,7 +182,6 @@ package com.riadvice.activeaircord
         public function testSetterUndefinedPropertyExceptionIncludesModelName() : void
         {
             var author : Author = new Author();
-			// FIXME
             assertThat(function() : void {author.this_better_not_exist = "hi"}, throws(allOf(instanceOf(UndefinedPropertyException), hasProperty("message", containsString("Author.this_better_not_exist")))));
         }
 
@@ -193,7 +192,7 @@ package com.riadvice.activeaircord
             assertTrue(DictionaryUtils.getKeys(author.attributes()).length >= 10)
         }
 
-		// FIXME
+        // FIXME
         [Test]
         public function testAliasAttributeGetter() : void
         {

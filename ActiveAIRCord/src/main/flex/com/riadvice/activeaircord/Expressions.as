@@ -18,6 +18,9 @@ package com.riadvice.activeaircord
 {
     import com.riadvice.activeaircord.exceptions.ExpressionsException;
 
+    import flash.utils.Dictionary;
+
+    import org.as3commons.lang.DictionaryUtils;
     import org.as3commons.lang.ObjectUtils;
     import org.as3commons.lang.StringUtils;
 
@@ -34,7 +37,7 @@ package com.riadvice.activeaircord
             _connection = connection;
             _expressions = "";
 
-            if (ObjectUtils.isExplicitInstanceOf(expressions, Object))
+            if (ObjectUtils.isExplicitInstanceOf(expressions, Object) || ObjectUtils.isExplicitInstanceOf(expressions, Dictionary))
             {
                 var glue : String = rest.length > 0 ? rest[0] : " " + SQL.AND + " ";
                 var builtSQL : Array = buildSqlFromHash(expressions, glue);
@@ -121,7 +124,14 @@ package com.riadvice.activeaircord
             return result;
         }
 
-        private function buildSqlFromHash( hash : Object, glue : String ) : Array
+        /**
+         *
+         * @param hash Could be a raw Object or a Dictionary
+         * @param glue
+         * @return
+         *
+         */
+        private function buildSqlFromHash( hash : *, glue : String ) : Array
         {
             var sql : String = "";
             var g : String = "";

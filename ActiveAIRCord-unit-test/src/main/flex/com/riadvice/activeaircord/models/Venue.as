@@ -18,7 +18,9 @@ package com.riadvice.activeaircord.models
 {
     import com.riadvice.activeaircord.Model;
 
+
     public class Venue extends Model
     {
+        staticInitializer(prototype.constructor);
     }
 }

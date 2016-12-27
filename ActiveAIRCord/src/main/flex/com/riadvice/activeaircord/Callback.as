@@ -17,9 +17,7 @@
 package com.riadvice.activeaircord
 {
     import com.riadvice.activeaircord.exceptions.ActiveRecordException;
-
-    import flash.utils.Dictionary;
-
+    
     import org.as3commons.lang.ArrayUtils;
 
     public class Callback
