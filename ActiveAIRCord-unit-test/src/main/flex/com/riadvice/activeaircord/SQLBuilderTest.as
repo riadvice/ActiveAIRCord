@@ -117,8 +117,7 @@ package com.riadvice.activeaircord
         [Test]
         public function testWhereWithHashAndArray() : void
         {
-			// FIXME
-            _sql.where(_sql.where({id: 1, name: ["Tito", "Mexican"]}));
+            _sql.where({id: 1, name: ["Tito", "Mexican"]});
             assertSQLHas("SELECT * FROM authors WHERE id=? AND name IN(?,?)", _sql.toString());
             assertThat(_sql.whereValues, array(1, "Tito", "Mexican"));
         }
@@ -363,7 +362,7 @@ package com.riadvice.activeaircord
             // joins needs to be called prior to where
             _sql.joins(joins);
             _sql.where({id: 1, name: "Tito"});
-            assertSQLHas("SELECT * FROM authors " + joins + " WHERE `authors`.`id`=? AND `authors`.`name`=?", _sql.toString());
+            assertSQLHas("SELECT * FROM authors " + joins + " WHERE author.id=? AND authors.name=?", _sql.toString());
         }
 
     }

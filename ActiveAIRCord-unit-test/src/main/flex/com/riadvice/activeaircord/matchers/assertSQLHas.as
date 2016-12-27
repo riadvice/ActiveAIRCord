@@ -21,8 +21,8 @@ package com.riadvice.activeaircord.matchers
 
     public function assertSQLHas( value : String, compared : String ) : void
     {
-        value = StringUtils.replace(StringUtils.replace(value, "\"", ""), "`", '');
-        compared = StringUtils.replace(StringUtils.replace(compared, "\"", ""), "`", '');
+        value = value.replace(/(\")|(`)/g, '');
+        compared = compared.replace(/(\")|(`)/g, '');
 
         var comparisonSuccess : Boolean = StringUtils.contains(value, compared) || StringUtils.equals(value, compared);
         if (!comparisonSuccess)
