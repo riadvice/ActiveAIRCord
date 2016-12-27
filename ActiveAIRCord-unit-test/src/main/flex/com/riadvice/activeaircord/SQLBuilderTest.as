@@ -356,16 +356,14 @@ package com.riadvice.activeaircord
             assertSameObjects(hash, expectedHash);
         }
 
-        // FIXME
         [Test]
         public function testWhereWithJoinsPrependsTableNameToFields() : void
         {
             var joins : String = "INNER JOIN books ON (books.id = authors.id)";
             // joins needs to be called prior to where
             _sql.joins(joins);
-			// FIXME
             _sql.where({id: 1, name: "Tito"});
-            assertSQLHas("SELECT * FROM authors " + joins + " WHERE authors.id=? AND authors.name=?", _sql.toString());
+            assertSQLHas("SELECT * FROM authors " + joins + " WHERE `authors`.`id`=? AND `authors`.`name`=?", _sql.toString());
         }
 
     }
